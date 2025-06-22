@@ -1,0 +1,56 @@
+/* 视频容器和切换选项卡的样式 */
+.video-container {
+  margin-bottom: 20px;
+}
+.video-tabs {
+  margin-bottom: 10px;
+}
+.video-tab {
+  display: inline-block;
+  text-decoration: none;
+  padding: 8px 15px;
+  margin-right: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  color: rgb(28, 228, 168);
+}
+.bilibili-tab {
+  background-color: #56d9e2;
+}
+.youtube-tab {
+  background-color: #e8edd4;
+}
+.video-content {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+}
+.video-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+/* 默认显示哔哩哔哩视频，隐藏YouTube视频 */
+#bilibili {
+  display: block;
+}
+#youtube {
+  display: none;
+}
+/* 当YouTube被选中时 */
+#youtube:target {
+  display: block;
+}
+#youtube:target ~ #bilibili {
+  display: none;
+}
+/* 当哔哩哔哩被选中时 */
+#bilibili:target {
+  display: block;
+}
+#bilibili:target ~ #youtube {
+  display: none;
+} 

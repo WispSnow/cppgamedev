@@ -1,0 +1,7 @@
+# https://www.robotstxt.org/robotstxt.html
+# 允许所有爬虫访问
+User-agent: *
+Allow: /
+
+# 网站地图
+Sitemap: https://cppgamedev.top/sitemap.xml

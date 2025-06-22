@@ -1,0 +1,61 @@
+/* 路线图表格样式 */
+.roadmap-table-container {
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.roadmap-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.9em;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.roadmap-table thead tr {
+  background-color: #4A90E2;
+  color: #ffffff;
+  text-align: left;
+}
+
+.roadmap-table th,
+.roadmap-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #dddddd;
+}
+
+.roadmap-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.roadmap-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.roadmap-table tbody tr:last-of-type {
+  border-bottom: 2px solid #4A90E2;
+}
+
+.roadmap-table tbody tr:hover {
+  background-color: #e9f2fd;
+}
+
+/* 表格说明样式 */
+.table-description {
+  font-style: italic;
+  color: #666;
+  margin-top: -10px;
+  margin-bottom: 30px;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 600px) {
+  .roadmap-table th,
+  .roadmap-table td {
+    padding: 8px 10px;
+    font-size: 0.85em;
+  }
+} 
