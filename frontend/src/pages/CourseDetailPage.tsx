@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { getCourseById } from '../services/courseService';
 import { Course } from '../types';
 import SEOHelmet from '../components/SEOHelmet';
+import ErrorState from '../components/ErrorState';
+import { PartCardSkeletonList, Skeleton } from '../components/Skeleton';
 
 const PageContainer = styled.div`
   max-width: 1000px;
@@ -111,19 +113,23 @@ const ViewContentButton = styled.div`
   text-align: center;
 `;
 
-const LoadingMessage = styled.div`
-  text-align: center;
-  padding: 3rem;
-  color: var(--secondary-text-color, #666);
+const CourseHeaderSkeleton = styled(CourseHeader)`
+  min-height: 260px;
 `;
 
-const ErrorMessage = styled.div`
-  text-align: center;
+const CourseImageSkeleton = styled(Skeleton)`
+  width: 40%;
+  height: 260px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 200px;
+  }
+`;
+
+const CourseInfoSkeleton = styled.div`
   padding: 2rem;
-  color: #e53935;
-  background-color: rgba(229, 57, 53, 0.1);
-  border-radius: 8px;
-  margin: 1rem 0;
+  flex-grow: 1;
 `;
 
 const CourseDetailPage: React.FC = () => {
@@ -133,39 +139,34 @@ const CourseDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCourse = async () => {
-      try {
-        if (!courseId) return;
-        const data = await getCourseById(courseId);
-        setCourse(data);
-        setLoading(false);
-      } catch (err) {
-        setError('加载课程信息失败，请稍后再试');
-        setLoading(false);
-        console.error('Error fetching course:', err);
-      }
-    };
-
-    fetchCourse();
+  const fetchCourse = useCallback(async () => {
+    try {
+      if (!courseId) return;
+      setError(null);
+      setLoading(true);
+      setCourse(null);
+      const data = await getCourseById(courseId);
+      setCourse(data);
+    } catch (err) {
+      setError('加载课程信息失败，请稍后再试');
+      console.error('Error fetching course:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [courseId]);
+
+  useEffect(() => {
+    fetchCourse();
+  }, [fetchCourse]);
 
   const handlePartClick = (partId: string) => {
     navigate(`/courses/${courseId}/parts/${partId}`);
   };
 
-  if (loading) {
-    return <LoadingMessage>加载课程信息中...</LoadingMessage>;
-  }
-
-  if (error || !course) {
-    return <ErrorMessage>{error || '课程不存在'}</ErrorMessage>;
-  }
-
   return (
     <PageContainer>
       {course && (
-        <SEOHelmet 
+        <SEOHelmet
           title={`${course.title} | C++游戏开发教程`}
           description={`${course.description} - 学习C++游戏开发技能，从这门课程开始。`}
           keywords={`C++,游戏开发,${course.title},编程教程,游戏编程`}
@@ -174,25 +175,51 @@ const CourseDetailPage: React.FC = () => {
         />
       )}
       <BackLink to="/courses">← 返回全部任务</BackLink>
-      
-      <CourseHeader>
-        <CourseImage src={course.coverImage} alt={course.title} />
-        <CourseInfo>
-          <CourseTitle>{course.title}</CourseTitle>
-          <CourseDescription>{course.description}</CourseDescription>
-        </CourseInfo>
-      </CourseHeader>
+      {loading && (
+        <>
+          <CourseHeaderSkeleton>
+            <CourseImageSkeleton radius="0" />
+            <CourseInfoSkeleton>
+              <Skeleton height="32px" />
+              <Skeleton width="80%" />
+              <Skeleton width="60%" />
+            </CourseInfoSkeleton>
+          </CourseHeaderSkeleton>
+          <PartsSectionTitle>课程章节</PartsSectionTitle>
+          <PartCardSkeletonList />
+        </>
+      )}
 
-      <PartsSectionTitle>课程章节</PartsSectionTitle>
-      <PartsList>
-        {course.parts.map((part) => (
-          <PartCard key={part.id} onClick={() => handlePartClick(part.id)}>
-            <PartTitle>{part.title}</PartTitle>
-            <PartDescription>{part.description}</PartDescription>
-            <ViewContentButton>查看内容</ViewContentButton>
-          </PartCard>
-        ))}
-      </PartsList>
+      {!loading && error && (
+        <ErrorState message={error} onRetry={fetchCourse} />
+      )}
+
+      {!loading && !error && !course && (
+        <ErrorState message="未找到课程信息" onRetry={fetchCourse} />
+      )}
+
+      {!loading && !error && course && (
+        <>
+          <CourseHeader>
+            <CourseImage src={course.coverImage} alt={course.title} />
+            <CourseInfo>
+              <CourseTitle>{course.title}</CourseTitle>
+              <CourseDescription>{course.description}</CourseDescription>
+            </CourseInfo>
+          </CourseHeader>
+
+          <PartsSectionTitle>课程章节</PartsSectionTitle>
+          <PartsList>
+            {course.parts.map((part) => (
+              <PartCard key={part.id} onClick={() => handlePartClick(part.id)}>
+                <PartTitle>{part.title}</PartTitle>
+                <PartDescription>{part.description}</PartDescription>
+                <ViewContentButton>查看内容</ViewContentButton>
+              </PartCard>
+            ))}
+          </PartsList>
+        </>
+      )}
     </PageContainer>
   );
 };
