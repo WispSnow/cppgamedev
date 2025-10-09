@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vs, vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useTheme } from '../context/ThemeContext';
@@ -99,6 +100,64 @@ const MarkdownContainer = styled.div`
     border: none;
     border-top: 1px solid var(--border-color, #eaeaea);
     margin: 2rem 0;
+  }
+  
+  /* 表格样式 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  thead {
+    background-color: var(--primary-color, #0066cc);
+    color: white;
+  }
+  
+  th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--border-color, #eaeaea);
+  }
+  
+  tbody tr {
+    background-color: var(--card-bg-color, #ffffff);
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: var(--hover-bg-color, #f5f5f5);
+    }
+    
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+  
+  /* 暗色主题下的表格样式 */
+  [data-theme='dark'] & {
+    table {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    thead {
+      background-color: #1a73e8;
+    }
+    
+    tbody tr {
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+    }
   }
 `;
 
@@ -285,7 +344,11 @@ const MarkdownPage: React.FC<MarkdownPageProps> = ({ title, contentUrl }) => {
     <PageContainer>
       <PageTitle>{title}</PageTitle>
       <MarkdownContainer>
-        <ReactMarkdown rehypePlugins={[rehypeRaw]} components={components}>
+        <ReactMarkdown 
+          remarkPlugins={[remarkGfm]} 
+          rehypePlugins={[rehypeRaw]} 
+          components={components}
+        >
           {content}
         </ReactMarkdown>
       </MarkdownContainer>

@@ -447,6 +447,237 @@ const courses = [
         contentPath: "backend/src/courses/模块化编程与幽灵逃生/ex1-修正内存泄露问题.md"
       }
     ]
+  },
+  {
+    id: "layer-sunny-land",
+    title: "分层架构与阳光岛",
+    description: "学习C++游戏开发中的分层架构设计，使用SDL3、glm、nlohmann-json、Tiled构建一款平台跳跃游戏。掌握现代游戏引擎的设计理念与现代C++的特性。",
+    coverImage: "https://theorhythm.top/gamedev/SL/SL_screenshot_3.png",
+    status: "进行中",
+    parts: [
+      {
+        id: "intro",
+        title: "课程简介",
+        description: "了解分层架构与阳光岛的学习内容和目标。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/00 分层架构与阳光岛.md"
+      },
+      {
+        id: "environment-setup",
+        title: "环境安装及测试",
+        description: "搭建开发环境，配置SDL3、glm、nlohmann-json、spdlog等库，为后续开发做好准备。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/01 环境安装及测试.md"
+      },
+      {
+        id: "spdlog-json-basics",
+        title: "spdlog与json基础",
+        description: "学习使用spdlog日志库进行调试信息输出，掌握nlohmann/json进行数据管理的基础方法。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/02 spdlog与json基础.md"
+      },
+      {
+        id: "game-architecture",
+        title: "游戏架构设计",
+        description: "深入理解分层架构与组件化设计思想，为构建清晰、可扩展的游戏引擎奠定理论基础。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/03 游戏架构设计.md"
+      },
+      {
+        id: "main-loop-framerate",
+        title: "主循环与帧率控制",
+        description: "构建游戏的心脏——主循环，实现稳定的帧率控制和delta time计算。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/04 主循环与帧率控制.md"
+      },
+      {
+        id: "resource-manager",
+        title: "资源管理模块",
+        description: "设计并实现完整的资源管理系统，包括纹理、音频和字体的自动化加载与管理。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/05 资源管理模块.md"
+      },
+      {
+        id: "renderer-camera-sprite",
+        title: "渲染器、相机与精灵",
+        description: "建立完整的2D渲染管线，实现精灵渲染、相机系统与坐标转换。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/06 渲染器、相机与精灵.md"
+      },
+      {
+        id: "config-file",
+        title: "读取保存配置文件",
+        description: "使用JSON格式管理游戏配置，支持外部配置文件的读取与保存。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/07 读取保存配置文件.md"
+      },
+      {
+        id: "input-manager",
+        title: "输入管理类",
+        description: "构建强大且可配置的输入管理系统，支持键盘、鼠标的多种状态检测与动作绑定。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/08 输入管理类.md"
+      },
+      {
+        id: "gameobject-component",
+        title: "游戏对象与组件",
+        description: "实现GameObject和Component基类，建立面向组件的游戏编程架构。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/09 游戏对象与组件.md"
+      },
+      {
+        id: "transform-sprite-component",
+        title: "变换与精灵组件",
+        description: "创建TransformComponent和SpriteComponent，赋予游戏对象位置、旋转、缩放和视觉表现。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/10 变换与精灵组件.md"
+      },
+      {
+        id: "scene-management",
+        title: "场景与场景管理",
+        description: "设计场景系统和场景管理器，实现游戏不同状态的切换与管理。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/11 场景与场景管理.md"
+      },
+      {
+        id: "level-loader-image",
+        title: "关卡载入器-图片层",
+        description: "使用Tiled地图编辑器，实现从JSON文件加载图片层的功能。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/12 关卡载入器-图片层.md"
+      },
+      {
+        id: "level-loader-tile",
+        title: "关卡载入器-瓦片层",
+        description: "实现瓦片地图层的加载与渲染，构建游戏世界的基础地形。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/13 关卡载入器-瓦片层.md"
+      },
+      {
+        id: "level-loader-object",
+        title: "关卡载入器-对象层",
+        description: "从Tiled地图加载对象层，动态生成游戏对象。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/14 关卡载入器-对象层.md"
+      },
+      {
+        id: "physics-engine",
+        title: "物理引擎与物理组件",
+        description: "实现2D物理系统，包括重力、速度和加速度的物理组件。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/15 物理引擎与物理组件.md"
+      },
+      {
+        id: "collider-component",
+        title: "碰撞器组件与碰撞检测",
+        description: "设计碰撞器组件，实现AABB碰撞检测算法。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/16 碰撞器组件与碰撞检测.md"
+      },
+      {
+        id: "tilemap-collision",
+        title: "瓦片地图层碰撞解析",
+        description: "实现玩家与瓦片地图的碰撞检测与物理响应，让角色能在平台上行走。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/17 瓦片地图层碰撞解析.md"
+      },
+      {
+        id: "object-collision",
+        title: "对象间的碰撞解析",
+        description: "处理游戏对象之间的碰撞检测与响应，实现复杂的交互逻辑。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/18 对象间的碰撞解析.md"
+      },
+      {
+        id: "oneway-platform-slope",
+        title: "瓦片层单向平台与斜坡",
+        description: "实现单向平台（可从下方穿过）和斜坡地形的碰撞处理。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/19 瓦片层单向平台与斜坡.md"
+      },
+      {
+        id: "player-state-machine",
+        title: "玩家组件与状态机",
+        description: "设计玩家控制组件，实现基于状态机的复杂角色行为管理。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/20 玩家组件与状态机.md"
+      },
+      {
+        id: "animation-component",
+        title: "动画组件与动画载入",
+        description: "实现动画系统，支持序列帧动画的播放与状态切换。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/21 动画组件与动画载入.md"
+      },
+      {
+        id: "health-component",
+        title: "生命组件与死伤状态",
+        description: "添加生命值系统，处理角色的受伤与死亡逻辑。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/22 生命组件与死伤状态.md"
+      },
+      {
+        id: "player-interaction",
+        title: "玩家与其他对象交互",
+        description: "实现玩家与游戏世界中各种对象的交互机制，如收集道具、触发事件等。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/23 玩家与其他对象交互.md"
+      },
+      {
+        id: "ai-component",
+        title: "AI组件与AI行为",
+        description: "设计AI组件，为敌人添加巡逻、追逐等智能行为。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/24 AI组件与AI行为.md"
+      },
+      {
+        id: "climbing-state",
+        title: "攀爬状态切换",
+        description: "实现角色的攀爬机制，包括梯子检测和攀爬状态的流畅切换。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/25 攀爬状态切换.md"
+      },
+      {
+        id: "coyote-time-invincibility",
+        title: "土狼时间与无敌闪烁",
+        description: "实现土狼时间（Coyote Time）提升跳跃手感，添加受伤后的无敌闪烁效果。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/26 土狼时间与无敌闪烁.md"
+      },
+      {
+        id: "audio-engine",
+        title: "音频引擎与音频组件",
+        description: "封装SDL_mixer，实现音效和背景音乐的播放管理系统。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/27 音频引擎与音频组件.md"
+      },
+      {
+        id: "level-switch-new-map",
+        title: "关卡切换-新地图",
+        description: "实现关卡之间的切换机制，加载新的地图和游戏对象。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/28 关卡切换-新地图.md"
+      },
+      {
+        id: "level-switch-shared-data",
+        title: "关卡切换-共享游戏数据",
+        description: "在场景切换时保持玩家状态和游戏数据的连续性。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/29 关卡切换-共享游戏数据.md"
+      },
+      {
+        id: "text-rendering",
+        title: "文字渲染引擎",
+        description: "实现文字渲染系统，支持多种字体和文本样式的显示。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/30 文字渲染引擎.md"
+      },
+      {
+        id: "ui-manager",
+        title: "UI管理器与UI元素",
+        description: "设计UI系统的基础架构，实现UI元素的管理与渲染。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/31 UI管理器与UI元素.md"
+      },
+      {
+        id: "health-icon-score",
+        title: "生命图标与得分记录",
+        description: "创建游戏HUD，显示玩家生命值和得分等关键信息。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/32 生命图标与得分记录.md"
+      },
+      {
+        id: "button-interactive-ui",
+        title: "按钮及可交互UI元素",
+        description: "实现可交互的UI按钮系统，处理鼠标悬停和点击事件。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/33 按钮及可交互UI元素.md"
+      },
+      {
+        id: "title-scene-overlay",
+        title: "标题场景及场景重叠",
+        description: "创建游戏标题场景，实现场景的层叠显示功能。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/34 标题场景及场景重叠.md"
+      },
+      {
+        id: "pause-menu-scene",
+        title: "暂停与菜单场景",
+        description: "实现游戏暂停功能和暂停菜单界面。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/35 暂停与菜单场景.md"
+      },
+      {
+        id: "ending-scene",
+        title: "结束场景与最终完成",
+        description: "实现游戏结束场景，完善游戏的最终细节，完成整个项目。",
+        contentPath: "backend/src/courses/分层架构与阳光岛/36 结束场景与最终完成.md"
+      }
+    ]
   }
 ];
 
