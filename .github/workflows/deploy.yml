@@ -1,0 +1,77 @@
+name: Build and Deploy React App
+
+# 触发条件：当有代码 push 到 main 分支时
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Job
+    # 运行环境：使用最新的Ubuntu系统
+    runs-on: ubuntu-latest
+
+    steps:
+      # 第1步：检出你的仓库代码
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 第2步：设置 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # 第3步：安装并构建 Frontend
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      # 第4步：安装 Backend 依赖（生产环境）
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci --production
+
+      # 第5步：部署 Frontend 到服务器
+      - name: Deploy Frontend to Server
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Frontend 构建后的静态文件
+          SOURCE: "frontend/build/"
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          # 部署到 Web 服务器目录（例如 /var/www/html）
+          TARGET: ${{ secrets.FRONTEND_DIR }}
+
+      # 第6步：部署 Backend 到服务器
+      - name: Deploy Backend to Server
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Backend 源代码和 node_modules
+          SOURCE: "backend/"
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          # 部署到后端应用目录
+          TARGET: ${{ secrets.BACKEND_DIR }}
+          # 排除不需要的文件
+          EXCLUDE: "node_modules/, .git/, .env"
+      
+      # 第7步：在服务器上重新安装 Backend 依赖并重启服务
+      - name: Restart Backend Service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.BACKEND_DIR }}
+            npm ci --production
+            # 使用 systemctl 重启服务
+            sudo systemctl restart cppgamedev-backend.service
