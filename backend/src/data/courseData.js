@@ -453,7 +453,7 @@ const courses = [
     title: "分层架构与阳光岛",
     description: "学习C++游戏开发中的分层架构设计，使用SDL3、glm、nlohmann-json、Tiled构建一款平台跳跃游戏。掌握现代游戏引擎的设计理念与现代C++的特性。",
     coverImage: "https://theorhythm.top/gamedev/SL/SL_screenshot_3.png",
-    status: "进行中",
+    status: "已完成",
     parts: [
       {
         id: "intro",
