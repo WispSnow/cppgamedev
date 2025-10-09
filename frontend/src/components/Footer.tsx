@@ -19,13 +19,6 @@ const FooterContent = styled.div`
   text-align: center;
 `;
 
-const FooterLogo = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: var(--primary-color, #0066cc);
-`;
-
 const FooterLinks = styled.div`
   display: flex;
   gap: 2rem;
@@ -56,7 +49,6 @@ const Footer: React.FC = () => {
   return (
     <FooterContainer>
       <FooterContent>
-        {/* <FooterLogo>游戏开发教程</FooterLogo> */}
         <FooterLinks>
           <FooterLink to="/about">关于我们</FooterLink>
           <FooterLink to="/contact">联系我们</FooterLink>
