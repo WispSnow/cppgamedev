@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { getAllCourses } from '../services/courseService';
 import { Course } from '../types';
+import ErrorState from '../components/ErrorState';
+import { CourseCardSkeletonGrid } from '../components/Skeleton';
 
 const PageContainer = styled.div`
   max-width: 1200px;
@@ -74,22 +76,6 @@ const PartCount = styled.div`
   font-weight: 500;
 `;
 
-const LoadingMessage = styled.div`
-  text-align: center;
-  margin-top: 2rem;
-  font-size: 1.2rem;
-  color: var(--secondary-text-color);
-`;
-
-const ErrorMessage = styled.div`
-  text-align: center;
-  margin-top: 2rem;
-  padding: 1rem;
-  background-color: #ffebee;
-  color: #c62828;
-  border-radius: 4px;
-`;
-
 interface CourseWithPartCount extends Course {
   partCount?: number;
 }
@@ -99,42 +85,47 @@ const CoursesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoading(true);
-        const coursesData = await getAllCourses();
-        setCourses(coursesData);
-      } catch (err) {
-        console.error('Error fetching courses:', err);
-        setError('获取任务列表失败，请稍后再试');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourses();
+  const fetchCourses = useCallback(async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      const coursesData = await getAllCourses();
+      setCourses(coursesData);
+    } catch (err) {
+      console.error('Error fetching courses:', err);
+      setError('获取任务列表失败，请稍后再试');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  if (loading) return <LoadingMessage>加载任务中...</LoadingMessage>;
-  if (error) return <ErrorMessage>{error}</ErrorMessage>;
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
 
   return (
     <PageContainer>
       <PageTitle>全部任务</PageTitle>
-      
-      <CourseGrid>
-        {courses.map(course => (
-          <CourseCard key={course.id} to={`/courses/${course.id}`}>
-            <CourseImage $backgroundUrl={course.coverImage || 'https://via.placeholder.com/300x180?text=No+Image'} />
-            <CourseContent>
-              <CourseTitle>{course.title}</CourseTitle>
-              <CourseDescription>{course.description}</CourseDescription>
-              <PartCount>{course.partCount || 0} 个章节</PartCount>
-            </CourseContent>
-          </CourseCard>
-        ))}
-      </CourseGrid>
+      {loading && <CourseCardSkeletonGrid />}
+
+      {!loading && error && (
+        <ErrorState message={error} onRetry={fetchCourses} />
+      )}
+
+      {!loading && !error && (
+        <CourseGrid>
+          {courses.map(course => (
+            <CourseCard key={course.id} to={`/courses/${course.id}`}>
+              <CourseImage $backgroundUrl={course.coverImage || 'https://via.placeholder.com/300x180?text=No+Image'} />
+              <CourseContent>
+                <CourseTitle>{course.title}</CourseTitle>
+                <CourseDescription>{course.description}</CourseDescription>
+                <PartCount>{course.partCount || 0} 个章节</PartCount>
+              </CourseContent>
+            </CourseCard>
+          ))}
+        </CourseGrid>
+      )}
     </PageContainer>
   );
 };

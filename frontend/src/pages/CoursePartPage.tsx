@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
@@ -13,6 +13,8 @@ import ProgressIndicator from '../components/ProgressIndicator';
 import { useTheme } from '../context/ThemeContext';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import ErrorState from '../components/ErrorState';
+import { ArticleSkeleton, Skeleton } from '../components/Skeleton';
 
 const PageContainer = styled.div`
   max-width: 900px;
@@ -155,13 +157,6 @@ const MarkdownContainer = styled.div`
   }
 `;
 
-const ErrorMessage = styled.div`
-  padding: 2rem;
-  text-align: center;
-  color: #e53935;
-  font-size: 1.2rem;
-`;
-
 const CodeWrapper = styled.div`
   margin: 1.5rem 0;
   border-radius: 8px;
@@ -197,6 +192,14 @@ const CodeBlockWrapper = styled.div`
   }
 `;
 
+const ProgressSkeleton = styled.div`
+  margin-bottom: 1.5rem;
+`;
+
+const SkeletonRow = styled(Skeleton)`
+  margin-bottom: 0.5rem;
+`;
+
 const CoursePartPage: React.FC = () => {
   const { courseId, partId } = useParams<{ courseId: string; partId: string }>();
   const [course, setCourse] = useState<Course | null>(null);
@@ -205,40 +208,44 @@ const CoursePartPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { theme } = useTheme();
 
-  useEffect(() => {
-    const fetchCourseAndPart = async () => {
-      try {
-        setLoading(true);
-        if (courseId) {
-          const courseData = await getCourseById(courseId);
-          setCourse(courseData);
-          
-          if (partId) {
-            try {
-              const partData = await getCoursePart(courseId, partId);
-              setPart(partData);
-            } catch (partError) {
-              console.error('获取章节内容失败:', partError);
-              const foundPart = courseData.parts.find(p => p.id === partId);
-              if (foundPart) {
-                setPart(foundPart);
-                setError('无法加载章节内容，请稍后再试');
-              } else {
-                setError('未找到章节内容');
-              }
+  const fetchCourseAndPart = useCallback(async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      setCourse(null);
+      setPart(null);
+      if (courseId) {
+        const courseData = await getCourseById(courseId);
+        setCourse(courseData);
+
+        if (partId) {
+          try {
+            const partData = await getCoursePart(courseId, partId);
+            setPart(partData);
+          } catch (partError) {
+            console.error('获取章节内容失败:', partError);
+            const foundPart = courseData.parts.find(p => p.id === partId);
+            if (foundPart) {
+              setPart(foundPart);
+              setError('无法加载章节内容，请稍后再试');
+            } else {
+              setPart(null);
+              setError('未找到章节内容');
             }
           }
         }
-      } catch (err) {
-        setError('加载内容时出错');
-        console.error(err);
-      } finally {
-        setLoading(false);
       }
-    };
-    
-    fetchCourseAndPart();
+    } catch (err) {
+      setError('加载内容时出错');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }, [courseId, partId]);
+
+  useEffect(() => {
+    fetchCourseAndPart();
+  }, [fetchCourseAndPart]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -248,9 +255,6 @@ const CoursePartPage: React.FC = () => {
       root.style.setProperty('--code-block-bg', '#f6f8fa');
     }
   }, [theme]);
-  
-  if (loading) return <div>正在加载章节内容...</div>;
-  if (error || !course || !part) return <ErrorMessage>{error || '未找到内容'}</ErrorMessage>;
   
   const components = {
     code({ node, inline, className, children, ...props }: any) {
@@ -323,46 +327,72 @@ const CoursePartPage: React.FC = () => {
     }
   };
 
+  const hasContent = !loading && !error && course && part;
+
   return (
     <>
-      <TableOfContents 
-        courseId={courseId || ''} 
-        parts={course.parts} 
-        currentPartId={partId}
-      />
-      
+      {course && (
+        <TableOfContents
+          courseId={courseId || ''}
+          parts={course.parts}
+          currentPartId={partId}
+        />
+      )}
+
       <PageContainer>
         <BackLink to={`/courses/${courseId}`}>← 返回课程页面</BackLink>
-        
-        <ProgressIndicator 
-          currentPartId={partId || ''} 
-          allParts={course.parts} 
-        />
-        
-        <ContentHeader>
-          <PartTitle>{part.title}</PartTitle>
-          <CourseName>{course.title}</CourseName>
-        </ContentHeader>
-        
-        {part.content ? (
-          <MarkdownContainer>
-            <ReactMarkdown 
-              components={components}
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}
-            >
-              {part.content}
-            </ReactMarkdown>
-          </MarkdownContainer>
-        ) : (
-          <ErrorMessage>此章节暂无内容</ErrorMessage>
+
+        {loading && (
+          <>
+            <ProgressSkeleton>
+              <SkeletonRow width="45%" height="14px" />
+              <SkeletonRow width="60%" height="10px" />
+            </ProgressSkeleton>
+            <ArticleSkeleton />
+          </>
         )}
-        
-        <ChapterNavigation
-          courseId={courseId || ''}
-          currentPartId={partId || ''}
-          allParts={course.parts}
-        />
+
+        {!loading && error && (
+          <ErrorState message={error} onRetry={fetchCourseAndPart} />
+        )}
+
+        {!loading && !error && (!course || !part) && (
+          <ErrorState message="未找到章节内容" onRetry={fetchCourseAndPart} />
+        )}
+
+        {hasContent && (
+          <>
+            <ProgressIndicator
+              currentPartId={partId || ''}
+              allParts={course.parts}
+            />
+
+            <ContentHeader>
+              <PartTitle>{part.title}</PartTitle>
+              <CourseName>{course.title}</CourseName>
+            </ContentHeader>
+
+            {part.content ? (
+              <MarkdownContainer>
+                <ReactMarkdown
+                  components={components}
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                >
+                  {part.content}
+                </ReactMarkdown>
+              </MarkdownContainer>
+            ) : (
+              <ErrorState message="此章节暂无内容" />
+            )}
+
+            <ChapterNavigation
+              courseId={courseId || ''}
+              currentPartId={partId || ''}
+              allParts={course.parts}
+            />
+          </>
+        )}
       </PageContainer>
     </>
   );
