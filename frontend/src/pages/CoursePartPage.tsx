@@ -224,7 +224,7 @@ const CoursePartPage: React.FC = () => {
             setPart(partData);
           } catch (partError) {
             console.error('获取章节内容失败:', partError);
-            const foundPart = courseData.parts.find(p => p.id === partId);
+            const foundPart = courseData.parts?.find(p => p.id === partId);
             if (foundPart) {
               setPart(foundPart);
               setError('无法加载章节内容，请稍后再试');
