@@ -3,6 +3,7 @@ const cors = require('cors');
 const path = require('path');
 const dotenv = require('dotenv');
 const coursesRouter = require('./routes/courses');
+const troubleshootingRouter = require('./routes/troubleshooting');
 
 // 加载环境变量
 dotenv.config();
@@ -16,6 +17,7 @@ app.use(express.json());
 
 // 路由
 app.use('/api/courses', coursesRouter);
+app.use('/api/troubleshooting', troubleshootingRouter);
 
 // 静态文件服务（生产环境使用）
 if (process.env.NODE_ENV === 'production') {

@@ -9,6 +9,7 @@ const courses = [
     title: "SDL与太空战机",
     description: "通过SDL2图形库学习C++游戏开发基础，从零开始构建一款经典的太空射击游戏。掌握游戏循环、输入处理、图像渲染和音频播放等核心概念。",
     coverImage: "https://theorhythm.top/gamedev/screen_shooter_2.png",
+    category: "mainline",
     status: "已完成",
     parts: [
       {
@@ -216,6 +217,7 @@ const courses = [
     title: "模块化编程与幽灵逃生",
     description: "学习C++游戏开发中的模块化编程思想，使用SDL3、GLM数学库构建一款生存类游戏。掌握组件化设计、向量数学和资源管理等高级概念。",
     coverImage: "https://theorhythm.top/gamedev/GE/screen_ge_2.png",
+    category: "mainline",
     status: "已完成",
     parts: [
       {
@@ -453,6 +455,7 @@ const courses = [
     title: "分层架构与阳光岛",
     description: "学习C++游戏开发中的分层架构设计，使用SDL3、glm、nlohmann-json、Tiled构建一款平台跳跃游戏。掌握现代游戏引擎的设计理念与现代C++的特性。",
     coverImage: "https://theorhythm.top/gamedev/SL/SL_screenshot_3.png",
+    category: "mainline",
     status: "已完成",
     parts: [
       {
@@ -676,6 +679,38 @@ const courses = [
         title: "结束场景与最终完成",
         description: "实现游戏结束场景，完善游戏的最终细节，完成整个项目。",
         contentPath: "backend/src/courses/分层架构与阳光岛/36 结束场景与最终完成.md"
+      }
+    ]
+  },
+  {
+    id: "side-rapid-prototyping",
+    title: "支线任务：快速原型工具箱",
+    description: "占位课程：未来将在这里介绍如何用C++和常用工具快速搭建游戏原型。",
+    coverImage: "https://via.placeholder.com/600x400?text=Side+Quest",
+    category: "side",
+    status: "规划中",
+    parts: [
+      {
+        id: "overview",
+        title: "即将上线",
+        description: "敬请期待！我们正在整理课程内容。",
+        contentPath: "backend/src/courses/支线任务-快速原型工具箱/00 占位说明.md"
+      }
+    ]
+  },
+  {
+    id: "side-audio-playground",
+    title: "支线任务：音频实验室",
+    description: "占位课程：未来将在此探索更进阶的音频中间件与声音设计技巧。",
+    coverImage: "https://via.placeholder.com/600x400?text=Side+Quest",
+    category: "side",
+    status: "规划中",
+    parts: [
+      {
+        id: "coming-soon",
+        title: "即将上线",
+        description: "课程正在筹备中，稍后将更新详细章节。",
+        contentPath: "backend/src/courses/支线任务-音频实验室/00 占位说明.md"
       }
     ]
   }

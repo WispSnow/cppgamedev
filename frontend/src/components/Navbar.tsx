@@ -88,6 +88,8 @@ const Navbar: React.FC = () => {
         </Logo>
         <NavLinks>
           <NavLink to="/">主线</NavLink>
+          <NavLink to="/side-quests">支线</NavLink>
+          <NavLink to="/troubleshooting">疑难解决</NavLink>
           <NavLink to="/courses">全部任务</NavLink>
           <ThemeButton onClick={toggleTheme} aria-label="切换主题">
             {theme === 'light' ? '🌙' : '☀️'}

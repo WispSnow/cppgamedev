@@ -113,6 +113,12 @@ const ViewContentButton = styled.div`
   text-align: center;
 `;
 
+const EmptyPartsMessage = styled.p`
+  margin-top: 1.5rem;
+  color: var(--secondary-text-color, #666);
+  text-align: center;
+`;
+
 const CourseHeaderSkeleton = styled(CourseHeader)`
   min-height: 260px;
 `;
@@ -209,15 +215,19 @@ const CourseDetailPage: React.FC = () => {
           </CourseHeader>
 
           <PartsSectionTitle>课程章节</PartsSectionTitle>
-          <PartsList>
-            {course.parts.map((part) => (
-              <PartCard key={part.id} onClick={() => handlePartClick(part.id)}>
-                <PartTitle>{part.title}</PartTitle>
-                <PartDescription>{part.description}</PartDescription>
-                <ViewContentButton>查看内容</ViewContentButton>
-              </PartCard>
-            ))}
-          </PartsList>
+          {course.parts && course.parts.length > 0 ? (
+            <PartsList>
+              {course.parts.map(part => (
+                <PartCard key={part.id} onClick={() => handlePartClick(part.id)}>
+                  <PartTitle>{part.title}</PartTitle>
+                  <PartDescription>{part.description}</PartDescription>
+                  <ViewContentButton>查看内容</ViewContentButton>
+                </PartCard>
+              ))}
+            </PartsList>
+          ) : (
+            <EmptyPartsMessage>章节内容正在筹备中，敬请期待。</EmptyPartsMessage>
+          )}
         </>
       )}
     </PageContainer>

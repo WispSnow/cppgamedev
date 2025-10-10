@@ -334,7 +334,7 @@ const CoursePartPage: React.FC = () => {
       {course && (
         <TableOfContents
           courseId={courseId || ''}
-          parts={course.parts}
+          parts={course.parts || []}
           currentPartId={partId}
         />
       )}
@@ -364,7 +364,7 @@ const CoursePartPage: React.FC = () => {
           <>
             <ProgressIndicator
               currentPartId={partId || ''}
-              allParts={course.parts}
+              allParts={course.parts || []}
             />
 
             <ContentHeader>
@@ -389,7 +389,7 @@ const CoursePartPage: React.FC = () => {
             <ChapterNavigation
               courseId={courseId || ''}
               currentPartId={partId || ''}
-              allParts={course.parts}
+              allParts={course.parts || []}
             />
           </>
         )}

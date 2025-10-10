@@ -115,6 +115,12 @@ const ErrorMessage = styled.div`
   margin: 1rem 0;
 `;
 
+const EmptyMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  color: var(--secondary-text-color, #666);
+`;
+
 const HomePage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -135,6 +141,10 @@ const HomePage: React.FC = () => {
 
     fetchCourses();
   }, []);
+
+  const mainlineCourses = courses.filter(
+    course => (course.category ?? 'mainline') === 'mainline'
+  );
 
   return (
     <HomeContainer>
@@ -157,9 +167,11 @@ const HomePage: React.FC = () => {
           <LoadingMessage>正在加载任务...</LoadingMessage>
         ) : error ? (
           <ErrorMessage>{error}</ErrorMessage>
+        ) : mainlineCourses.length === 0 ? (
+          <EmptyMessage>暂时没有主线任务，敬请期待新内容。</EmptyMessage>
         ) : (
           <CourseGrid>
-            {courses.map(course => (
+            {mainlineCourses.map(course => (
               <CourseCard key={course.id} to={`/courses/${course.id}`}>
                 <CourseImage src={course.coverImage} alt={course.title} />
                 <CourseInfo>
