@@ -5,6 +5,7 @@ import { getAllCourses } from '../services/courseService';
 import { Course } from '../types';
 import ErrorState from '../components/ErrorState';
 import { CourseCardSkeletonGrid } from '../components/Skeleton';
+import SEOHelmet from '../components/SEOHelmet';
 
 const PageContainer = styled.div`
   max-width: 1200px;
@@ -14,9 +15,15 @@ const PageContainer = styled.div`
 
 const PageTitle = styled.h1`
   font-size: 2.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   color: var(--text-color);
   text-align: center;
+`;
+
+const PageDescription = styled.p`
+  text-align: center;
+  color: var(--secondary-text-color);
+  margin-bottom: 2rem;
 `;
 
 const CourseGrid = styled.div`
@@ -35,7 +42,7 @@ const CourseCard = styled(Link)`
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
   color: var(--text-color);
-  
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
@@ -65,21 +72,15 @@ const CourseDescription = styled.p`
   line-height: 1.6;
 `;
 
-const PartCount = styled.div`
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.4rem 0.8rem;
-  background-color: var(--primary-color-light);
-  color: var(--primary-color);
-  border-radius: 16px;
-  font-size: 0.8rem;
-  font-weight: 500;
+const PlaceholderMessage = styled.div`
+  text-align: center;
+  margin-top: 3rem;
+  color: var(--secondary-text-color);
 `;
 
-const CourseCategoryTag = styled.span`
+const Tag = styled.span`
   display: inline-block;
   margin-top: 0.75rem;
-  margin-right: 0.5rem;
   padding: 0.2rem 0.6rem;
   background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.1));
   color: var(--primary-color, #0066cc);
@@ -88,17 +89,11 @@ const CourseCategoryTag = styled.span`
   font-weight: 600;
 `;
 
-const EmptyMessage = styled.div`
-  text-align: center;
-  margin-top: 2rem;
-  color: var(--secondary-text-color);
-`;
-
 interface CourseWithPartCount extends Course {
   partCount?: number;
 }
 
-const CoursesPage: React.FC = () => {
+const SideQuestsPage: React.FC = () => {
   const [courses, setCourses] = useState<CourseWithPartCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +106,7 @@ const CoursesPage: React.FC = () => {
       setCourses(coursesData);
     } catch (err) {
       console.error('Error fetching courses:', err);
-      setError('获取任务列表失败，请稍后再试');
+      setError('获取支线任务失败，请稍后再试');
     } finally {
       setLoading(false);
     }
@@ -121,47 +116,43 @@ const CoursesPage: React.FC = () => {
     fetchCourses();
   }, [fetchCourses]);
 
+  const sideCourses = courses.filter(course => (course.category ?? 'mainline') === 'side');
+
   return (
     <PageContainer>
-      <PageTitle>全部任务</PageTitle>
+      <SEOHelmet
+        title="支线任务 | C++游戏开发拓展课程"
+        description="探索更多C++游戏开发支线任务，了解即将上线的拓展课程。"
+        keywords="C++,游戏开发,支线课程,拓展教程"
+        canonical="/side-quests"
+      />
+      <PageTitle>支线任务</PageTitle>
+      <PageDescription>更多有趣的专题课程将在这里陆续上线，目前为占位内容。</PageDescription>
+
       {loading && <CourseCardSkeletonGrid />}
 
-      {!loading && error && (
-        <ErrorState message={error} onRetry={fetchCourses} />
+      {!loading && error && <ErrorState message={error} onRetry={fetchCourses} />}
+
+      {!loading && !error && sideCourses.length === 0 && (
+        <PlaceholderMessage>支线任务正在筹备中，敬请期待！</PlaceholderMessage>
       )}
 
-      {!loading && !error && (
-        (() => {
-          const filteredCourses = courses.filter(course => {
-            const category = course.category ?? 'mainline';
-            return category === 'mainline' || category === 'side';
-          });
-
-          if (filteredCourses.length === 0) {
-            return <EmptyMessage>暂无可展示的任务，稍后再来探索吧。</EmptyMessage>;
-          }
-
-          return (
-            <CourseGrid>
-              {filteredCourses.map(course => (
-                <CourseCard key={course.id} to={`/courses/${course.id}`}>
-                  <CourseImage $backgroundUrl={course.coverImage || 'https://via.placeholder.com/300x180?text=No+Image'} />
-                  <CourseContent>
-                    <CourseTitle>{course.title}</CourseTitle>
-                    <CourseDescription>{course.description}</CourseDescription>
-                    <CourseCategoryTag>
-                      {(course.category ?? 'mainline') === 'mainline' ? '主线任务' : '支线任务'}
-                    </CourseCategoryTag>
-                    <PartCount>{course.partCount || 0} 个章节</PartCount>
-                  </CourseContent>
-                </CourseCard>
-              ))}
-            </CourseGrid>
-          );
-        })()
+      {!loading && !error && sideCourses.length > 0 && (
+        <CourseGrid>
+          {sideCourses.map(course => (
+            <CourseCard key={course.id} to={`/courses/${course.id}`}>
+              <CourseImage $backgroundUrl={course.coverImage || 'https://via.placeholder.com/300x180?text=Side+Quest'} />
+              <CourseContent>
+                <CourseTitle>{course.title}</CourseTitle>
+                <CourseDescription>{course.description}</CourseDescription>
+                <Tag>支线任务</Tag>
+              </CourseContent>
+            </CourseCard>
+          ))}
+        </CourseGrid>
       )}
     </PageContainer>
   );
 };
 
-export default CoursesPage; 
+export default SideQuestsPage;

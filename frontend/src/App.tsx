@@ -5,6 +5,9 @@ import HomePage from './pages/HomePage';
 import CourseDetailPage from './pages/CourseDetailPage';
 import CoursePartPage from './pages/CoursePartPage';
 import CoursesPage from './pages/CoursesPage';
+import SideQuestsPage from './pages/SideQuestsPage';
+import TroubleshootingPage from './pages/TroubleshootingPage';
+import TroubleshootingDetailPage from './pages/TroubleshootingDetailPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import RoadmapPage from './pages/RoadmapPage';
@@ -35,8 +38,11 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/courses" element={<CoursesPage />} />
+              <Route path="/side-quests" element={<SideQuestsPage />} />
               <Route path="/courses/:courseId" element={<CourseDetailPage />} />
               <Route path="/courses/:courseId/parts/:partId" element={<CoursePartPage />} />
+              <Route path="/troubleshooting" element={<TroubleshootingPage />} />
+              <Route path="/troubleshooting/:articleId" element={<TroubleshootingDetailPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/roadmap" element={<RoadmapPage />} />
