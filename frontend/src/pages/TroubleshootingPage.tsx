@@ -97,7 +97,7 @@ const TroubleshootingPage: React.FC = () => {
         canonical="/troubleshooting"
       />
       <PageTitle>疑难解决</PageTitle>
-      <PageDescription>针对常见问题的排查笔记将陆续整理在这里，目前内容为占位示例。</PageDescription>
+      <PageDescription>针对C++游戏开发过程中的疑难问题提供排查思路和解决方案。</PageDescription>
 
       {loading && <CourseCardSkeletonGrid />}
 

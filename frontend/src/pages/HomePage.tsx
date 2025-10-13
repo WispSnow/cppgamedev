@@ -157,7 +157,7 @@ const HomePage: React.FC = () => {
       <HeroSection>
         <Title>C++游戏开发之旅</Title>
         <Subtitle>
-          像搭积木一样开发游戏，循序渐进地提升C++编程技能，以及各种类型的游戏实现方式。
+          精心设计的PBL项目式教程，让你像搭积木一样开发游戏，循序渐进地提升C++游戏编程技能，以及各种类型的游戏实现方式。
         </Subtitle>
       </HeroSection>
 

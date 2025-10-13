@@ -127,7 +127,7 @@ const SideQuestsPage: React.FC = () => {
         canonical="/side-quests"
       />
       <PageTitle>支线任务</PageTitle>
-      <PageDescription>更多有趣的专题课程将在这里陆续上线，目前为占位内容。</PageDescription>
+      <PageDescription>一些有用的知识与辅助工具。</PageDescription>
 
       {loading && <CourseCardSkeletonGrid />}
 
