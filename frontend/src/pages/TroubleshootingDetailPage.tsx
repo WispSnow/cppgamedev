@@ -62,14 +62,22 @@ const MarkdownContainer = styled.div`
     padding-left: 2rem;
   }
 
-  pre {
+  pre, .react-syntax-highlighter {
     margin: 1.5rem 0;
     border-radius: 8px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background-color: var(--code-block-bg, #f6f8fa);
+    padding: 1rem;
+    -webkit-overflow-scrolling: touch;
   }
 
-  code {
+  code, .react-syntax-highlighter code {
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    white-space: pre;
+    display: block;
+    width: max-content;
+    min-width: 100%;
   }
 `;
 

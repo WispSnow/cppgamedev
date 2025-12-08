@@ -178,24 +178,31 @@ const CodeWrapper = styled.div`
   border-radius: 8px;
   background-color: var(--code-block-bg, #f6f8fa);
   position: relative;
-  overflow: hidden;
+  overflow: auto;
 `;
 
 const CodeBlockWrapper = styled.div`
   position: relative;
   padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   
   pre {
     margin: 0 !important;
     background-color: transparent !important;
     border-radius: 6px;
     font-size: 14px !important;
+    width: max-content;
+    min-width: 100%;
   }
   
   code {
     background-color: transparent !important;
     padding: 0 !important;
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
+    white-space: pre;
   }
 `;
 

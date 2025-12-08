@@ -162,13 +162,17 @@ const CodeWrapper = styled.div`
   border-radius: 8px;
   background-color: var(--code-block-bg, #f6f8fa);
   position: relative;
-  overflow: hidden;
+  overflow: auto;
   border: none;
 `;
 
 const CodeBlockWrapper = styled.div`
   position: relative;
   padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   
   pre {
     margin: 0 !important;
@@ -176,6 +180,8 @@ const CodeBlockWrapper = styled.div`
     border-radius: 6px;
     font-size: 14px !important;
     border: none !important;
+    width: max-content;
+    min-width: 100%;
   }
   
   code {
@@ -183,6 +189,7 @@ const CodeBlockWrapper = styled.div`
     padding: 0 !important;
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
     border: none !important;
+    white-space: pre;
   }
   
   /* 覆盖SyntaxHighlighter中所有元素的边框 */
