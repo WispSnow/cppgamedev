@@ -116,6 +116,44 @@ const DifficultyTag = styled.span<{ $bgColor: string; $color: string }>`
   font-weight: 500;
 `;
 
+const FilterContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+`;
+
+const FilterButton = styled.button<{ $active: boolean; $color?: string; $bgColor?: string }>`
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 20px;
+  background-color: ${props => props.$active ? (props.$color || 'var(--primary-color, #0066cc)') : 'var(--card-bg-color, #fff)'};
+  color: ${props => props.$active ? '#fff' : 'var(--text-color, #333)'};
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+  border: 1px solid ${props => props.$active ? 'transparent' : 'var(--border-color, #eee)'};
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+`;
+
+const UpdateTag = styled.span`
+  font-size: 0.8rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: #f5f5f5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+`;
+
 const LoadingMessage = styled.div`
   text-align: center;
   padding: 2rem;
@@ -141,6 +179,7 @@ const HomePage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -158,9 +197,28 @@ const HomePage: React.FC = () => {
     fetchCourses();
   }, []);
 
-  const mainlineCourses = courses
+  // 1. 筛选逻辑
+  const filteredCourses = selectedDifficulty 
+    ? courses.filter(course => course.difficulty === selectedDifficulty)
+    : courses;
+
+  // 2. 最新动态 (Top 3 by updateAt)
+  const latestCourses = [...filteredCourses]
+    .filter(c => c.updateAt)
+    .sort((a, b) => new Date(b.updateAt!).getTime() - new Date(a.updateAt!).getTime())
+    .slice(0, 3);
+
+  // 3. 主线任务
+  const mainlineCourses = filteredCourses
     .filter(course => (course.category ?? 'mainline') === 'mainline')
     .sort((a, b) => (a.difficulty || 0) - (b.difficulty || 0));
+
+  // 4. 支线任务
+  const sideCourses = filteredCourses
+    .filter(course => course.category === 'side')
+    .sort((a, b) => (a.difficulty || 0) - (b.difficulty || 0));
+
+  const difficulties = [1, 2, 3, 4, 5];
 
   return (
     <HomeContainer>
@@ -176,6 +234,60 @@ const HomePage: React.FC = () => {
           精心设计的PBL项目式教程，让你像搭积木一样开发游戏，循序渐进地提升C++游戏编程技能，以及各种类型的游戏实现方式。
         </Subtitle>
       </HeroSection>
+
+      <FilterContainer>
+        <FilterButton 
+          $active={selectedDifficulty === null} 
+          onClick={() => setSelectedDifficulty(null)}
+        >
+          全部
+        </FilterButton>
+        {difficulties.map(level => {
+          const info = getDifficultyInfo(level);
+          return (
+            <FilterButton
+              key={level}
+              $active={selectedDifficulty === level}
+              $color={info.color}
+              onClick={() => setSelectedDifficulty(level)}
+            >
+              {info.label}
+            </FilterButton>
+          );
+        })}
+      </FilterContainer>
+
+      {/* 最新动态区块 */}
+      {!loading && !error && latestCourses.length > 0 && (
+        <CoursesSection>
+          <SectionTitle>✨ 最新动态</SectionTitle>
+          <CourseGrid>
+            {latestCourses.map(course => (
+              <CourseCard key={`latest-${course.id}`} to={`/courses/${course.id}`}>
+                <CourseImage src={course.coverImage} alt={course.title} />
+                <CourseInfo>
+                  <TagContainer>
+                    {course.difficulty && (() => {
+                      const diffInfo = getDifficultyInfo(course.difficulty);
+                      return (
+                        <DifficultyTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
+                          {diffInfo.label}
+                        </DifficultyTag>
+                      );
+                    })()}
+                    {course.updateAt && (
+                      <UpdateTag>📅 {course.updateAt}</UpdateTag>
+                    )}
+                  </TagContainer>
+                  <CourseTitle>{course.title}</CourseTitle>
+                  <CourseDescription>{course.description}</CourseDescription>
+                  <LearnMoreButton>查看详情</LearnMoreButton>
+                </CourseInfo>
+              </CourseCard>
+            ))}
+          </CourseGrid>
+        </CoursesSection>
+      )}
 
       <CoursesSection>
         <SectionTitle>主线任务</SectionTitle>
@@ -209,7 +321,37 @@ const HomePage: React.FC = () => {
             ))}
           </CourseGrid>
         )}
+
       </CoursesSection>
+
+      {/* 支线任务区块 */}
+      {!loading && !error && sideCourses.length > 0 && (
+        <CoursesSection>
+          <SectionTitle>🛡️ 支线任务</SectionTitle>
+          <CourseGrid>
+            {sideCourses.map(course => (
+              <CourseCard key={course.id} to={`/courses/${course.id}`}>
+                <CourseImage src={course.coverImage} alt={course.title} />
+                <CourseInfo>
+                  <TagContainer>
+                    {course.difficulty && (() => {
+                      const diffInfo = getDifficultyInfo(course.difficulty);
+                      return (
+                        <DifficultyTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
+                          {diffInfo.label}
+                        </DifficultyTag>
+                      );
+                    })()}
+                  </TagContainer>
+                  <CourseTitle>{course.title}</CourseTitle>
+                  <CourseDescription>{course.description}</CourseDescription>
+                  <LearnMoreButton>开始探索</LearnMoreButton>
+                </CourseInfo>
+              </CourseCard>
+            ))}
+          </CourseGrid>
+        </CoursesSection>
+      )}
     </HomeContainer>
   );
 };
