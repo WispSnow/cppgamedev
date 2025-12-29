@@ -8,6 +8,8 @@ export interface Course {
   parts?: CoursePart[];
   coverImage?: string;
   category?: CourseCategory;
+  difficulty?: number;
+  updateAt?: string;
   status?: string;
 }
 

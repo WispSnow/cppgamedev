@@ -4,12 +4,20 @@
  * contentPath字段指向Markdown文件的路径
  */
 const courses = [
+  // Difficulty Levels:
+  // 1: 入门级 (Entry)
+  // 2: 初级 (Beginner)
+  // 3: 进阶级 (Intermediate)
+  // 4: 中级 (Advanced)
+  // 5: 高级 (Expert)
   {
     id: "sdl-space-shooter",
     title: "SDL与太空战机",
     description: "通过SDL2图形库学习C++游戏开发基础,从零开始构建一款经典的太空射击游戏。掌握游戏循环、输入处理、图像渲染和音频播放等核心概念。",
     coverImage: "https://theorhythm.top/gamedev/screen_shooter_2.png",
     category: "mainline",
+    difficulty: 1,
+    updateAt: "2025-02-01",
     status: "已完成",
     parts: [
       {
@@ -218,6 +226,8 @@ const courses = [
     description: "学习C++游戏开发中的模块化编程思想,使用SDL3、GLM数学库构建一款生存类游戏。掌握组件化设计、向量数学和资源管理等高级概念。",
     coverImage: "https://theorhythm.top/gamedev/GE/screen_ge_2.png",
     category: "mainline",
+    difficulty: 2,
+    updateAt: "2025-06-01",
     status: "已完成",
     parts: [
       {
@@ -456,6 +466,8 @@ const courses = [
     description: "学习C++游戏开发中的分层架构设计,使用SDL3、glm、nlohmann-json、Tiled构建一款平台跳跃游戏。掌握现代游戏引擎的设计理念与现代C++的特性。",
     coverImage: "https://theorhythm.top/gamedev/SL/SL_screenshot_3.png",
     category: "mainline",
+    difficulty: 3,
+    updateAt: "2025-09-01",
     status: "已完成",
     parts: [
       {
@@ -688,6 +700,8 @@ const courses = [
     description: "学习在真实项目中优化与重构的技巧与关键设计模式。以动手实践为核心,理论简明扼要,强调'学即能用,改即见效'。",
     coverImage: "https://theorhythm.top/gamedev/opt/opt-cover.webp",
     category: "side",
+    difficulty: 2,
+    updateAt: "2025-08-01",
     status: "更新中",
     parts: [
       {

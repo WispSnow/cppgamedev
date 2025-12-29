@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { getAllCourses } from '../services/courseService';
 import { Course } from '../types';
 import SEOHelmet from '../components/SEOHelmet';
+import { getDifficultyInfo } from '../utils/difficultyUtils';
 
 const HomeContainer = styled.div`
   max-width: 1200px;
@@ -100,6 +101,21 @@ const LearnMoreButton = styled.span`
   align-self: flex-start;
 `;
 
+const TagContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+`;
+
+const DifficultyTag = styled.span<{ $bgColor: string; $color: string }>`
+  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  background-color: ${props => props.$bgColor};
+  color: ${props => props.$color};
+  font-weight: 500;
+`;
+
 const LoadingMessage = styled.div`
   text-align: center;
   padding: 2rem;
@@ -142,9 +158,9 @@ const HomePage: React.FC = () => {
     fetchCourses();
   }, []);
 
-  const mainlineCourses = courses.filter(
-    course => (course.category ?? 'mainline') === 'mainline'
-  );
+  const mainlineCourses = courses
+    .filter(course => (course.category ?? 'mainline') === 'mainline')
+    .sort((a, b) => (a.difficulty || 0) - (b.difficulty || 0));
 
   return (
     <HomeContainer>
@@ -175,6 +191,16 @@ const HomePage: React.FC = () => {
               <CourseCard key={course.id} to={`/courses/${course.id}`}>
                 <CourseImage src={course.coverImage} alt={course.title} />
                 <CourseInfo>
+                  <TagContainer>
+                    {course.difficulty && (() => {
+                      const diffInfo = getDifficultyInfo(course.difficulty);
+                      return (
+                        <DifficultyTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
+                          {diffInfo.label}
+                        </DifficultyTag>
+                      );
+                    })()}
+                  </TagContainer>
                   <CourseTitle>{course.title}</CourseTitle>
                   <CourseDescription>{course.description}</CourseDescription>
                   <LearnMoreButton>开始旅程</LearnMoreButton>
