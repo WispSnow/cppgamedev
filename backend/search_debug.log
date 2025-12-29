@@ -1,0 +1,22 @@
+[2025-12-29T15:21:53.467Z] 开始构建搜索索引...
+[2025-12-29T15:21:53.489Z] 搜索索引构建完成，耗时 21ms，共条目: 133
+[2025-12-29T15:22:01.691Z] Request: GET /api/courses/side-game-optimization-and-design-patterns
+[2025-12-29T15:22:01.700Z] Request: GET /api/courses/side-game-optimization-and-design-patterns
+[2025-12-29T15:22:06.786Z] Request: GET /api/search?q=%E6%B8%B8%E6%88%8F
+[2025-12-29T15:22:06.787Z] 搜索请求: "游戏"
+[2025-12-29T15:22:06.789Z] 搜索结果数量: 20
+[2025-12-29T15:22:13.820Z] Request: GET /api/search?q=dan%20li
+[2025-12-29T15:22:13.821Z] 搜索请求: "dan li"
+[2025-12-29T15:22:13.824Z] 搜索结果数量: 0
+[2025-12-29T15:22:16.807Z] Request: GET /api/search?q=%E5%8D%95li
+[2025-12-29T15:22:16.807Z] 搜索请求: "单li"
+[2025-12-29T15:22:16.809Z] 搜索结果数量: 0
+[2025-12-29T15:22:21.630Z] Request: GET /api/search?q=%E5%8D%95%E4%BE%8B
+[2025-12-29T15:22:21.631Z] 搜索请求: "单例"
+[2025-12-29T15:22:21.632Z] 搜索结果数量: 9
+[2025-12-29T15:22:27.703Z] Request: GET /api/courses/side-game-optimization-and-design-patterns
+[2025-12-29T15:22:27.706Z] Request: GET /api/courses/side-game-optimization-and-design-patterns
+[2025-12-29T15:22:27.711Z] Request: GET /api/courses/side-game-optimization-and-design-patterns/parts/service-locator
+[2025-12-29T15:22:27.715Z] Request: GET /api/courses/side-game-optimization-and-design-patterns/parts/service-locator
+[2025-12-29T15:22:46.833Z] Request: GET /api/courses
+[2025-12-29T15:22:46.838Z] Request: GET /api/courses

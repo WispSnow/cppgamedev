@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import SearchModal from './SearchModal';
 
 const NavbarContainer = styled.header`
   background-color: var(--card-bg-color, #ffffff);
@@ -74,10 +75,18 @@ const ThemeButton = styled.button`
   &:hover {
     background-color: var(--toc-hover-bg, rgba(0, 0, 0, 0.05));
   }
+  &:hover {
+    background-color: var(--toc-hover-bg, rgba(0, 0, 0, 0.05));
+  }
+`;
+
+const SearchButton = styled(ThemeButton)`
+  margin-left: 0.5rem;
 `;
 
 const Navbar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
+  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
   
   return (
     <NavbarContainer>
@@ -91,11 +100,15 @@ const Navbar: React.FC = () => {
           <NavLink to="/side-quests">支线</NavLink>
           <NavLink to="/troubleshooting">疑难解决</NavLink>
           <NavLink to="/courses">全部任务</NavLink>
+          <SearchButton onClick={() => setIsSearchOpen(true)} aria-label="搜索">
+            🔍
+          </SearchButton>
           <ThemeButton onClick={toggleTheme} aria-label="切换主题">
             {theme === 'light' ? '🌙' : '☀️'}
           </ThemeButton>
         </NavLinks>
       </NavbarContent>
+      {isSearchOpen && <SearchModal onClose={() => setIsSearchOpen(false)} />}
     </NavbarContainer>
   );
 };
