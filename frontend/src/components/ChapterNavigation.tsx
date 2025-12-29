@@ -33,6 +33,25 @@ const NextLink = styled(NavLink)`
   justify-content: flex-end;
 `;
 
+const FeedbackLink = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  text-decoration: none;
+  padding: 0.7rem 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  border: 1px solid #eee;
+
+  &:hover {
+    background-color: #f5f5f5;
+    color: #333;
+    border-color: #ccc;
+  }
+`;
+
 const NavIcon = styled.span`
   margin: 0 0.5rem;
 `;
@@ -87,6 +106,15 @@ const ChapterNavigation: React.FC<ChapterNavigationProps> = ({
       ) : (
         <Spacer />
       )}
+      
+      
+      <FeedbackLink 
+        href="https://github.com/WispSnow/cppgamedev/issues" 
+        target="_blank" 
+        rel="noopener noreferrer"
+      >
+        遇到问题？去反馈
+      </FeedbackLink>
       
       {nextPart ? (
         <NextLink to={`/courses/${courseId}/parts/${nextPart.id}`}>
