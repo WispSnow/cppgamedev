@@ -316,37 +316,7 @@ const HomePage: React.FC = () => {
         </>
       )}
 
-      {/* 最新动态区块 */}
-      {!loading && !error && latestCourses.length > 0 && (
-        <CoursesSection>
-          <SectionTitle>✨ 最新动态</SectionTitle>
-          <CourseGrid>
-            {latestCourses.map(course => (
-              <CourseCard key={`latest-${course.id}`} to={`/courses/${course.id}`}>
-                <CourseImage src={course.coverImage} alt={course.title} />
-                <CourseInfo>
-                  <TagContainer>
-                    {course.difficulty && (() => {
-                      const diffInfo = getDifficultyInfo(course.difficulty);
-                      return (
-                        <DifficultyTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
-                          {diffInfo.label}
-                        </DifficultyTag>
-                      );
-                    })()}
-                    {course.updateAt && (
-                      <UpdateTag>📅 {course.updateAt}</UpdateTag>
-                    )}
-                  </TagContainer>
-                  <CourseTitle>{course.title}</CourseTitle>
-                  <CourseDescription>{course.description}</CourseDescription>
-                  <LearnMoreButton>查看详情</LearnMoreButton>
-                </CourseInfo>
-              </CourseCard>
-            ))}
-          </CourseGrid>
-        </CoursesSection>
-      )}
+
 
       <CoursesSection>
         <SectionTitle>主线任务</SectionTitle>

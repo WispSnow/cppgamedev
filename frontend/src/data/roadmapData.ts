@@ -12,7 +12,7 @@ export const roadmapData: RoadmapItem[] = [
   {
     id: 1,
     title: "游戏开发入门概念",
-    techStack: "SDL",
+    techStack: "SDL2",
     gameType: "弹幕射击",
     status: "completed",
     description: "通过SDL2图形库学习C++游戏开发基础，从零开始构建一款经典的太空射击游戏。掌握游戏循环、输入处理、图像渲染和音频播放等核心概念。",
@@ -30,7 +30,7 @@ export const roadmapData: RoadmapItem[] = [
   {
     id: 3,
     title: "瓦片地图与分层架构",
-    techStack: "Tiled, nlohmann-json, SDL3",
+    techStack: "Tiled, nlohmann-json, spdlog",
     gameType: "平台跳跃",
     status: "completed",
     description: "学习现代游戏引擎架构设计，包括资源管理、2D物理引擎实现、Tiled地图解析、玩家状态机与动画系统。",

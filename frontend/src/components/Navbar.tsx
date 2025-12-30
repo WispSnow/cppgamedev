@@ -154,6 +154,7 @@ const Navbar: React.FC = () => {
 
         <NavLinks $isOpen={isMenuOpen}>
           <NavLink to="/mainline" $isActive={isActive('/mainline')} onClick={closeMenu}>主线</NavLink>
+          <NavLink to="/side-quests" $isActive={isActive('/side-quests')} onClick={closeMenu}>支线</NavLink>
           <NavLink to="/roadmap" $isActive={isActive('/roadmap')} onClick={closeMenu}>路线图</NavLink>
           <NavLink to="/troubleshooting" $isActive={isActive('/troubleshooting')} onClick={closeMenu}>疑难解决</NavLink>
           <NavLink to="/faq" $isActive={isActive('/faq')} onClick={closeMenu}>FAQ</NavLink>

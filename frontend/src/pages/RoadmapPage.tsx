@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import SEOHelmet from '../components/SEOHelmet';
-import { roadmapData, RoadmapItem } from '../data/roadmapData';
+import { roadmapData } from '../data/roadmapData';
 
 const PageContainer = styled.div`
   max-width: 1000px;
