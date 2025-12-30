@@ -11,6 +11,10 @@ export interface Course {
   difficulty?: number;
   updateAt?: string;
   status?: string;
+  resources?: {
+    githubLink?: string;
+    baiduLink?: string;
+  };
 }
 
 // 课程部分类型定义

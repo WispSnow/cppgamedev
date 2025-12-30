@@ -19,6 +19,10 @@ const courses = [
     difficulty: 1,
     updateAt: "2025-02-01",
     status: "已完成",
+    resources: {
+      githubLink: "https://github.com/WispSnow/SDLShooter",
+      baiduLink: "https://pan.baidu.com/s/1aGyLFfrQQlOylKy03WLL-g?pwd=hmjz"
+    },
     parts: [
       {
         id: "intro",
@@ -229,6 +233,10 @@ const courses = [
     difficulty: 2,
     updateAt: "2025-06-01",
     status: "已完成",
+    resources: {
+      githubLink: "https://github.com/WispSnow/GhostEscape",
+      baiduLink: "https://pan.baidu.com/s/16OuMaAqehGjzSoMS19zNcA?pwd=5brp"
+    },
     parts: [
       {
         id: "intro",
@@ -469,6 +477,10 @@ const courses = [
     difficulty: 3,
     updateAt: "2025-09-01",
     status: "已完成",
+    resources: {
+      githubLink: "https://github.com/WispSnow/SunnyLand",
+      baiduLink: "https://pan.baidu.com/s/1pmz0GCXpDr2d79ieTXkt5g?pwd=23n8"
+    },
     parts: [
       {
         id: "intro",

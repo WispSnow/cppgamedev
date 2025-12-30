@@ -138,6 +138,55 @@ const CourseInfoSkeleton = styled.div`
   flex-grow: 1;
 `;
 
+const DownloadSection = styled.div`
+  background-color: var(--card-bg-color, #ffffff);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+`;
+
+const DownloadTitle = styled.h3`
+  margin: 0;
+  color: var(--text-color, #333);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+const DownloadButton = styled.a<{ $primary?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: ${props => props.$primary ? 'var(--primary-color, #0066cc)' : 'transparent'};
+  color: ${props => props.$primary ? 'white' : 'var(--primary-color, #0066cc)'};
+  border: 1px solid var(--primary-color, #0066cc);
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: ${props => props.$primary ? '#0055aa' : 'rgba(0, 102, 204, 0.05)'};
+    text-decoration: none;
+  }
+`;
+
 const CourseDetailPage: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const [course, setCourse] = useState<Course | null>(null);
@@ -213,6 +262,35 @@ const CourseDetailPage: React.FC = () => {
               <CourseDescription>{course.description}</CourseDescription>
             </CourseInfo>
           </CourseHeader>
+
+          {course.resources && (
+            <DownloadSection>
+              <DownloadTitle>
+                📥 课程资源下载
+              </DownloadTitle>
+              <ButtonGroup>
+                {course.resources.githubLink && (
+                  <DownloadButton 
+                    href={course.resources.githubLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    $primary
+                  >
+                    GitHub 仓库
+                  </DownloadButton>
+                )}
+                {course.resources.baiduLink && (
+                  <DownloadButton 
+                    href={course.resources.baiduLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    网盘下载 (备用)
+                  </DownloadButton>
+                )}
+              </ButtonGroup>
+            </DownloadSection>
+          )}
 
           <PartsSectionTitle>课程章节</PartsSectionTitle>
           {course.parts && course.parts.length > 0 ? (
