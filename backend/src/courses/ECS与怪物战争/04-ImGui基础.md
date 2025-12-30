@@ -23,7 +23,7 @@
 
 它最大的特点是：**UI 不是对象树，也不是一堆控件类**；你只要在每一帧里“声明”界面长什么样，然后根据控件返回值（例如按钮是否被点击）直接写逻辑即可。
 
-![](../本期参考/PPT截图/怪物战争.025.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.025.webp" style='width: 800px;' />
 
 > PPT 第 25 页：ImGui 的集成流程（初始化 → 主循环：事件处理/开始新帧/声明UI/渲染 → 清理）
 
@@ -110,7 +110,7 @@ ImGui_ImplSDLRenderer3_Init(renderer);
 
 ### 3) 主循环里按固定顺序接入 ImGui：事件 → 新帧 → UI → 渲染
 
-![](../本期参考/PPT截图/怪物战争.026.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.026.webp" style='width: 800px;' />
 
 > PPT 第 26 页：UI 是“声明出来的”，控件返回值就是交互入口（如按钮是否点击）
 

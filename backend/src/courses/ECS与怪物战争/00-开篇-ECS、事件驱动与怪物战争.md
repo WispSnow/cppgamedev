@@ -23,7 +23,7 @@
 
 这一期我们不再从零搭建一个游戏框架，而是**在上一期《阳光岛》的引擎层基础上继续演进**：一方面引入更现代的架构思想（ECS + 事件驱动），另一方面做一款完整的塔防游戏，实践“架构升级如何落地到具体玩法”。
 
-![](../本期参考/PPT截图/怪物战争.004.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.004.webp" style='width: 800px;' />
 
 > PPT 第 4 页：使用 ImGui 快速开发原型，玩法致敬《千年战争》
 
@@ -49,7 +49,7 @@
 
 ## 🧰 技术栈与依赖
 
-![](../本期参考/PPT截图/怪物战争.003.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.003.webp" style='width: 800px;' />
 
 > PPT 第 3 页：本期课程主要依赖库
 

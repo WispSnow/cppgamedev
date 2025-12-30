@@ -29,11 +29,11 @@
 - 鼠标左键点选玩家单位：左上角固定窗口显示详情，并可额外显示攻击范围
 - 鼠标右键：取消选中
 
-![](../本期参考/PPT截图/怪物战争.089.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.089.webp" style='width: 800px;' />
 
 > PPT 第 89 页：ImGui 工作/集成流程（初始化 → 主循环 NewFrame/声明UI/Render → 清理）
 
-![](../本期参考/PPT截图/怪物战争.090.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.090.webp" style='width: 800px;' />
 
 > PPT 第 90 页：ImGui 显示单位信息（SelectionSystem 负责检测/赋值，DebugUISystem 负责显示，尽量解耦游戏逻辑）
 

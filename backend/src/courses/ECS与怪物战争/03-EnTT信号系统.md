@@ -35,7 +35,7 @@
 
 本节对应代码状态：`03-EnTT信号系统`，核心示例仍然集中在 `src/main.cpp`。
 
-![](../本期参考/PPT截图/怪物战争.023.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.023.webp" style='width: 800px;' />
 
 > PPT 第 23 页：`entt::dispatcher` 是“事件中心”，按事件类型管理信号，并支持事件队列
 
@@ -66,7 +66,7 @@
 - `entt::sigh`：多播信号（一个信号绑定多个回调）
 - `entt::sink`：信号的“入口”，提供安全的 `connect/disconnect` 接口（一般通过 sink 来连回调）
 
-![](../本期参考/PPT截图/怪物战争.022.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.022.webp" style='width: 800px;' />
 
 > PPT 第 22 页：`sigh` 保存回调列表并发布事件；`sink` 提供连接/断开监听器的安全接口
 
@@ -78,7 +78,7 @@
 
 这节课我们用最简单的例子：分数。分数不是某个实体的组件，而是全局状态，更适合放在 `registry.ctx()` 里：
 
-![](../本期参考/PPT截图/怪物战争.018.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.018.webp" style='width: 800px;' />
 
 > PPT 第 18 页：`registry.ctx()` 用来存放“非 component”的数据（如分数、时间、重要实体引用等）
 

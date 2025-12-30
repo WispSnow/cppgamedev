@@ -23,7 +23,7 @@
 
 但在真正把游戏逻辑迁移到 ECS 之前，先要把 EnTT 的“最小使用闭环”跑通：创建实体、挂载组件、用视图遍历实体集合，并理解一个贯穿后续课程的常用工具——**哈希字符串**。
 
-![](../本期参考/PPT截图/怪物战争.015.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.015.webp" style='width: 800px;' />
 
 > PPT 第 15 页：`registry / entity / component` 的关系
 
@@ -55,7 +55,7 @@
 - 我只关心“同时拥有 A、B（可选排除 C）组件”的实体
 - view 会帮你组织出这批实体，并提供高效遍历方式
 
-![](../本期参考/PPT截图/怪物战争.016.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.016.webp" style='width: 800px;' />
 
 > PPT 第 16 页：view 会检索并保存轻量引用，用于高效遍历
 
@@ -115,7 +115,7 @@ view.each([](const auto& entity_tag, const auto& pos) {
 
 如果每次都用 `std::string` 做比较，频率高时会比较浪费。EnTT 的 `entt::hashed_string` 提供了一种思路：把字符串映射成整数（哈希值），运行时主要比较整数。
 
-![](../本期参考/PPT截图/怪物战争.017.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.017.webp" style='width: 800px;' />
 
 > PPT 第 17 页：`entt::hashed_string` 可以把字符串映射为整数用于快速比较
 

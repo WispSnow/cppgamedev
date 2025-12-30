@@ -32,7 +32,7 @@
 
 并且做出一个重要设计决策：**UI 依然保持“自组合 + 继承”的树形结构，不强行 ECS 化**，让 UI 模块与游戏 ECS 模块隔离。
 
-![](../本期参考/PPT截图/怪物战争.052.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.052.webp" style='width: 800px;' />
 
 > PPT 第 52 页：框架结构：Scene 内部同时驱动 UI 与 ECS（两条链路隔离）
 
@@ -55,7 +55,7 @@ ECS 的核心优势并不是“更优雅”，而是更适合**大量同类对�
 - 系统用 `view<...>` 一次性拿到一组实体，循环里做同一类事情
 - 系统逻辑从组件里抽离出来，组件之间更少互相依赖
 
-![](../本期参考/PPT截图/怪物战争.053.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.053.webp" style='width: 800px;' />
 
 > PPT 第 53 页：registry 统一管理实体/组件索引，System 独立运行逻辑
 
@@ -148,7 +148,7 @@ for (auto entity : view) {
 
 动画组件内部保存“动画表”（key 为动画名的哈希 ID），并记录当前帧、当前时间等播放状态；系统每帧推进计时器，并把当前帧的 `src_rect_` 写回精灵组件。
 
-![](../本期参考/PPT截图/怪物战争.054.png)
+<img src="https://theorhythm.top/gamedev/MW/怪物战争.054.webp" style='width: 800px;' />
 
 > PPT 第 54 页：动画系统的关键：定时更新 `source_rect`，渲染就自然变成“动起来”
 
