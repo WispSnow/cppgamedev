@@ -1,2 +1,8 @@
-[2025-12-30T07:28:06.981Z] 开始构建搜索索引...
-[2025-12-30T07:28:07.017Z] 搜索索引构建完成，耗时 35ms，共条目: 133
+[2025-12-30T12:15:14.290Z] 开始构建搜索索引...
+[2025-12-30T12:15:14.332Z] 搜索索引构建完成，耗时 41ms，共条目: 164
+[2025-12-30T12:17:17.276Z] Request: GET /api/courses/ecs-monster-war
+[2025-12-30T12:17:17.283Z] Request: GET /api/courses/ecs-monster-war
+[2025-12-30T12:17:21.966Z] Request: GET /api/courses
+[2025-12-30T12:17:21.970Z] Request: GET /api/courses
+[2025-12-30T12:17:34.273Z] Request: GET /api/courses
+[2025-12-30T12:17:34.276Z] Request: GET /api/courses

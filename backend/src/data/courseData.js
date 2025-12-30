@@ -7,9 +7,9 @@ const courses = [
   // Difficulty Levels:
   // 1: 入门级 (Entry)
   // 2: 初级 (Beginner)
-  // 3: 进阶级 (Intermediate)
-  // 4: 中级 (Advanced)
-  // 5: 高级 (Expert)
+  // 3: 中级 (Intermediate)
+  // 4: 高级 (Advanced)
+  // 5: 专家级 (Expert)
   {
     id: "sdl-space-shooter",
     title: "SDL与太空战机",
@@ -703,6 +703,202 @@ const courses = [
         title: "结束场景与最终完成",
         description: "实现游戏结束场景,完善游戏的最终细节,完成整个项目。",
         contentPath: "backend/src/courses/分层架构与阳光岛/36 结束场景与最终完成.md"
+      }
+    ]
+  },
+  {
+    id: "ecs-monster-war",
+    title: "ECS与怪物战争",
+    description: "深入学习实体组件系统(ECS)与事件驱动架构，使用EnTT库与C++构建高性能游戏《怪物战争》。掌握现代游戏开发的核心架构思想。",
+    coverImage: "https://theorhythm.top/gamedev/MW/screen_shot_mw3.webp",
+    category: "mainline",
+    difficulty: 3,
+    updateAt: "2025-12-31",
+    status: "已完成",
+    resources: {
+      githubLink: "https://github.com/WispSnow/MonsterWar",
+      baiduLink: "https://pan.baidu.com/s/1gbDFEagUHmBJ1o_jLmgnDQ?pwd=332p#list/path=%2F"
+    },
+    parts: [
+      {
+        id: "intro",
+        title: "开篇-ECS、事件驱动与怪物战争",
+        description: "本课程将带你深入了解ECS架构和事件驱动编程，开启《怪物战争》开发之旅。",
+        contentPath: "backend/src/courses/ECS与怪物战争/00-开篇-ECS、事件驱动与怪物战争.md"
+      },
+      {
+        id: "part-01",
+        title: "环境安装及测试",
+        description: "配置开发环境，确保EnTT库和其他依赖项正确安装。",
+        contentPath: "backend/src/courses/ECS与怪物战争/01-环境安装及测试.md"
+      },
+      {
+        id: "part-02",
+        title: "EnTT基础",
+        description: "学习EnTT库的基本用法，理解实体、组件和注册表的概念。",
+        contentPath: "backend/src/courses/ECS与怪物战争/02-EnTT基础.md"
+      },
+      {
+        id: "part-03",
+        title: "EnTT信号系统",
+        description: "掌握EnTT的信号与槽机制，实现对象间的通信。",
+        contentPath: "backend/src/courses/ECS与怪物战争/03-EnTT信号系统.md"
+      },
+      {
+        id: "part-04",
+        title: "ImGui基础",
+        description: "集成ImGui，为游戏开发调试工具和UI。",
+        contentPath: "backend/src/courses/ECS与怪物战争/04-ImGui基础.md"
+      },
+      {
+        id: "part-05",
+        title: "游戏框架改进",
+        description: "优化现有游戏框架，适应ECS架构的需求。",
+        contentPath: "backend/src/courses/ECS与怪物战争/05-游戏框架改进.md"
+      },
+      {
+        id: "part-06",
+        title: "代码的复用与整理",
+        description: "重构代码，提高模块化程度和复用性。",
+        contentPath: "backend/src/courses/ECS与怪物战争/06-代码的复用与整理.md"
+      },
+      {
+        id: "part-07",
+        title: "输入模块的信号功能",
+        description: "使用信号系统重构输入处理模块。",
+        contentPath: "backend/src/courses/ECS与怪物战争/07-输入模块的信号功能.md"
+      },
+      {
+        id: "part-08",
+        title: "事件总线与场景切换",
+        description: "设计全局事件总线，管理场景切换逻辑。",
+        contentPath: "backend/src/courses/ECS与怪物战争/08-事件总线与场景切换.md"
+      },
+      {
+        id: "part-09",
+        title: "捕获与中断信号传递",
+        description: "深入了解信号传递机制，实现高级事件处理。",
+        contentPath: "backend/src/courses/ECS与怪物战争/09-捕获与中断信号传递.md"
+      },
+      {
+        id: "part-10",
+        title: "引入哈希字符串",
+        description: "使用哈希字符串优化资源索引和查找性能。",
+        contentPath: "backend/src/courses/ECS与怪物战争/10-引入哈希字符串.md"
+      },
+      {
+        id: "part-11",
+        title: "引入ECS框架",
+        description: "正式在游戏中应用ECS架构，重构核心逻辑。",
+        contentPath: "backend/src/courses/ECS与怪物战争/11-引入ECS框架.md"
+      },
+      {
+        id: "part-12",
+        title: "关卡载入器",
+        description: "设计关卡数据结构，实现基础关卡加载功能。",
+        contentPath: "backend/src/courses/ECS与怪物战争/12-关卡载入器.md"
+      },
+      {
+        id: "part-13",
+        title: "完善关卡载入器",
+        description: "扩展关卡载入器，支持更多类型的游戏对象和属性。",
+        contentPath: "backend/src/courses/ECS与怪物战争/13-完善关卡载入器.md"
+      },
+      {
+        id: "part-14",
+        title: "设定移动路径",
+        description: "实现路径点系统，控制单位的移动路线。",
+        contentPath: "backend/src/courses/ECS与怪物战争/14-设定移动路径.md"
+      },
+      {
+        id: "part-15",
+        title: "实体工厂与蓝图",
+        description: "设计实体工厂模式，通过蓝图快速生成游戏实体。",
+        contentPath: "backend/src/courses/ECS与怪物战争/15-实体工厂与蓝图.md"
+      },
+      {
+        id: "part-16",
+        title: "玩家实体与阻拦敌人",
+        description: "实现玩家单位，并添加阻拦敌人的交互逻辑。",
+        contentPath: "backend/src/courses/ECS与怪物战争/16-玩家实体与阻拦敌人.md"
+      },
+      {
+        id: "part-17",
+        title: "目标锁定与攻击",
+        description: "实现战斗系统的目标索敌和自动攻击功能。",
+        contentPath: "backend/src/courses/ECS与怪物战争/17-目标锁定与攻击.md"
+      },
+      {
+        id: "part-18",
+        title: "动画驱动的战斗交互",
+        description: "将战斗逻辑与动画系统结合，实现流畅的战斗表现。",
+        contentPath: "backend/src/courses/ECS与怪物战争/18-动画驱动的战斗交互.md"
+      },
+      {
+        id: "part-19",
+        title: "远程攻击与弹道",
+        description: "添加远程攻击单位和投射物弹道计算。",
+        contentPath: "backend/src/courses/ECS与怪物战争/19-远程攻击与弹道.md"
+      },
+      {
+        id: "part-20",
+        title: "死亡动画与血量标签",
+        description: "实现单位死亡效果和血条显示。",
+        contentPath: "backend/src/courses/ECS与怪物战争/20-死亡动画与血量标签.md"
+      },
+      {
+        id: "part-21",
+        title: "出击选择角色肖像",
+        description: "制作角色选择界面，显示角色肖像。",
+        contentPath: "backend/src/courses/ECS与怪物战争/21-出击选择角色肖像.md"
+      },
+      {
+        id: "part-22",
+        title: "出击区域与关卡状态",
+        description: "管理出击区域，维护关卡状态流转。",
+        contentPath: "backend/src/courses/ECS与怪物战争/22-出击区域与关卡状态.md"
+      },
+      {
+        id: "part-23",
+        title: "出击准备与出击完成",
+        description: "完善战斗前的准备阶段和战斗结束后的结算逻辑。",
+        contentPath: "backend/src/courses/ECS与怪物战争/23-出击准备与出击完成.md"
+      },
+      {
+        id: "part-24",
+        title: "敌人生成波次",
+        description: "设计波次系统，控制敌人的动态生成。",
+        contentPath: "backend/src/courses/ECS与怪物战争/24-敌人生成波次.md"
+      },
+      {
+        id: "part-25",
+        title: "ImGui显示单位信息",
+        description: "利用ImGui调试显示选中单位的详细属性。",
+        contentPath: "backend/src/courses/ECS与怪物战争/25-ImGui显示单位信息.md"
+      },
+      {
+        id: "part-26",
+        title: "技能施放与显示",
+        description: "实现技能系统，包括释放逻辑和UI显示。",
+        contentPath: "backend/src/courses/ECS与怪物战争/26-技能施放与显示.md"
+      },
+      {
+        id: "part-27",
+        title: "完善主场景",
+        description: "整合各项功能，打磨主游戏场景。",
+        contentPath: "backend/src/courses/ECS与怪物战争/27-完善主场景.md"
+      },
+      {
+        id: "part-28",
+        title: "标题场景",
+        description: "制作精美的游戏标题与开始菜单。",
+        contentPath: "backend/src/courses/ECS与怪物战争/28-标题场景.md"
+      },
+      {
+        id: "part-29",
+        title: "通关场景与结束场景",
+        description: "实现游戏通关判定和结束画面。",
+        contentPath: "backend/src/courses/ECS与怪物战争/29-通关场景与结束场景.md"
       }
     ]
   },

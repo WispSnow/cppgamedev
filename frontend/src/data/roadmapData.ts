@@ -41,39 +41,39 @@ export const roadmapData: RoadmapItem[] = [
     title: "ECS与怪物战争",
     techStack: "entt, imgui",
     gameType: "塔防游戏",
-    status: "planned",
+    status: "completed",
     description: "深入学习ECS架构（实体、组件、系统）与事件驱动设计，设计一款高性能的塔防游戏。"
   },
   {
     id: 5,
-    title: "OpenGL",
-    techStack: "Lua, opengl",
+    title: "待定",
+    techStack: "opengl, freetype, miniaudio",
     gameType: "农场游戏",
-    status: "planned",
-    description: "掌握将Lua脚本语言集成到C++游戏中的技术，实现数据驱动设计与逻辑分离。"
+    status: "in-progress",
+    description: "学习OpenGL、FreeType、MiniAudio等库，实现2D渲染、文本显示和音频播放。"
   },
   {
     id: 6,
-    title: "物理系统",
-    techStack: "Box2D",
+    title: "待定",
+    techStack: "Lua",
     gameType: "日式RPG",
-    status: "planned",
-    description: "专注于物理模拟、刚体动力学、约束与关节，使用Box2D开发具有真实物理交互的游戏。"
-  },
-  {
-    id: 7,
-    title: "高级主题 (RPG)",
-    techStack: "待定",
-    gameType: "策略RPG",
     status: "planned",
     description: "探索更复杂的RPG游戏系统开发，包括剧情系统、回合制战斗等。"
   },
   {
-    id: 8,
-    title: "高级主题 (策略)",
+    id: 7,
+    title: "待定",
     techStack: "待定",
     gameType: "策略RPG",
     status: "planned",
     description: "挑战策略RPG开发，涉及复杂的AI、网格寻路与战棋系统。"
+  },
+  {
+    id: 8,
+    title: "待定",
+    techStack: "待定",
+    gameType: "多人在线RPG",
+    status: "planned",
+    description: "挑战大型多人在线角色扮演游戏开发，包括网络通信、多人同步、社交系统等。"
   }
 ];

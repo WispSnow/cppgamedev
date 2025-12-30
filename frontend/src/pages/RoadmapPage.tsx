@@ -212,7 +212,7 @@ const RoadmapPage: React.FC = () => {
               <ContentCard $status={item.status}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                   <StatusBadge $status={item.status}>
-                    {item.status === 'completed' ? '已发布' : item.status === 'in-progress' ? '更新中' : '计划中'}
+                    {item.status === 'completed' ? '已发布' : item.status === 'in-progress' ? '制作中' : '计划中'}
                   </StatusBadge>
                   <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 500 }}>{item.gameType}</span>
                 </div>
