@@ -128,6 +128,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
+  const handleSelect = React.useCallback((result: SearchResult) => {
+    navigate(result.url);
+    onClose();
+  }, [navigate, onClose]);
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -152,7 +157,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [results, selectedIndex, onClose]);
+  }, [results, selectedIndex, onClose, handleSelect]);
 
   useEffect(() => {
     if (query.trim().length === 0) {
@@ -178,10 +183,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
     return () => clearTimeout(timer);
   }, [query]);
 
-  const handleSelect = (result: SearchResult) => {
-    navigate(result.url);
-    onClose();
-  };
 
   // Highlight matches in snippet manually since backend returns pure text
   // Note: Better implementation would have backend return pre-highlighted text or indices

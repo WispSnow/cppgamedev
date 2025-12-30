@@ -165,16 +165,7 @@ const FilterButton = styled.button<{ $active: boolean; $color?: string; $bgColor
   }
 `;
 
-const UpdateTag = styled.span`
-  font-size: 0.8rem;
-  color: #666;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  background-color: #f5f5f5;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-`;
+
 
 const LoadingMessage = styled.div`
   text-align: center;
@@ -228,11 +219,7 @@ const HomePage: React.FC = () => {
     ? courses.filter(course => course.difficulty === selectedDifficulty)
     : courses;
 
-  // 2. 最新动态 (Top 3 by updateAt)
-  const latestCourses = [...filteredCourses]
-    .filter(c => c.updateAt)
-    .sort((a, b) => new Date(b.updateAt!).getTime() - new Date(a.updateAt!).getTime())
-    .slice(0, 3);
+
 
   // 3. 主线任务
   const mainlineCourses = filteredCourses

@@ -1,30 +1,52 @@
-[2025-12-30T13:23:45.476Z] 开始构建搜索索引...
-[2025-12-30T13:23:45.516Z] 搜索索引构建完成，耗时 39ms，共条目: 164
-[2025-12-30T13:23:55.614Z] Request: GET /api/courses
-[2025-12-30T13:23:55.622Z] Request: GET /api/courses
-[2025-12-30T13:23:57.482Z] Request: GET /api/courses
-[2025-12-30T13:23:57.487Z] Request: GET /api/courses
-[2025-12-30T13:25:46.681Z] Request: GET /api/courses
-[2025-12-30T13:25:46.686Z] Request: GET /api/courses
-[2025-12-30T13:25:49.596Z] Request: GET /api/troubleshooting
-[2025-12-30T13:25:49.599Z] Request: GET /api/troubleshooting
-[2025-12-30T13:25:50.788Z] Request: GET /api/courses
-[2025-12-30T13:25:50.792Z] Request: GET /api/courses
-[2025-12-30T13:25:51.851Z] Request: GET /api/troubleshooting
-[2025-12-30T13:25:51.855Z] Request: GET /api/troubleshooting
-[2025-12-30T13:25:53.034Z] Request: GET /api/courses
-[2025-12-30T13:25:53.038Z] Request: GET /api/courses
-[2025-12-30T13:25:53.624Z] Request: GET /api/courses
-[2025-12-30T13:25:53.628Z] Request: GET /api/courses
-[2025-12-30T13:26:01.636Z] Request: GET /api/courses
-[2025-12-30T13:26:01.640Z] Request: GET /api/courses
-[2025-12-30T14:08:00.760Z] Request: GET /api/courses
-[2025-12-30T14:08:00.766Z] Request: GET /api/courses
-[2025-12-30T14:08:03.388Z] Request: GET /api/courses
-[2025-12-30T14:08:03.392Z] Request: GET /api/courses
-[2025-12-30T14:08:05.043Z] Request: GET /api/courses
-[2025-12-30T14:08:05.047Z] Request: GET /api/courses
-[2025-12-30T14:08:09.993Z] Request: GET /api/courses
-[2025-12-30T14:08:09.997Z] Request: GET /api/courses
-[2025-12-30T14:08:18.813Z] Request: GET /api/troubleshooting
-[2025-12-30T14:08:18.816Z] Request: GET /api/troubleshooting
+[2025-12-30T14:35:19.648Z] 开始构建搜索索引...
+[2025-12-30T14:35:19.687Z] 搜索索引构建完成，耗时 39ms，共条目: 164
+[2025-12-30T14:35:32.819Z] Request: GET /api/courses
+[2025-12-30T14:35:32.827Z] Request: GET /api/courses
+[2025-12-30T14:35:34.794Z] Request: GET /api/courses
+[2025-12-30T14:35:34.799Z] Request: GET /api/courses
+[2025-12-30T14:35:57.839Z] Request: GET /api/courses
+[2025-12-30T14:35:57.843Z] Request: GET /api/courses
+[2025-12-30T14:35:59.570Z] Request: GET /api/courses
+[2025-12-30T14:35:59.573Z] Request: GET /api/courses
+[2025-12-30T14:36:02.109Z] Request: GET /api/troubleshooting
+[2025-12-30T14:36:02.112Z] Request: GET /api/troubleshooting
+[2025-12-30T14:36:28.983Z] Request: GET /api/troubleshooting
+[2025-12-30T14:36:28.986Z] Request: GET /api/troubleshooting
+[2025-12-30T14:36:39.074Z] Request: GET /api/courses
+[2025-12-30T14:36:39.078Z] Request: GET /api/courses
+[2025-12-30T14:36:39.768Z] Request: GET /api/courses
+[2025-12-30T14:36:39.771Z] Request: GET /api/courses
+[2025-12-30T14:36:40.837Z] Request: GET /api/courses
+[2025-12-30T14:36:40.840Z] Request: GET /api/courses
+[2025-12-30T14:36:52.937Z] Request: GET /api/courses/sdl-space-shooter
+[2025-12-30T14:36:52.942Z] Request: GET /api/courses/sdl-space-shooter
+[2025-12-30T14:36:52.945Z] Request: GET /api/courses/sdl-space-shooter/parts/cmake-setup
+[2025-12-30T14:36:52.959Z] Request: GET /api/courses/sdl-space-shooter/parts/cmake-setup
+[2025-12-30T14:37:00.924Z] Request: GET /api/courses
+[2025-12-30T14:37:00.927Z] Request: GET /api/courses
+[2025-12-30T14:37:12.569Z] Request: GET /api/courses/modular-ghost-escape
+[2025-12-30T14:37:12.574Z] Request: GET /api/courses/modular-ghost-escape
+[2025-12-30T14:37:13.589Z] Request: GET /api/courses/modular-ghost-escape
+[2025-12-30T14:37:13.594Z] Request: GET /api/courses/modular-ghost-escape
+[2025-12-30T14:37:13.600Z] Request: GET /api/courses/modular-ghost-escape/parts/part-02
+[2025-12-30T14:37:13.617Z] Request: GET /api/courses/modular-ghost-escape/parts/part-02
+[2025-12-30T14:37:15.851Z] Request: GET /api/courses
+[2025-12-30T14:37:15.857Z] Request: GET /api/courses
+[2025-12-30T14:38:10.053Z] Request: GET /api/search?q=danli
+[2025-12-30T14:38:10.054Z] 搜索请求: "danli"
+[2025-12-30T14:38:10.059Z] 搜索结果数量: 0
+[2025-12-30T14:38:12.031Z] Request: GET /api/search?q=dan%20li
+[2025-12-30T14:38:12.032Z] 搜索请求: "dan li"
+[2025-12-30T14:38:12.037Z] 搜索结果数量: 0
+[2025-12-30T14:38:12.773Z] Request: GET /api/search?q=%E5%8D%95%E4%BE%8B
+[2025-12-30T14:38:12.773Z] 搜索请求: "单例"
+[2025-12-30T14:38:12.777Z] 搜索结果数量: 12
+[2025-12-30T14:38:17.580Z] Request: GET /api/courses/side-game-optimization-and-design-patterns
+[2025-12-30T14:38:17.586Z] Request: GET /api/courses/side-game-optimization-and-design-patterns
+[2025-12-30T14:38:17.597Z] Request: GET /api/courses/side-game-optimization-and-design-patterns/parts/service-locator
+[2025-12-30T14:38:17.601Z] Request: GET /api/courses/side-game-optimization-and-design-patterns/parts/service-locator
+[2025-12-30T14:38:25.703Z] Request: GET /api/search?q=ECS
+[2025-12-30T14:38:25.704Z] 搜索请求: "ecs"
+[2025-12-30T14:38:25.708Z] 搜索结果数量: 20
+[2025-12-30T14:38:31.310Z] Request: GET /api/courses/ecs-monster-war
+[2025-12-30T14:38:31.313Z] Request: GET /api/courses/ecs-monster-war
