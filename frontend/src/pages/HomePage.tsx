@@ -5,6 +5,7 @@ import { getAllCourses } from '../services/courseService';
 import { Course } from '../types';
 import SEOHelmet from '../components/SEOHelmet';
 import { getDifficultyInfo } from '../utils/difficultyUtils';
+import { getReadingHistory, getBookmarks, HistoryItem } from '../services/storageService';
 
 const HomeContainer = styled.div`
   max-width: 1200px;
@@ -61,6 +62,23 @@ const CourseCard = styled(Link)`
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   }
+`;
+
+const HistoryCard = styled(CourseCard)`
+  min-height: 120px;
+  padding: 1.5rem;
+  justify-content: center;
+`;
+
+const HistoryTitle = styled.h3`
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-color, #333);
+`;
+
+const HistoryMeta = styled.div`
+  font-size: 0.9rem;
+  color: var(--secondary-text-color, #666);
 `;
 
 const CourseImage = styled.img`
@@ -180,6 +198,8 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<number | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [bookmarks, setBookmarks] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -195,6 +215,8 @@ const HomePage: React.FC = () => {
     };
 
     fetchCourses();
+    setHistory(getReadingHistory());
+    setBookmarks(getBookmarks());
   }, []);
 
   // 1. 筛选逻辑
@@ -256,6 +278,39 @@ const HomePage: React.FC = () => {
           );
         })}
       </FilterContainer>
+
+      {/* 历史记录与收藏 */}
+      {(!loading && !error) && (
+        <>
+          {history.length > 0 && (
+            <CoursesSection>
+              <SectionTitle>📖 继续阅读</SectionTitle>
+              <CourseGrid>
+                {history.slice(0, 3).map(item => (
+                  <HistoryCard key={`${item.courseId}-${item.partId}`} to={`/courses/${item.courseId}/parts/${item.partId}`}>
+                    <HistoryTitle>{item.title}</HistoryTitle>
+                    <HistoryMeta>上次阅读于 {new Date(item.timestamp).toLocaleDateString()}</HistoryMeta>
+                  </HistoryCard>
+                ))}
+              </CourseGrid>
+            </CoursesSection>
+          )}
+
+          {bookmarks.length > 0 && (
+            <CoursesSection>
+              <SectionTitle>⭐ 我的收藏</SectionTitle>
+              <CourseGrid>
+                {bookmarks.map(item => (
+                  <HistoryCard key={`bm-${item.courseId}-${item.partId}`} to={`/courses/${item.courseId}/parts/${item.partId}`}>
+                    <HistoryTitle>{item.title}</HistoryTitle>
+                    <HistoryMeta>收藏于 {new Date(item.timestamp).toLocaleDateString()}</HistoryMeta>
+                  </HistoryCard>
+                ))}
+              </CourseGrid>
+            </CoursesSection>
+          )}
+        </>
+      )}
 
       {/* 最新动态区块 */}
       {!loading && !error && latestCourses.length > 0 && (

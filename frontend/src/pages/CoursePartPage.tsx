@@ -15,6 +15,7 @@ import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import ErrorState from '../components/ErrorState';
 import { ArticleSkeleton, Skeleton } from '../components/Skeleton';
+import { saveReadingProgress, toggleBookmark, isBookmarked } from '../services/storageService';
 
 const PageContainer = styled.div`
   max-width: 900px;
@@ -37,6 +38,9 @@ const BackLink = styled(Link)`
 
 const ContentHeader = styled.div`
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 `;
 
 const PartTitle = styled.h1`
@@ -48,6 +52,25 @@ const CourseName = styled.h3`
   margin-top: 0;
   color: var(--secondary-text-color, #666);
   font-weight: normal;
+`;
+
+const BookmarkButton = styled.button<{ $active: boolean }>`
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: ${props => props.$active ? '#ffc107' : 'var(--border-color, #ccc)'};
+  transition: all 0.2s;
+  padding: 0.5rem;
+  margin-left: 1rem;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+
+const HeaderLeft = styled.div`
+  flex: 1;
 `;
 
 const MarkdownContainer = styled.div`
@@ -213,6 +236,7 @@ const CoursePartPage: React.FC = () => {
   const [part, setPart] = useState<CoursePart | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [bookmarked, setBookmarked] = useState(false);
   const { theme } = useTheme();
 
   const fetchCourseAndPart = useCallback(async () => {
@@ -229,12 +253,19 @@ const CoursePartPage: React.FC = () => {
           try {
             const partData = await getCoursePart(courseId, partId);
             setPart(partData);
+            
+            // Save reading history
+            if (partData && courseData) {
+              saveReadingProgress(courseData.id, partData.id, partData.title);
+            }
           } catch (partError) {
             console.error('获取章节内容失败:', partError);
             const foundPart = courseData.parts?.find(p => p.id === partId);
             if (foundPart) {
               setPart(foundPart);
               setError('无法加载章节内容，请稍后再试');
+              // Also save history if we found the part metadata
+              saveReadingProgress(courseData.id, foundPart.id, foundPart.title);
             } else {
               setPart(null);
               setError('未找到章节内容');
@@ -253,6 +284,19 @@ const CoursePartPage: React.FC = () => {
   useEffect(() => {
     fetchCourseAndPart();
   }, [fetchCourseAndPart]);
+
+  useEffect(() => {
+    if (courseId && partId) {
+      setBookmarked(isBookmarked(courseId, partId));
+    }
+  }, [courseId, partId]);
+
+  const handleBookmarkToggle = () => {
+    if (courseId && partId && part) {
+      const isAdded = toggleBookmark(courseId, partId, part.title);
+      setBookmarked(isAdded);
+    }
+  };
 
   useEffect(() => {
     const root = document.documentElement;
@@ -375,8 +419,17 @@ const CoursePartPage: React.FC = () => {
             />
 
             <ContentHeader>
-              <PartTitle>{part.title}</PartTitle>
-              <CourseName>{course.title}</CourseName>
+              <HeaderLeft>
+                <PartTitle>{part.title}</PartTitle>
+                <CourseName>{course.title}</CourseName>
+              </HeaderLeft>
+              <BookmarkButton 
+                onClick={handleBookmarkToggle}
+                $active={bookmarked}
+                title={bookmarked ? "取消收藏" : "收藏章节"}
+              >
+                {bookmarked ? '★' : '☆'}
+              </BookmarkButton>
             </ContentHeader>
 
             {part.content ? (
