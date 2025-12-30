@@ -96,7 +96,7 @@ const Navbar: React.FC = () => {
           首页
         </Logo>
         <NavLinks>
-          <NavLink to="/">主线</NavLink>
+          <NavLink to="/mainline">主线</NavLink>
           <NavLink to="/side-quests">支线</NavLink>
           <NavLink to="/troubleshooting">疑难解决</NavLink>
           <NavLink to="/courses">全部任务</NavLink>

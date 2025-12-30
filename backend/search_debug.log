@@ -1,8 +1,18 @@
-[2025-12-30T01:36:08.949Z] 开始构建搜索索引...
-[2025-12-30T01:36:08.981Z] 搜索索引构建完成，耗时 31ms，共条目: 133
-[2025-12-30T01:36:21.662Z] Request: GET /api/courses
-[2025-12-30T01:36:21.667Z] Request: GET /api/courses
-[2025-12-30T01:36:28.674Z] Request: GET /api/troubleshooting
-[2025-12-30T01:36:28.678Z] Request: GET /api/troubleshooting
-[2025-12-30T01:36:30.190Z] Request: GET /api/courses
-[2025-12-30T01:36:30.193Z] Request: GET /api/courses
+[2025-12-30T02:24:22.029Z] 开始构建搜索索引...
+[2025-12-30T02:24:22.062Z] 搜索索引构建完成，耗时 32ms，共条目: 133
+[2025-12-30T02:24:29.298Z] Request: GET /api/courses
+[2025-12-30T02:24:29.305Z] Request: GET /api/courses
+[2025-12-30T02:24:30.942Z] Request: GET /api/courses
+[2025-12-30T02:24:30.947Z] Request: GET /api/courses
+[2025-12-30T02:24:33.706Z] Request: GET /api/courses
+[2025-12-30T02:24:33.710Z] Request: GET /api/courses
+[2025-12-30T02:24:36.174Z] Request: GET /api/courses
+[2025-12-30T02:24:36.178Z] Request: GET /api/courses
+[2025-12-30T02:24:37.243Z] Request: GET /api/courses
+[2025-12-30T02:24:37.245Z] Request: GET /api/courses
+[2025-12-30T02:24:39.139Z] Request: GET /api/troubleshooting
+[2025-12-30T02:24:39.142Z] Request: GET /api/troubleshooting
+[2025-12-30T02:24:40.585Z] Request: GET /api/courses
+[2025-12-30T02:24:40.590Z] Request: GET /api/courses
+[2025-12-30T02:24:42.762Z] Request: GET /api/courses
+[2025-12-30T02:24:42.767Z] Request: GET /api/courses

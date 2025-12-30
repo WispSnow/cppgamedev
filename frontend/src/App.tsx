@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import HomePage from './pages/HomePage';
+import MainlinePage from './pages/MainlinePage';
 import CourseDetailPage from './pages/CourseDetailPage';
 import CoursePartPage from './pages/CoursePartPage';
 import CoursesPage from './pages/CoursesPage';
@@ -37,6 +38,7 @@ function App() {
           <MainContent>
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/mainline" element={<MainlinePage />} />
               <Route path="/courses" element={<CoursesPage />} />
               <Route path="/side-quests" element={<SideQuestsPage />} />
               <Route path="/courses/:courseId" element={<CourseDetailPage />} />
