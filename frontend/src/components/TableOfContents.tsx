@@ -9,21 +9,24 @@ interface TOCContainerProps {
 
 const TOCContainer = styled.div<TOCContainerProps>`
   position: fixed;
-  right: ${props => props.$isVisible ? '2rem' : '-260px'};
+  right: ${props => props.$isVisible ? '2rem' : '-280px'};
   top: 10rem;
   width: 250px;
   max-height: 70vh;
   overflow-y: auto;
   background-color: var(--toc-bg-color, #f8f9fa);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 1rem;
-  transition: all 0.3s ease;
+  transition: right 0.3s ease;
   z-index: 100;
   
   @media (max-width: 1200px) {
-    right: ${props => props.$isVisible ? '1rem' : '-260px'};
-    width: 220px;
+    top: 80px;
+    height: calc(100vh - 100px);
+    right: ${props => props.$isVisible ? '0' : '-100%'};
+    width: 280px;
+    border-radius: 8px 0 0 8px;
   }
 `;
 
@@ -61,29 +64,35 @@ const TOCLink = styled(Link)<{ active: boolean }>`
 
 const ToggleButton = styled.button<{ $isVisible: boolean }>`
   position: fixed;
-  right: 1rem;
+  right: ${props => props.$isVisible ? '260px' : '1rem'};
   top: 10rem;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   background-color: var(--primary-color, #0066cc);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px 0 0 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 99;
   transition: right 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  opacity: 0.8;
+  box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.1);
+  font-size: 1.2rem;
   
   &:hover {
-    opacity: 1;
+    background-color: #0055aa;
   }
   
-  @media (max-width: 768px) {
-    display: none;
+  @media (max-width: 1200px) {
+    top: auto;
+    bottom: 2rem;
+    right: ${props => props.$isVisible ? '280px' : '1rem'};
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
 `;
 

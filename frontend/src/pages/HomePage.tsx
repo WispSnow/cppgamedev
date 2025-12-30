@@ -11,6 +11,10 @@ const HomeContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
 `;
 
 const HeroSection = styled.div`
