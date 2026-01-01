@@ -16,6 +16,7 @@ import remarkGfm from 'remark-gfm';
 import ErrorState from '../components/ErrorState';
 import { ArticleSkeleton, Skeleton } from '../components/Skeleton';
 import { saveReadingProgress, toggleBookmark, isBookmarked } from '../services/storageService';
+import GiscusComments from '../components/GiscusComments';
 
 const PageContainer = styled.div`
   max-width: 900px;
@@ -446,14 +447,18 @@ const CoursePartPage: React.FC = () => {
               <ErrorState message="此章节暂无内容" />
             )}
 
+
             <ChapterNavigation
               courseId={courseId || ''}
               currentPartId={partId || ''}
               allParts={course.parts || []}
             />
+            
+            <GiscusComments />
           </>
         )}
       </PageContainer>
+
     </>
   );
 };
