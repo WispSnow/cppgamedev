@@ -1,6 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import styled from 'styled-components';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import styled, { keyframes } from 'styled-components';
 import HomePage from './pages/HomePage';
 import MainlinePage from './pages/MainlinePage';
 import CourseDetailPage from './pages/CourseDetailPage';
@@ -15,7 +15,6 @@ import RoadmapPage from './pages/RoadmapPage';
 import FAQPage from './pages/FAQPage';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import ThemeToggle from './components/ThemeToggle';
 import { ThemeProvider } from './context/ThemeContext';
 import MarkdownPage from './components/MarkdownPage';
 
@@ -25,9 +24,38 @@ const AppContainer = styled.div`
   min-height: 100vh;
 `;
 
-const MainContent = styled.main`
-  flex: 1;
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
+
+const MainContent = styled.main<{ $routeKey: string }>`
+  flex: 1;
+  animation: ${fadeIn} 0.25s ease-out;
+`;
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <MainContent key={location.pathname} $routeKey={location.pathname}>
+      <Routes location={location}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/mainline" element={<MainlinePage />} />
+        <Route path="/courses" element={<CoursesPage />} />
+        <Route path="/side-quests" element={<SideQuestsPage />} />
+        <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+        <Route path="/courses/:courseId/parts/:partId" element={<CoursePartPage />} />
+        <Route path="/troubleshooting" element={<TroubleshootingPage />} />
+        <Route path="/troubleshooting/:articleId" element={<TroubleshootingDetailPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/roadmap" element={<RoadmapPage />} />
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/test-video" element={<MarkdownPage title="视频测试" contentUrl="/content/test-video.md" />} />
+      </Routes>
+    </MainContent>
+  );
+}
 
 function App() {
   return (
@@ -35,24 +63,7 @@ function App() {
       <Router>
         <AppContainer>
           <Navbar />
-          <MainContent>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/mainline" element={<MainlinePage />} />
-              <Route path="/courses" element={<CoursesPage />} />
-              <Route path="/side-quests" element={<SideQuestsPage />} />
-              <Route path="/courses/:courseId" element={<CourseDetailPage />} />
-              <Route path="/courses/:courseId/parts/:partId" element={<CoursePartPage />} />
-              <Route path="/troubleshooting" element={<TroubleshootingPage />} />
-              <Route path="/troubleshooting/:articleId" element={<TroubleshootingDetailPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/roadmap" element={<RoadmapPage />} />
-              <Route path="/faq" element={<FAQPage />} />
-              <Route path="/test-video" element={<MarkdownPage title="视频测试" contentUrl="/content/test-video.md" />} />
-            </Routes>
-          </MainContent>
-          <ThemeToggle />
+          <AnimatedRoutes />
           <Footer />
         </AppContainer>
       </Router>

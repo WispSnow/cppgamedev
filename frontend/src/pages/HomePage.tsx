@@ -217,6 +217,15 @@ const CourseTitle = styled.h3`
   font-size: 1.3rem;
   color: var(--text-color, #333);
   margin: 0 0 1rem 0;
+  transition: color 0.2s ease;
+
+  ${CourseCard}:hover & {
+    color: var(--primary-color, #0066cc);
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.15rem;
+  }
 `;
 
 const CourseDescription = styled.p`
@@ -228,6 +237,10 @@ const CourseDescription = styled.p`
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const LearnMoreButton = styled.span`
@@ -240,6 +253,12 @@ const LearnMoreButton = styled.span`
   text-align: center;
   font-weight: 500;
   align-self: flex-start;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+
+  ${CourseCard}:active & {
+    transform: scale(0.96);
+    opacity: 0.85;
+  }
 `;
 
 
@@ -249,6 +268,20 @@ const FilterContainer = styled.div`
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 3rem;
+
+  @media (max-width: 600px) {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.25rem 0;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
 `;
 
 const FilterButton = styled.button<{ $active: boolean; $color?: string; $bgColor?: string }>`
@@ -268,9 +301,16 @@ const FilterButton = styled.button<{ $active: boolean; $color?: string; $bgColor
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   }
+
+  &:active {
+    transform: translateY(0) scale(0.97);
+  }
+
+  @media (max-width: 600px) {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
 `;
-
-
 
 const LoadingMessage = styled.div`
   text-align: center;
@@ -289,8 +329,42 @@ const ErrorMessage = styled.div`
 
 const EmptyMessage = styled.div`
   text-align: center;
-  padding: 2rem;
+  padding: 3rem 2rem;
   color: var(--secondary-text-color, #666);
+`;
+
+const EmptyIcon = styled.div`
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.5;
+`;
+
+const EmptyText = styled.p`
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+`;
+
+const EmptyHint = styled.p`
+  font-size: 0.85rem;
+  margin: 0;
+  opacity: 0.7;
+`;
+
+const ClearFilterButton = styled.button`
+  margin-top: 1rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border-color, #eee);
+  border-radius: 20px;
+  background: var(--card-bg-color, #fff);
+  color: var(--primary-color, #0066cc);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--primary-color, #0066cc);
+    color: #fff;
+  }
 `;
 
 const HomePage: React.FC = () => {
@@ -425,7 +499,22 @@ const HomePage: React.FC = () => {
         ) : error ? (
           <ErrorMessage>{error}</ErrorMessage>
         ) : mainlineCourses.length === 0 ? (
-          <EmptyMessage>暂时没有主线任务，敬请期待新内容。</EmptyMessage>
+          <EmptyMessage>
+            <EmptyIcon>{selectedDifficulty ? '🔍' : '📭'}</EmptyIcon>
+            <EmptyText>
+              {selectedDifficulty
+                ? `暂无「${getDifficultyInfo(selectedDifficulty).label}」难度的主线任务`
+                : '暂时没有主线任务，敬请期待新内容。'}
+            </EmptyText>
+            {selectedDifficulty && (
+              <>
+                <EmptyHint>试试其他难度筛选，或查看全部课程</EmptyHint>
+                <ClearFilterButton onClick={() => setSelectedDifficulty(null)}>
+                  查看全部
+                </ClearFilterButton>
+              </>
+            )}
+          </EmptyMessage>
         ) : (
           <CourseGrid>
             {mainlineCourses.map(course => {
@@ -455,32 +544,51 @@ const HomePage: React.FC = () => {
       </CoursesSection>
 
       {/* 支线任务区块 */}
-      {!loading && !error && sideCourses.length > 0 && (
+      {!loading && !error && (
         <CoursesSection>
-          <SectionTitle>🛡️ 支线任务</SectionTitle>
-          <CourseGrid>
-            {sideCourses.map(course => {
-              const diffInfo = course.difficulty ? getDifficultyInfo(course.difficulty) : null;
-              return (
-                <CourseCard key={course.id} to={`/courses/${course.id}`}>
-                  <CourseImageWrapper>
-                    <CourseImage src={course.coverImage} alt={course.title} />
-                    <ImageOverlay />
-                    {diffInfo && (
-                      <ImageTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
-                        {diffInfo.label}
-                      </ImageTag>
-                    )}
-                  </CourseImageWrapper>
-                  <CourseInfo>
-                    <CourseTitle>{course.title}</CourseTitle>
-                    <CourseDescription>{course.description}</CourseDescription>
-                    <LearnMoreButton>开始探索</LearnMoreButton>
-                  </CourseInfo>
-                </CourseCard>
-              );
-            })}
-          </CourseGrid>
+          <SectionTitle>支线任务</SectionTitle>
+          {sideCourses.length === 0 ? (
+            <EmptyMessage>
+              <EmptyIcon>{selectedDifficulty ? '🔍' : '📭'}</EmptyIcon>
+              <EmptyText>
+                {selectedDifficulty
+                  ? `暂无「${getDifficultyInfo(selectedDifficulty).label}」难度的支线任务`
+                  : '暂时没有支线任务，敬请期待新内容。'}
+              </EmptyText>
+              {selectedDifficulty && (
+                <>
+                  <EmptyHint>试试其他难度筛选，或查看全部课程</EmptyHint>
+                  <ClearFilterButton onClick={() => setSelectedDifficulty(null)}>
+                    查看全部
+                  </ClearFilterButton>
+                </>
+              )}
+            </EmptyMessage>
+          ) : (
+            <CourseGrid>
+              {sideCourses.map(course => {
+                const diffInfo = course.difficulty ? getDifficultyInfo(course.difficulty) : null;
+                return (
+                  <CourseCard key={course.id} to={`/courses/${course.id}`}>
+                    <CourseImageWrapper>
+                      <CourseImage src={course.coverImage} alt={course.title} />
+                      <ImageOverlay />
+                      {diffInfo && (
+                        <ImageTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
+                          {diffInfo.label}
+                        </ImageTag>
+                      )}
+                    </CourseImageWrapper>
+                    <CourseInfo>
+                      <CourseTitle>{course.title}</CourseTitle>
+                      <CourseDescription>{course.description}</CourseDescription>
+                      <LearnMoreButton>开始探索</LearnMoreButton>
+                    </CourseInfo>
+                  </CourseCard>
+                );
+              })}
+            </CourseGrid>
+          )}
         </CoursesSection>
       )}
     </HomeContainer>

@@ -25,28 +25,52 @@ const NavbarContent = styled.div`
 `;
 
 const Logo = styled(Link)`
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--primary-color, #0066cc);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-color, #333);
   text-decoration: none;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
   z-index: 102;
-  
+  letter-spacing: -0.03em;
+
   &:hover {
-    opacity: 0.9;
+    opacity: 0.85;
   }
 `;
 
-const LogoIcon = styled.span`
-  font-size: 1.8rem;
-  margin-right: 0.5rem;
+const LogoBracket = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--primary-color, #0066cc), #7c3aed);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  flex-shrink: 0;
+`;
+
+const LogoText = styled.span`
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  @media (max-width: 480px) {
+    display: none;
+  }
 `;
 
 const NavLinks = styled.nav<{ $isOpen: boolean }>`
   display: flex;
   gap: 1.5rem;
   align-items: center;
+
+  @media (max-width: 1024px) and (min-width: 769px) {
+    gap: 0.25rem;
+  }
 
   @media (max-width: 768px) {
     position: fixed;
@@ -73,6 +97,7 @@ const NavLink = styled(Link)<{ $isActive?: boolean }>`
   border-radius: 4px;
   transition: all 0.2s;
   font-size: 1rem;
+  white-space: nowrap;
   
   &:hover {
     color: var(--primary-color, #0066cc);
@@ -148,8 +173,8 @@ const Navbar: React.FC = () => {
     <NavbarContainer>
       <NavbarContent>
         <Logo to="/" onClick={closeMenu}>
-          <LogoIcon>📚</LogoIcon>
-          首页
+          <LogoBracket>C++</LogoBracket>
+          <LogoText>cppgamedev</LogoText>
         </Logo>
 
         <NavLinks $isOpen={isMenuOpen}>
