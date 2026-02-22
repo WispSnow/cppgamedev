@@ -903,6 +903,226 @@ const courses = [
     ]
   },
   {
+    id: "opengl-tiny-farm",
+    title: "OpenGL与迷你农场",
+    description: "使用OpenGL图形渲染、FreeType/HarfBuzz字体渲染、MiniAudio音频播放，结合ECS架构与数据驱动设计，从零构建一款完整的2D农场经营游戏。四万余行产品级游戏代码，全面掌握现代游戏引擎开发。",
+    coverImage: "https://theorhythm.top/gamedev/TF/cover.webp",
+    category: "mainline",
+    difficulty: 4,
+    updateAt: "2026-02-22",
+    status: "已完成",
+    resources: {
+      githubLink: "https://github.com/WispSnow/TinyFarm",
+      baiduLink: "https://pan.baidu.com/s/1gbDFEagUHmBJ1o_jLmgnDQ?pwd=332p#list/path=%2F"
+    },
+    parts: [
+      {
+        id: "intro",
+        title: "开篇",
+        description: "介绍迷你农场项目概览，了解课程使用的技术栈：OpenGL图形渲染、FreeType/HarfBuzz字体渲染、MiniAudio音频播放。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/00-开篇.md"
+      },
+      {
+        id: "part-01",
+        title: "构建与运行",
+        description: "掌握CMake工程的三阶段工作流（配置/构建/运行），完成依赖管理与运行时资源组织。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/01-构建与运行.md"
+      },
+      {
+        id: "part-02",
+        title: "游戏架构设计",
+        description: "建立迷你农场的架构心智模型，涵盖分层设计、Scene + ECS + 子系统运行时骨架与数据驱动设计原则。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/02-游戏架构设计.md"
+      },
+      {
+        id: "part-03",
+        title: "从入口到第一帧",
+        description: "追踪从main()到第一帧渲染（TitleScene）的控制流，理解初始化顺序与启动架构。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/03-从入口到第一帧.md"
+      },
+      {
+        id: "part-04",
+        title: "测试用例入门",
+        description: "使用GoogleTest框架结合迷你农场实例，掌握构建、运行和编写单元测试的完整工作流。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/04-测试用例入门.md"
+      },
+      {
+        id: "part-05",
+        title: "Debug UI 与可观测性基础",
+        description: "搭建调试基础设施，通过快捷键实时检查场景、事件、ECS等运行时状态。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/05-Debug UI 与可观测性基础.md"
+      },
+      {
+        id: "part-06",
+        title: "事件系统",
+        description: "理解EnTT Dispatcher的即时分发（trigger）与延迟批处理（enqueue）机制，避免常见的时序与同步问题。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/06-事件系统.md"
+      },
+      {
+        id: "part-07",
+        title: "场景系统",
+        description: "详解Scene栈架构，update只处理栈顶场景而render合成整个栈，实现延迟场景切换以保证安全。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/07-场景系统.md"
+      },
+      {
+        id: "part-08",
+        title: "ECS 在本项目中的落地",
+        description: "理解每个Scene拥有独立Registry的ECS实现方式，明确更新顺序的重要性与共享状态管理。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/08-ECS 在本项目中的落地.md"
+      },
+      {
+        id: "part-09",
+        title: "2D 渲染最小闭环",
+        description: "从Transform/Sprite/Render组件经RenderSystem到屏幕像素的最小渲染循环，包含Y-sort深度排序。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/09-2D 渲染最小闭环.md"
+      },
+      {
+        id: "part-10",
+        title: "Renderer 与 GLRenderer",
+        description: "理解双层渲染架构：Renderer（外观层）与GLRenderer（OpenGL后端），使用逻辑分辨率与信箱视口实现一致渲染。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/10-Renderer 与 GLRenderer.md"
+      },
+      {
+        id: "part-11",
+        title: "精灵批处理与着色器",
+        description: "通过精灵批处理优化减少GPU绘制调用，解决像素风渲染中的边缘抖动与模糊问题。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/11-精灵批处理与着色器.md"
+      },
+      {
+        id: "part-12",
+        title: "光照与后处理",
+        description: "将光照、自发光、泛光、合成等后处理Pass串联成可维护的渲染流水线。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/12-光照与后处理.md"
+      },
+      {
+        id: "part-13",
+        title: "资源系统",
+        description: "通过ResourceManager外观模式实现集中式资源管理，使用resource_mapping.json驱动数据化的资源加载与缓存。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/13-资源系统.md"
+      },
+      {
+        id: "part-14",
+        title: "字体与文本渲染",
+        description: "构建从FreeType/HarfBuzz到文本图集再到UI与世界文本渲染的完整字体渲染管线。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/14-字体与文本渲染.md"
+      },
+      {
+        id: "part-15",
+        title: "输入系统",
+        description: "将原始SDL输入转换为动作映射，实现状态机驱动的输入处理与逻辑坐标的鼠标位置。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/15-输入系统.md"
+      },
+      {
+        id: "part-16",
+        title: "音频系统",
+        description: "基于MiniAudio实现音频管理，支持事件驱动的音效触发、语义化音频键与2D空间声衰减。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/16-音频系统.md"
+      },
+      {
+        id: "part-17",
+        title: "UI 框架基础",
+        description: "建立每个Scene独立的UIManager管理元素树，驱动Normal/Hover/Pressed状态机与音效反馈。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/17-UI 框架基础.md"
+      },
+      {
+        id: "part-18",
+        title: "UI 布局与预设",
+        description: "用Stack/Grid容器替代手动坐标布局，引入九宫格与预设样式实现可复用的数据驱动UI。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/18-UI 布局与预设.md"
+      },
+      {
+        id: "part-19",
+        title: "空间索引",
+        description: "组合静态瓦片网格与动态实体网格，提供统一的空间查询API用于移动与交互检测。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/19-空间索引.md"
+      },
+      {
+        id: "part-20",
+        title: "碰撞解析与移动",
+        description: "实现碰撞解析管线，将目标位移转换为考虑墙壁和障碍物后的可行位移。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/20-碰撞解析与移动.md"
+      },
+      {
+        id: "part-21",
+        title: "地图数据管线",
+        description: "追踪从Tiled编辑器（.tmj/.tsj）经解析到ECS实体与空间索引数据的完整数据管线。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/21-地图数据管线.md"
+      },
+      {
+        id: "part-22",
+        title: "关卡载入器与实体建造者",
+        description: "分离通用的EntityBuilder组件组装与游戏特定的类型分派，定义清晰的引擎/游戏层边界。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/22-关卡载入器与实体建造者.md"
+      },
+      {
+        id: "part-23",
+        title: "蓝图与实体工厂",
+        description: "通过EntityFactory模式将角色、动物、作物等定义转化为可配置的实体蓝图数据。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/23-蓝图与实体工厂.md"
+      },
+      {
+        id: "part-24",
+        title: "世界状态",
+        description: "将多地图世界组织为可查询的图结构（WorldState），管理地图邻接关系与跨地图触发器。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/24-世界状态.md"
+      },
+      {
+        id: "part-25",
+        title: "地图管理器",
+        description: "实现MapManager的加载/卸载生命周期编排，支持预加载、快照持久化与离线世界推进。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/25-地图管理器.md"
+      },
+      {
+        id: "part-26",
+        title: "游戏场景初始化与系统编排",
+        description: "详解GameScene初始化顺序与系统更新编排，强调错误顺序如何导致隐蔽Bug。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/26-游戏场景初始化与系统编排.md"
+      },
+      {
+        id: "part-27",
+        title: "玩家控制与相机",
+        description: "实现玩家移动意图映射与相机跟随系统，包含平滑追踪与地图边界约束。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/27-玩家控制与相机.md"
+      },
+      {
+        id: "part-28",
+        title: "交互与对话",
+        description: "串联空间查询、动作输入与事件分发，实现玩家与NPC及物体的交互对话系统。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/28-交互与对话.md"
+      },
+      {
+        id: "part-29",
+        title: "物品栏与快捷栏",
+        description: "实现物品栏与快捷栏系统，遵循单一数据源原则并通过事件驱动UI同步保证状态一致性。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/29-物品栏与快捷栏.md"
+      },
+      {
+        id: "part-30",
+        title: "物品使用与农场循环",
+        description: "将物品栏连接到游戏世界，实现工具使用、耕地、作物种植、生长与掉落的农场循环。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/30-物品使用与农场循环.md"
+      },
+      {
+        id: "part-31",
+        title: "游戏时间与昼夜",
+        description: "将时间作为系统API产生事件，驱动作物生长、NPC日程、环境变化与光照过渡。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/31-游戏时间与昼夜.md"
+      },
+      {
+        id: "part-32",
+        title: "存档与流程收尾",
+        description: "实现存档服务，捕获世界状态、物品栏、时间与地图快照，实现持久化游戏进度。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/32-存档与流程收尾.md"
+      },
+      {
+        id: "part-33",
+        title: "收尾",
+        description: "全课程回顾，从引擎层到游戏层再到数据层的完整架构总结，以及下一步学习路线图。",
+        contentPath: "backend/src/courses/OpenGL与迷你农场/33-收尾.md"
+      }
+    ]
+  },
+  {
     id: "side-game-optimization-and-design-patterns",
     title: "游戏优化与设计模式",
     description: "学习在真实项目中优化与重构的技巧与关键设计模式。以动手实践为核心,理论简明扼要,强调'学即能用,改即见效'。",

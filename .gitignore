@@ -3,6 +3,10 @@
 /.pnp
 .pnp.js
 
+# Agent
+.claude
+.agent*
+
 # testing
 /coverage
 

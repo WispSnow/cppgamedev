@@ -46,11 +46,12 @@ export const roadmapData: RoadmapItem[] = [
   },
   {
     id: 5,
-    title: "待定",
+    title: "OpenGL与迷你农场",
     techStack: "opengl, freetype, miniaudio",
     gameType: "农场游戏",
-    status: "in-progress",
-    description: "学习OpenGL、FreeType、MiniAudio等库，实现2D渲染、文本显示和音频播放。"
+    status: "completed",
+    description: "使用OpenGL图形渲染、FreeType/HarfBuzz字体渲染、MiniAudio音频播放，结合ECS架构与数据驱动设计，构建完整的2D农场经营游戏。",
+    courseId: "opengl-tiny-farm"
   },
   {
     id: 6,
