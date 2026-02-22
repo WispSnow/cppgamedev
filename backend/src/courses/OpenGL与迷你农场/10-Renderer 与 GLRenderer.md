@@ -44,11 +44,11 @@
 
 > 上层只关心"画什么"，`GLRenderer` 负责"怎么画 + 画到哪里 + 以什么分辨率画"。
 
-![Renderer 层架构图](diagrams/L08_renderer_layer_architecture.png)
+<img src="https://theorhythm.top/gamedev/TF/L08_renderer_layer_architecture.webp" style='width: 960px;' />
 
 下面这张图更直观地展示了两层的职责边界：
 
-![Renderer 职责边界图](diagrams/L08_renderer_responsibilities.png)
+<img src="https://theorhythm.top/gamedev/TF/L08_renderer_responsibilities.webp" style='width: 960px;' />
 
 **为什么要这样分？** 因为上层系统（`RenderSystem`、`LightSystem`、UI 等）只依赖 `Renderer` 的接口。当底层需要升级（比如从单 pass 到多 pass、添加后处理），只要 `Renderer` 的接口不变，上层系统一行代码都不用改。这就是外观模式（Facade Pattern）在渲染管线中的典型应用。
 
@@ -105,7 +105,7 @@ viewport.pos  = (0, 110.25)   → 上下各约 110px 黑边
 
 项目中对应的函数是 `engine::utils::computeLetterboxMetrics()`（`src/engine/utils/math.h`）。`ViewportManager` 在窗口尺寸变化时调用它来更新 `glViewport`。
 
-![逻辑分辨率 + Letterbox 示意图](diagrams/L08_logical_resolution_letterbox.png)
+<img src="https://theorhythm.top/gamedev/TF/L08_logical_resolution_letterbox.webp" style='width: 960px;' />
 
 **常见坑：高 DPI 下"窗口坐标"和"drawable 像素"不一致**
 
@@ -130,7 +130,7 @@ viewport.pos  = (0, 110.25)   → 上下各约 110px 黑边
 
 > 输入（鼠标）最终要映射到 Logical；相机把 World 映射到 Logical；GLRenderer 把 Logical 等比合成到 Window Pixels 的 viewport。
 
-![四种坐标系对齐图](diagrams/L08_coordinate_systems_alignment.png)
+<img src="https://theorhythm.top/gamedev/TF/L08_coordinate_systems_alignment.webp" style='width: 960px;' />
 
 ## 架构与数据流
 
@@ -151,7 +151,7 @@ viewport.pos  = (0, 110.25)   → 上下各约 110px 黑边
 
 **关键的分辨率切换发生在第 5 步**：前 4 步都在 `logical_size` 大小的 FBO 上绘制（固定分辨率），第 5 步 Composite Pass 用一个全屏四边形把结果缩放到 letterbox viewport 里（窗口像素）。这就是"逻辑分辨率渲染"在管线中的实际落地。
 
-![Pass 管线流水图](diagrams/L08_pass_pipeline.png)
+<img src="https://theorhythm.top/gamedev/TF/L08_pass_pipeline.webp" style='width: 960px;' />
 
 **为什么 UI 在 viewport 而不在 logical FBO 上？**
 UI 的坐标是相对**屏幕**的（不随相机移动），所以最终要画到代表屏幕可见区域的 viewport。但 UI 的设计坐标空间仍然是 `logical_size`——这样无论窗口怎么变化，UI 布局的相对位置都保持一致。这正是"逻辑分辨率"的价值所在：它不仅统一了场景渲染，也统一了 UI 布局。

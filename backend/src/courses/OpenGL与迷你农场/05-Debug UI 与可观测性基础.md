@@ -37,7 +37,7 @@
 
 《迷你农场》对 Debug UI 采用**两层开关**策略。这两层各有分工，互不干扰：
 
-![两层开关对比图](diagrams/L03B_two_layer_switch.png)
+<img src="https://theorhythm.top/gamedev/TF/L03B_two_layer_switch.webp" style='width: 960px;' />
 
 **编译期开关——控制"有没有"**
 
@@ -72,7 +72,7 @@ CMake 选项 `ENABLE_DEBUG_UI`（默认 `ON`）。关闭时，ImGui 源码、所
 
 `F5/F6` 不是写死在业务层的，而是通过渲染层统一处理。完整链路如下：
 
-![按键到面板显示时序图](diagrams/L03B_hotkey_sequence.png)
+<img src="https://theorhythm.top/gamedev/TF/L03B_hotkey_sequence.webp" style='width: 960px;' />
 
 1. SDL 键盘事件被 `InputManager::update()` 轮询到
 2. 事件通过回调转发到 `GLRenderer::handleSDLEvent()`
@@ -85,7 +85,7 @@ CMake 选项 `ENABLE_DEBUG_UI`（默认 `ON`）。关闭时，ImGui 源码、所
 
 ### 2.2 一帧里 Debug UI 画在什么位置
 
-![一帧中 Debug UI 渲染位置](diagrams/L03B_frame_render_flow.png)
+<img src="https://theorhythm.top/gamedev/TF/L03B_frame_render_flow.webp" style='width: 960px;' />
 
 理解这条帧内顺序很重要：
 
@@ -124,7 +124,7 @@ Debug UI 是**覆盖层**，叠在场景渲染之上、`present` 之前。这意
 
 每个调试面板都实现统一的 `DebugPanel` 接口：
 
-![DebugPanel 协议与管理器关系图](diagrams/L03B_panel_protocol.png)
+<img src="https://theorhythm.top/gamedev/TF/L03B_panel_protocol.webp" style='width: 960px;' />
 
 - **`name()`**：返回在 Hub 勾选列表中显示的名字（如 `"Core: Dispatcher Trace"`）。
 - **`draw(bool& is_open)`**：窗口绘制的主体。面板可以通过将 `is_open` 设为 `false` 来通知管理器关闭自己——比如用户点击了窗口右上角的 × 按钮。管理器检测到 `is_open` 变为 `false` 后，会调用 `onHide()` 并将该面板标记为未启用。

@@ -67,7 +67,7 @@ void Scene::clean() {
 
 你可以亲手验证这条边界：打开 Engine Debug Panels（`F5`），勾选 `Scene` 面板。在 TitleScene 时观察实体数量，然后点击 Start 进入 GameScene，你会看到实体数量发生巨大变化——因为你切换到了一份全新的 registry。
 
-![Scene 栈 + Registry 示意图](diagrams/L06_scene_stack_registry.png)
+<img src="https://theorhythm.top/gamedev/TF/L06_scene_stack_registry.webp" style='width: 960px;' />
 
 ---
 
@@ -119,7 +119,7 @@ private:
 
 《迷你农场》 用 `registry.ctx()` 作为"按类型索引"的小容器，把这些数据放在 registry 上——它们不属于任何实体，但属于当前场景。
 
-![Context/Registry/ctx 数据流图](diagrams/L06_ctx_data_flow.png)
+<img src="https://theorhythm.top/gamedev/TF/L06_ctx_data_flow.webp" style='width: 960px;' />
 
 ### 3.2 初始化：GameScene 往 ctx 里放什么？
 
@@ -220,7 +220,7 @@ void LightSystem::update(entt::registry& registry, engine::render::Renderer& ren
 - 引擎层：`TransformComponent`（位置）+ `SpriteComponent`（外观）+ `VelocityComponent`（速度）+ `AnimationComponent`（动画）+ `ColliderComponent`（碰撞）
 - 游戏层：`ActorComponent`（角色属性）+ `StateComponent`（动作/朝向状态）+ `InventoryComponent`（物品栏）+ `HotbarComponent`（快捷栏）+ `PlayerTag`（身份标记）
 
-![Component 分层 + Tag 用法](diagrams/L06_component_layering.png)
+<img src="https://theorhythm.top/gamedev/TF/L06_component_layering.webp" style='width: 960px;' />
 
 这种分层的好处是：引擎层的 System（如 MovementSystem）只依赖引擎层组件，可以在不同游戏中复用；游戏层的 System（如 FarmSystem）读取两层组件，但只有游戏层才知道"种地"是什么意思。
 
@@ -378,7 +378,7 @@ void GameScene::update(float delta_time) {
 
 把前面的核心概念放在一起，《迷你农场》 的 ECS 可以看成"三层合奏"：
 
-![ECS 三层架构 + 实体来源](diagrams/L06_three_layer_architecture.png)
+<img src="https://theorhythm.top/gamedev/TF/L06_three_layer_architecture.webp" style='width: 960px;' />
 
 每一帧的运行逻辑是：
 1. **Systems 按固定顺序 update**：从 registry 的 view 中查询组件组合，读写数据、打 Tag、发事件
@@ -402,7 +402,7 @@ ECS 里非常常见的坑是：
 1. 先收集需要处理的实体 id
 2. 再统一 destroy/remove
 
-![两阶段处理模式](diagrams/L06_two_phase_pattern.png)
+<img src="https://theorhythm.top/gamedev/TF/L06_two_phase_pattern.webp" style='width: 960px;' />
 
 《迷你农场》 中的两个典型示范：
 
