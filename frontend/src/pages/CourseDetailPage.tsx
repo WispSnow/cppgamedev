@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { getCourseById } from '../services/courseService';
@@ -6,6 +6,7 @@ import { Course } from '../types';
 import SEOHelmet from '../components/SEOHelmet';
 import ErrorState from '../components/ErrorState';
 import { PartCardSkeletonList, Skeleton } from '../components/Skeleton';
+import { getReadingHistory } from '../services/storageService';
 
 const PageContainer = styled.div`
   max-width: 1000px;
@@ -72,45 +73,83 @@ const PartsSectionTitle = styled.h2`
 `;
 
 const PartsList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-bg-color, #ffffff);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 `;
 
-const PartCard = styled.div`
-  background-color: var(--card-bg-color, #ffffff);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+const PartItem = styled.div<{ $isRead?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1.25rem;
   cursor: pointer;
-  
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid var(--border-color, #eaeaea);
+
+  &:last-child {
+    border-bottom: none;
   }
+
+  &:hover {
+    background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.05));
+  }
+
+  opacity: ${props => props.$isRead ? 0.7 : 1};
+`;
+
+const PartNumber = styled.span`
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.1));
+  color: var(--primary-color, #0066cc);
+  font-size: 0.8rem;
+  font-weight: 600;
+`;
+
+const PartContent = styled.div`
+  flex-grow: 1;
+  min-width: 0;
 `;
 
 const PartTitle = styled.h3`
-  margin-top: 0;
-  margin-bottom: 0.75rem;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: var(--text-color, #333);
 `;
 
 const PartDescription = styled.p`
+  margin: 0.25rem 0 0;
   color: var(--secondary-text-color, #666);
-  margin-bottom: 1rem;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
-const ViewContentButton = styled.div`
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-color, #0066cc);
-  color: white;
-  border-radius: 4px;
+const PartReadBadge = styled.span`
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+  font-weight: 500;
+`;
+
+const PartArrow = styled.span`
+  flex-shrink: 0;
+  color: var(--secondary-text-color, #999);
   font-size: 0.9rem;
-  text-align: center;
 `;
 
 const EmptyPartsMessage = styled.p`
@@ -193,6 +232,15 @@ const CourseDetailPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const readPartIds = useMemo(() => {
+    const history = getReadingHistory();
+    return new Set(
+      history
+        .filter(item => item.courseId === courseId)
+        .map(item => item.partId)
+    );
+  }, [courseId]);
 
   const fetchCourse = useCallback(async () => {
     try {
@@ -292,16 +340,25 @@ const CourseDetailPage: React.FC = () => {
             </DownloadSection>
           )}
 
-          <PartsSectionTitle>课程章节</PartsSectionTitle>
+          <PartsSectionTitle>课程章节 ({course.parts?.length || 0})</PartsSectionTitle>
           {course.parts && course.parts.length > 0 ? (
             <PartsList>
-              {course.parts.map(part => (
-                <PartCard key={part.id} onClick={() => handlePartClick(part.id)}>
-                  <PartTitle>{part.title}</PartTitle>
-                  <PartDescription>{part.description}</PartDescription>
-                  <ViewContentButton>查看内容</ViewContentButton>
-                </PartCard>
-              ))}
+              {course.parts.map((part, index) => {
+                const isRead = readPartIds.has(part.id);
+                return (
+                  <PartItem key={part.id} $isRead={isRead} onClick={() => handlePartClick(part.id)}>
+                    <PartNumber>{index + 1}</PartNumber>
+                    <PartContent>
+                      <PartTitle>{part.title}</PartTitle>
+                      {part.description && (
+                        <PartDescription>{part.description}</PartDescription>
+                      )}
+                    </PartContent>
+                    {isRead && <PartReadBadge>已读</PartReadBadge>}
+                    <PartArrow>›</PartArrow>
+                  </PartItem>
+                );
+              })}
             </PartsList>
           ) : (
             <EmptyPartsMessage>章节内容正在筹备中，敬请期待。</EmptyPartsMessage>
