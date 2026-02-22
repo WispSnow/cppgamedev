@@ -905,7 +905,7 @@ const courses = [
   {
     id: "opengl-tiny-farm",
     title: "OpenGL与迷你农场",
-    description: "使用OpenGL图形渲染、FreeType/HarfBuzz字体渲染、MiniAudio音频播放，结合ECS架构与数据驱动设计，从零构建一款完整的2D农场经营游戏。四万余行产品级游戏代码，全面掌握现代游戏引擎开发。",
+    description: "使用OpenGL图形渲染、FreeType/HarfBuzz字体渲染、MiniAudio音频播放，结合ECS架构与数据驱动设计，拆解一款完整的2D农场经营游戏。全面掌握现代游戏引擎开发。",
     coverImage: "https://theorhythm.top/gamedev/TF/cover.webp",
     category: "mainline",
     difficulty: 4,

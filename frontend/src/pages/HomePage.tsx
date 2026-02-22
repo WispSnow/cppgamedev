@@ -85,10 +85,44 @@ const HistoryMeta = styled.div`
   color: var(--secondary-text-color, #666);
 `;
 
+const CourseImageWrapper = styled.div`
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+`;
+
 const CourseImage = styled.img`
   width: 100%;
-  height: 180px;
+  height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+
+  ${CourseCard}:hover & {
+    transform: scale(1.05);
+  }
+`;
+
+const ImageOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+  pointer-events: none;
+`;
+
+const ImageTag = styled.span<{ $bgColor: string; $color: string }>`
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 4px;
+  background-color: ${props => props.$bgColor};
+  color: ${props => props.$color};
+  font-weight: 600;
+  backdrop-filter: blur(4px);
 `;
 
 const CourseInfo = styled.div`
@@ -107,8 +141,12 @@ const CourseTitle = styled.h3`
 const CourseDescription = styled.p`
   color: var(--secondary-text-color, #666);
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 1.6;
   flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 
 const LearnMoreButton = styled.span`
@@ -123,20 +161,6 @@ const LearnMoreButton = styled.span`
   align-self: flex-start;
 `;
 
-const TagContainer = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-`;
-
-const DifficultyTag = styled.span<{ $bgColor: string; $color: string }>`
-  font-size: 0.8rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  background-color: ${props => props.$bgColor};
-  color: ${props => props.$color};
-  font-weight: 500;
-`;
 
 const FilterContainer = styled.div`
   display: flex;
@@ -315,26 +339,27 @@ const HomePage: React.FC = () => {
           <EmptyMessage>暂时没有主线任务，敬请期待新内容。</EmptyMessage>
         ) : (
           <CourseGrid>
-            {mainlineCourses.map(course => (
-              <CourseCard key={course.id} to={`/courses/${course.id}`}>
-                <CourseImage src={course.coverImage} alt={course.title} />
-                <CourseInfo>
-                  <TagContainer>
-                    {course.difficulty && (() => {
-                      const diffInfo = getDifficultyInfo(course.difficulty);
-                      return (
-                        <DifficultyTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
-                          {diffInfo.label}
-                        </DifficultyTag>
-                      );
-                    })()}
-                  </TagContainer>
-                  <CourseTitle>{course.title}</CourseTitle>
-                  <CourseDescription>{course.description}</CourseDescription>
-                  <LearnMoreButton>开始旅程</LearnMoreButton>
-                </CourseInfo>
-              </CourseCard>
-            ))}
+            {mainlineCourses.map(course => {
+              const diffInfo = course.difficulty ? getDifficultyInfo(course.difficulty) : null;
+              return (
+                <CourseCard key={course.id} to={`/courses/${course.id}`}>
+                  <CourseImageWrapper>
+                    <CourseImage src={course.coverImage} alt={course.title} />
+                    <ImageOverlay />
+                    {diffInfo && (
+                      <ImageTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
+                        {diffInfo.label}
+                      </ImageTag>
+                    )}
+                  </CourseImageWrapper>
+                  <CourseInfo>
+                    <CourseTitle>{course.title}</CourseTitle>
+                    <CourseDescription>{course.description}</CourseDescription>
+                    <LearnMoreButton>开始旅程</LearnMoreButton>
+                  </CourseInfo>
+                </CourseCard>
+              );
+            })}
           </CourseGrid>
         )}
 
@@ -345,26 +370,27 @@ const HomePage: React.FC = () => {
         <CoursesSection>
           <SectionTitle>🛡️ 支线任务</SectionTitle>
           <CourseGrid>
-            {sideCourses.map(course => (
-              <CourseCard key={course.id} to={`/courses/${course.id}`}>
-                <CourseImage src={course.coverImage} alt={course.title} />
-                <CourseInfo>
-                  <TagContainer>
-                    {course.difficulty && (() => {
-                      const diffInfo = getDifficultyInfo(course.difficulty);
-                      return (
-                        <DifficultyTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
-                          {diffInfo.label}
-                        </DifficultyTag>
-                      );
-                    })()}
-                  </TagContainer>
-                  <CourseTitle>{course.title}</CourseTitle>
-                  <CourseDescription>{course.description}</CourseDescription>
-                  <LearnMoreButton>开始探索</LearnMoreButton>
-                </CourseInfo>
-              </CourseCard>
-            ))}
+            {sideCourses.map(course => {
+              const diffInfo = course.difficulty ? getDifficultyInfo(course.difficulty) : null;
+              return (
+                <CourseCard key={course.id} to={`/courses/${course.id}`}>
+                  <CourseImageWrapper>
+                    <CourseImage src={course.coverImage} alt={course.title} />
+                    <ImageOverlay />
+                    {diffInfo && (
+                      <ImageTag $bgColor={diffInfo.bgColor} $color={diffInfo.color}>
+                        {diffInfo.label}
+                      </ImageTag>
+                    )}
+                  </CourseImageWrapper>
+                  <CourseInfo>
+                    <CourseTitle>{course.title}</CourseTitle>
+                    <CourseDescription>{course.description}</CourseDescription>
+                    <LearnMoreButton>开始探索</LearnMoreButton>
+                  </CourseInfo>
+                </CourseCard>
+              );
+            })}
           </CourseGrid>
         </CoursesSection>
       )}

@@ -49,11 +49,33 @@ const CourseCard = styled(Link)`
   }
 `;
 
+const CourseImageWrapper = styled.div`
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+`;
+
 const CourseImage = styled.div<{ $backgroundUrl: string }>`
-  height: 180px;
+  width: 100%;
+  height: 100%;
   background-image: url(${props => props.$backgroundUrl});
   background-size: cover;
   background-position: center;
+  transition: transform 0.3s ease;
+
+  ${CourseCard}:hover & {
+    transform: scale(1.05);
+  }
+`;
+
+const ImageOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+  pointer-events: none;
 `;
 
 const CourseContent = styled.div`
@@ -70,6 +92,10 @@ const CourseDescription = styled.p`
   color: var(--secondary-text-color);
   font-size: 0.9rem;
   line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 
 const PlaceholderMessage = styled.div`
@@ -141,7 +167,10 @@ const SideQuestsPage: React.FC = () => {
         <CourseGrid>
           {sideCourses.map(course => (
             <CourseCard key={course.id} to={`/courses/${course.id}`}>
-              <CourseImage $backgroundUrl={course.coverImage || 'https://via.placeholder.com/300x180?text=Side+Quest'} />
+              <CourseImageWrapper>
+                <CourseImage $backgroundUrl={course.coverImage || 'https://via.placeholder.com/300x180?text=Side+Quest'} />
+                <ImageOverlay />
+              </CourseImageWrapper>
               <CourseContent>
                 <CourseTitle>{course.title}</CourseTitle>
                 <CourseDescription>{course.description}</CourseDescription>

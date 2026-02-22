@@ -5,7 +5,9 @@
 
 # Agent
 .claude
-.agent*
+.agent
+.agents
+.playwright-mcp
 
 # testing
 /coverage
@@ -38,3 +40,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+skills-lock.json
+backend/search_debug.log
+**/*.png
+**/*.log
