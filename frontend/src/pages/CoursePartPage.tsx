@@ -75,51 +75,84 @@ const HeaderLeft = styled.div`
 `;
 
 const MarkdownContainer = styled.div`
-  line-height: 1.8;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.85;
   color: var(--text-color, #333);
-  
-  h1, h2, h3, h4, h5, h6 {
-    margin-top: 2rem;
+  font-size: 1rem;
+
+  h1 {
+    margin-top: 2.5rem;
     margin-bottom: 1rem;
+    font-size: 1.75rem;
     color: var(--text-color, #333);
   }
-  
-  p {
-    margin-bottom: 1.5rem;
+
+  h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    font-size: 1.4rem;
+    border-bottom: 1px solid var(--border-color, #eaeaea);
+    color: var(--text-color, #333);
   }
-  
+
+  h3 {
+    margin-top: 2rem;
+    margin-bottom: 0.6rem;
+    font-size: 1.2rem;
+    color: var(--text-color, #333);
+  }
+
+  h4, h5, h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color, #333);
+  }
+
+  p {
+    margin-bottom: 1.25rem;
+  }
+
   a {
     color: var(--primary-color, #0066cc);
     text-decoration: none;
-    
+
     &:hover {
       text-decoration: underline;
     }
   }
-  
+
   img {
     max-width: 100%;
     height: auto;
-    border-radius: 4px;
+    border-radius: 6px;
     margin: 1.5rem 0;
   }
-  
+
   ul, ol {
-    margin-bottom: 1.5rem;
-    padding-left: 2rem;
+    margin-bottom: 1.25rem;
+    padding-left: 1.75rem;
   }
-  
+
+  li {
+    margin-bottom: 0.35rem;
+  }
+
   blockquote {
+    margin: 1.5rem 0;
     margin-left: 0;
-    padding-left: 1rem;
+    padding: 0.75rem 1rem;
     border-left: 3px solid var(--primary-color, #0066cc);
     color: var(--secondary-text-color, #666);
+    background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.03));
+    border-radius: 0 6px 6px 0;
   }
-  
+
   hr {
     border: none;
     border-top: 1px solid var(--border-color, #eaeaea);
-    margin: 2rem 0;
+    margin: 2.5rem 0;
   }
   
   /* 表格样式 */
