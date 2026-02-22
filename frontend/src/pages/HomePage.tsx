@@ -18,21 +18,102 @@ const HomeContainer = styled.div`
 `;
 
 const HeroSection = styled.div`
+  position: relative;
   text-align: center;
-  margin: 3rem 0 4rem;
+  padding: 3.5rem 2rem;
+  margin: 0 -2rem 3rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg,
+    var(--hero-bg-start, #eef4ff) 0%,
+    var(--hero-bg-end, #f0f0ff) 100%);
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    margin: 0 -1rem 2rem;
+    padding: 2.5rem 1.5rem;
+    border-radius: 0;
+  }
+`;
+
+const HeroGrid = styled.div`
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--hero-grid-color, rgba(0,102,204,0.04)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-grid-color, rgba(0,102,204,0.04)) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+`;
+
+const HeroDecor = styled.div`
+  position: absolute;
+  font-size: 1.2rem;
+  opacity: 0.12;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  color: var(--primary-color, #0066cc);
+  pointer-events: none;
+  user-select: none;
+  white-space: pre;
+  line-height: 1.5;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const HeroDecorLeft = styled(HeroDecor)`
+  top: 1.5rem;
+  left: 2rem;
+  text-align: left;
+`;
+
+const HeroDecorRight = styled(HeroDecor)`
+  bottom: 1.5rem;
+  right: 2rem;
+  text-align: right;
 `;
 
 const Title = styled.h1`
+  position: relative;
   font-size: 2.5rem;
   color: var(--text-color, #333);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+`;
+
+const TitleAccent = styled.span`
+  background: linear-gradient(135deg, var(--primary-color, #0066cc), #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `;
 
 const Subtitle = styled.p`
-  font-size: 1.2rem;
+  position: relative;
+  font-size: 1.1rem;
   color: var(--secondary-text-color, #666);
-  max-width: 700px;
-  margin: 0 auto;
+  max-width: 600px;
+  margin: 0.75rem auto 0;
+  line-height: 1.7;
+`;
+
+const HeroBadge = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-color, #0066cc);
+  background-color: var(--hero-badge-bg, rgba(0,102,204,0.08));
+  border-radius: 20px;
+  letter-spacing: 0.02em;
 `;
 
 const CoursesSection = styled.div`
@@ -266,9 +347,17 @@ const HomePage: React.FC = () => {
         canonical="/"
       />
       <HeroSection>
-        <Title>C++游戏开发之旅</Title>
+        <HeroGrid />
+        <HeroDecorLeft>{`while (game.running) {\n  handleInput();\n  update(dt);\n  render();\n}`}</HeroDecorLeft>
+        <HeroDecorRight>{`struct Player {\n  Vec2 pos;\n  float speed;\n  Sprite sprite;\n};`}</HeroDecorRight>
+        <HeroBadge>
+          <span>&#9654;</span> PBL 项目式学习
+        </HeroBadge>
+        <Title>
+          <TitleAccent>C++</TitleAccent>游戏开发之旅
+        </Title>
         <Subtitle>
-          精心设计的PBL项目式教程，让你像搭积木一样开发游戏，循序渐进地提升C++游戏编程技能，以及各种类型的游戏实现方式。
+          精心设计的项目式教程，让你像搭积木一样开发游戏，循序渐进地掌握游戏编程技能与各类游戏实现方式。
         </Subtitle>
       </HeroSection>
 

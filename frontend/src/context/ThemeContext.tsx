@@ -60,6 +60,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.setProperty('--code-bg-color', 'transparent');
       root.style.setProperty('--code-block-bg', '#161b22');
       root.style.setProperty('--inline-code-bg', '#2d333b');
+
+      // Hero 区域
+      root.style.setProperty('--hero-bg-start', '#1a1a2e');
+      root.style.setProperty('--hero-bg-end', '#16213e');
+      root.style.setProperty('--hero-grid-color', 'rgba(77, 159, 255, 0.06)');
+      root.style.setProperty('--hero-badge-bg', 'rgba(77, 159, 255, 0.12)');
     } else {
       // 浅色主题变量
       root.style.setProperty('--background-color', '#ffffff');
@@ -82,6 +88,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.setProperty('--code-bg-color', 'transparent');
       root.style.setProperty('--code-block-bg', '#f6f8fa');
       root.style.setProperty('--inline-code-bg', '#f3f4f5');
+
+      // Hero 区域
+      root.style.setProperty('--hero-bg-start', '#eef4ff');
+      root.style.setProperty('--hero-bg-end', '#f0f0ff');
+      root.style.setProperty('--hero-grid-color', 'rgba(0, 102, 204, 0.04)');
+      root.style.setProperty('--hero-badge-bg', 'rgba(0, 102, 204, 0.08)');
     }
   }, [theme]);
 
