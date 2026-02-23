@@ -717,7 +717,7 @@ const courses = [
     status: "已完成",
     resources: {
       githubLink: "https://github.com/WispSnow/MonsterWar",
-      baiduLink: "https://pan.baidu.com/s/1gbDFEagUHmBJ1o_jLmgnDQ?pwd=332p#list/path=%2F"
+      baiduLink: "https://pan.baidu.com/s/1gbDFEagUHmBJ1o_jLmgnDQ?pwd=332p"
     },
     parts: [
       {
@@ -913,7 +913,7 @@ const courses = [
     status: "已完成",
     resources: {
       githubLink: "https://github.com/WispSnow/TinyFarm",
-      baiduLink: "https://pan.baidu.com/s/1gbDFEagUHmBJ1o_jLmgnDQ?pwd=332p#list/path=%2F"
+      baiduLink: "https://pan.baidu.com/s/1lS0-vEciTGHUweWZo7Tpfg?pwd=3v7a"
     },
     parts: [
       {
