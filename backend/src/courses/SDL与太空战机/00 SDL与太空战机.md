@@ -1,35 +1,21 @@
 # SDL与太空战机：从零开始的游戏开发之旅
 
-<link rel="stylesheet" href="/css/videoStyles.css" />
-
 <div class="video-container">
-  <div class="video-tabs">
-    <a href="#bilibili" class="video-tab bilibili-tab">哔哩哔哩</a>
-    <a href="#youtube" class="video-tab youtube-tab">YouTube</a>
-  </div>
-
-  <div id="youtube" class="video-content">
-    <iframe 
+  <div id="bilibili" class="video-content">
+    <!-- B站嵌入：使用 https 明确协议（避免 file:// 或 http 导致被浏览器拦截） -->
+    <iframe
       class="video-frame"
-      src="https://www.youtube.com/embed/u7xOaJzO4xg?si=2EcHHYM5GRGXjVJ4" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      src="https://player.bilibili.com/player.html?bvid=BV1wSCFYQEyc&page=1&autoplay=0&danmaku=0&high_quality=1"
+      width="100%"
+      height="480"
+      scrolling="no"
+      frameborder="0"
       allowfullscreen>
     </iframe>
   </div>
-  
-  <div id="bilibili" class="video-content">
-    <iframe 
-      class="video-frame"
-      src="//player.bilibili.com/player.html?bvid=BV1wSCFYQEyc&page=1&autoplay=0&danmaku=0&high_quality=1" 
-      scrolling="no" 
-      border="0" 
-      frameborder="no" 
-      framespacing="0" 
-      allowfullscreen="true">
-    </iframe>
-  </div>
 </div>
+
+[在 Bilibili 上观看](https://www.bilibili.com/video/BV1wSCFYQEyc)
 
 欢迎来到《C++游戏开发之旅》系列的第一套教程：《SDL与太空战机》！这是一套专为游戏开发入门者精心设计的教程，将带领你从零基础开始，一步步构建一款完整的2D太空射击游戏。
 >课程配套代码：[Github](https://github.com/WispSnow/SDLShooter)

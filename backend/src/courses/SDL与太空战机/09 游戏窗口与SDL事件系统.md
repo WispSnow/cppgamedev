@@ -1,35 +1,21 @@
 # 游戏窗口与SDL事件系统
 
-<link rel="stylesheet" href="/css/videoStyles.css" />
-
 <div class="video-container">
-  <div class="video-tabs">
-    <a href="#bilibili" class="video-tab bilibili-tab">哔哩哔哩</a>
-    <a href="#youtube" class="video-tab youtube-tab">YouTube</a>
-  </div>
-
-  <div id="youtube" class="video-content">
-    <iframe 
+  <div id="bilibili" class="video-content">
+    <!-- B站嵌入：使用 https 明确协议（避免 file:// 或 http 导致被浏览器拦截） -->
+    <iframe
       class="video-frame"
-      src="https://www.youtube.com/embed/nHXq4DLc26I?si=Z9BNFoLq3oIb8Odl" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      src="https://player.bilibili.com/player.html?bvid=BV1yj6gYVEWF&page=1&autoplay=0&danmaku=0&high_quality=1"
+      width="100%"
+      height="480"
+      scrolling="no"
+      frameborder="0"
       allowfullscreen>
     </iframe>
   </div>
-
-  <div id="bilibili" class="video-content">
-    <iframe 
-      class="video-frame"
-      src="//player.bilibili.com/player.html?bvid=BV1yj6gYVEWF&page=1&autoplay=0&danmaku=0&high_quality=1" 
-      scrolling="no" 
-      border="0" 
-      frameborder="no" 
-      framespacing="0" 
-      allowfullscreen="true">
-    </iframe>
-  </div>
 </div>
+
+[在 Bilibili 上观看](https://www.bilibili.com/video/BV1yj6gYVEWF)
 
 在上一课中，我们搭建了游戏的基本框架，创建了`Game`类、`Scene`基类和`SceneMain`子类。但是，这个框架还不能运行，因为我们没有实现SDL的初始化、窗口创建和事件处理。在本课中，我们将完善这些部分，使游戏框架能够正常运行。
 

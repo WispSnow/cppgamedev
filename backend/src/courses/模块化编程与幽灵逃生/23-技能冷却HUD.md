@@ -1,35 +1,21 @@
 # 技能冷却HUD
 
-<link rel="stylesheet" href="/css/videoStyles.css" />
-
 <div class="video-container">
-  <div class="video-tabs">
-    <a href="#bilibili" class="video-tab bilibili-tab">哔哩哔哩</a>
-    <a href="#youtube" class="video-tab youtube-tab">YouTube</a>
-  </div>
-
-  <div id="youtube" class="video-content">
-    <iframe 
+  <div id="bilibili" class="video-content">
+    <!-- B站嵌入：使用 https 明确协议（避免 file:// 或 http 导致被浏览器拦截） -->
+    <iframe
       class="video-frame"
-      src="https://www.youtube.com/embed/fV98dWVwpAI?si=2EcHHYM5GRGXjVJ4" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      src="https://player.bilibili.com/player.html?bvid=BV1UuZhYnEx9&page=1&autoplay=0&danmaku=0&high_quality=1"
+      width="100%"
+      height="480"
+      scrolling="no"
+      frameborder="0"
       allowfullscreen>
     </iframe>
   </div>
-  
-  <div id="bilibili" class="video-content">
-    <iframe 
-      class="video-frame"
-      src="//player.bilibili.com/player.html?bvid=BV1UuZhYnEx9&page=1&autoplay=0&danmaku=0&high_quality=1" 
-      scrolling="no" 
-      border="0" 
-      frameborder="no" 
-      framespacing="0" 
-      allowfullscreen="true">
-    </iframe>
-  </div>
 </div>
+
+[在 Bilibili 上观看](https://www.bilibili.com/video/BV1UuZhYnEx9)
 
 在游戏中，玩家需要随时了解自己技能的冷却状态，以便做出最佳的战斗决策。技能冷却HUD（Heads-Up Display）是一种直观显示技能可用性的界面元素，能够让玩家清楚地知道何时可以再次使用某个技能。在本课中，我们将设计并实现一个技能冷却HUD，为我们的武器系统提供视觉反馈。
 

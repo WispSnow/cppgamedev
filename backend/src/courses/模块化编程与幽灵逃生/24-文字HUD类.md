@@ -1,35 +1,21 @@
 # 文字HUD类
 
-<link rel="stylesheet" href="/css/videoStyles.css" />
-
 <div class="video-container">
-  <div class="video-tabs">
-    <a href="#bilibili" class="video-tab bilibili-tab">哔哩哔哩</a>
-    <a href="#youtube" class="video-tab youtube-tab">YouTube</a>
-  </div>
-
-  <div id="youtube" class="video-content">
-    <iframe 
+  <div id="bilibili" class="video-content">
+    <!-- B站嵌入：使用 https 明确协议（避免 file:// 或 http 导致被浏览器拦截） -->
+    <iframe
       class="video-frame"
-      src="https://www.youtube.com/embed/ZHixiJnvX7c?si=2EcHHYM5GRGXjVJ4" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      src="https://player.bilibili.com/player.html?bvid=BV18rZSY3EyW&page=1&autoplay=0&danmaku=0&high_quality=1"
+      width="100%"
+      height="480"
+      scrolling="no"
+      frameborder="0"
       allowfullscreen>
     </iframe>
   </div>
-  
-  <div id="bilibili" class="video-content">
-    <iframe 
-      class="video-frame"
-      src="//player.bilibili.com/player.html?bvid=BV18rZSY3EyW&page=1&autoplay=0&danmaku=0&high_quality=1" 
-      scrolling="no" 
-      border="0" 
-      frameborder="no" 
-      framespacing="0" 
-      allowfullscreen="true">
-    </iframe>
-  </div>
 </div>
+
+[在 Bilibili 上观看](https://www.bilibili.com/video/BV18rZSY3EyW)
 
 在游戏开发中，向玩家展示文字信息是一个基本需求，从游戏得分到提示信息，从对话文本到游戏状态，文字无处不在。在本课中，我们将设计并实现一个灵活的文字HUD系统，使得在游戏中显示各种文本信息变得简单而直观。这一系统由两个主要类组成：`TextLabel`提供基础文字渲染能力，而`HUDText`则将文字与背景结合，形成完整的文字HUD控件。
 
@@ -259,36 +245,22 @@ void Game::addScore(int score)
 
 ## 五、HUDText类设计与实现
 
-<link rel="stylesheet" href="/css/videoStyles.css" />
-
 <div class="video-container">
-  <div class="video-tabs">
-    <a href="#bilibili" class="video-tab bilibili-tab">哔哩哔哩</a>
-    <a href="#youtube" class="video-tab youtube-tab">YouTube</a>
-  </div>
-
-  <div id="youtube" class="video-content">
-    <iframe 
+  <div id="bilibili" class="video-content">
+    <!-- B站嵌入：使用 https 明确协议（避免 file:// 或 http 导致被浏览器拦截） -->
+    <iframe
       class="video-frame"
-      src="https://www.youtube.com/embed/3ZdUe9tMzqI?si=2EcHHYM5GRGXjVJ4" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      src="https://player.bilibili.com/player.html?bvid=BV18rZSY3EyW&page=1&autoplay=0&danmaku=0&high_quality=1"
+      width="100%"
+      height="480"
+      scrolling="no"
+      frameborder="0"
       allowfullscreen>
     </iframe>
   </div>
-  
-  <div id="bilibili" class="video-content">
-    <iframe 
-      class="video-frame"
-      src="//player.bilibili.com/player.html?bvid=BV1N6ZRY7EV7&page=1&autoplay=0&danmaku=0&high_quality=1" 
-      scrolling="no" 
-      border="0" 
-      frameborder="no" 
-      framespacing="0" 
-      allowfullscreen="true">
-    </iframe>
-  </div>
 </div>
+
+[在 Bilibili 上观看](https://www.bilibili.com/video/BV18rZSY3EyW)
 
 有了基础的文本渲染能力，我们可以设计一个更高级的`HUDText`类，它结合了文本和背景图像：
 

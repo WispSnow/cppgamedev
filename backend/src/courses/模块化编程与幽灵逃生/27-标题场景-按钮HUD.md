@@ -1,35 +1,21 @@
 # 标题场景-按钮HUD
 
-<link rel="stylesheet" href="/css/videoStyles.css" />
-
 <div class="video-container">
-  <div class="video-tabs">
-    <a href="#bilibili" class="video-tab bilibili-tab">哔哩哔哩</a>
-    <a href="#youtube" class="video-tab youtube-tab">YouTube</a>
-  </div>
-
-  <div id="youtube" class="video-content">
-    <iframe 
+  <div id="bilibili" class="video-content">
+    <!-- B站嵌入：使用 https 明确协议（避免 file:// 或 http 导致被浏览器拦截） -->
+    <iframe
       class="video-frame"
-      src="https://www.youtube.com/embed/dfKxYVCVwn0?si=2EcHHYM5GRGXjVJ4" 
-      frameborder="0" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      src="https://player.bilibili.com/player.html?bvid=BV13ddwYzEqB&page=1&autoplay=0&danmaku=0&high_quality=1"
+      width="100%"
+      height="480"
+      scrolling="no"
+      frameborder="0"
       allowfullscreen>
     </iframe>
   </div>
-  
-  <div id="bilibili" class="video-content">
-    <iframe 
-      class="video-frame"
-      src="//player.bilibili.com/player.html?bvid=BV13ddwYzEqB&page=1&autoplay=0&danmaku=0&high_quality=1" 
-      scrolling="no" 
-      border="0" 
-      frameborder="no" 
-      framespacing="0" 
-      allowfullscreen="true">
-    </iframe>
-  </div>
 </div>
+
+[在 Bilibili 上观看](https://www.bilibili.com/video/BV13ddwYzEqB)
 
 在上一课中，我们实现了带有动态彩色边框的标题场景。本课将继续完善标题场景，添加交互式按钮，使玩家能够与游戏进行基本交互，比如退出游戏。我们将设计并实现一个通用的按钮HUD组件，它可以在不同的游戏状态下提供一致的用户交互体验。
 
