@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import SEOHelmet from '../components/SEOHelmet';
 import { faqData } from '../data/faqData';
@@ -145,16 +145,18 @@ const FAQPage: React.FC = () => {
   // Track open state by "categoryIndex-itemIndex"
   const [openItems, setOpenItems] = useState<Set<string>>(new Set(['0-0']));
 
-  const toggleItem = (categoryIndex: number, itemIndex: number) => {
+  const toggleItem = useCallback((categoryIndex: number, itemIndex: number) => {
     const key = `${categoryIndex}-${itemIndex}`;
-    const newOpenItems = new Set(openItems);
-    if (newOpenItems.has(key)) {
-      newOpenItems.delete(key);
-    } else {
-      newOpenItems.add(key);
-    }
-    setOpenItems(newOpenItems);
-  };
+    setOpenItems(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
 
   return (
     <PageContainer>

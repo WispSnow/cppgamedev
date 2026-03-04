@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { getAllCourses } from '../services/courseService';
@@ -394,21 +394,30 @@ const HomePage: React.FC = () => {
   }, []);
 
   // 1. 筛选逻辑
-  const filteredCourses = selectedDifficulty 
-    ? courses.filter(course => course.difficulty === selectedDifficulty)
-    : courses;
+  const filteredCourses = useMemo(() =>
+    selectedDifficulty
+      ? courses.filter(course => course.difficulty === selectedDifficulty)
+      : courses,
+    [courses, selectedDifficulty]
+  );
 
+  // 2. 主线任务
+  const mainlineCourses = useMemo(() =>
+    filteredCourses
+      .filter(course => (course.category ?? 'mainline') === 'mainline')
+      .sort((a, b) => (a.difficulty || 0) - (b.difficulty || 0)),
+    [filteredCourses]
+  );
 
+  // 3. 支线任务
+  const sideCourses = useMemo(() =>
+    filteredCourses
+      .filter(course => course.category === 'side')
+      .sort((a, b) => (a.difficulty || 0) - (b.difficulty || 0)),
+    [filteredCourses]
+  );
 
-  // 3. 主线任务
-  const mainlineCourses = filteredCourses
-    .filter(course => (course.category ?? 'mainline') === 'mainline')
-    .sort((a, b) => (a.difficulty || 0) - (b.difficulty || 0));
-
-  // 4. 支线任务
-  const sideCourses = filteredCourses
-    .filter(course => course.category === 'side')
-    .sort((a, b) => (a.difficulty || 0) - (b.difficulty || 0));
+  const handleClearFilter = useCallback(() => setSelectedDifficulty(null), []);
 
   const difficulties = [1, 2, 3, 4, 5];
 
@@ -436,9 +445,9 @@ const HomePage: React.FC = () => {
       </HeroSection>
 
       <FilterContainer>
-        <FilterButton 
-          $active={selectedDifficulty === null} 
-          onClick={() => setSelectedDifficulty(null)}
+        <FilterButton
+          $active={selectedDifficulty === null}
+          onClick={handleClearFilter}
         >
           全部
         </FilterButton>
@@ -509,7 +518,7 @@ const HomePage: React.FC = () => {
             {selectedDifficulty && (
               <>
                 <EmptyHint>试试其他难度筛选，或查看全部课程</EmptyHint>
-                <ClearFilterButton onClick={() => setSelectedDifficulty(null)}>
+                <ClearFilterButton onClick={handleClearFilter}>
                   查看全部
                 </ClearFilterButton>
               </>
@@ -558,7 +567,7 @@ const HomePage: React.FC = () => {
               {selectedDifficulty && (
                 <>
                   <EmptyHint>试试其他难度筛选，或查看全部课程</EmptyHint>
-                  <ClearFilterButton onClick={() => setSelectedDifficulty(null)}>
+                  <ClearFilterButton onClick={handleClearFilter}>
                     查看全部
                   </ClearFilterButton>
                 </>
