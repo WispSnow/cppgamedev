@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
@@ -16,7 +16,8 @@ import remarkGfm from 'remark-gfm';
 import ErrorState from '../components/ErrorState';
 import { ArticleSkeleton, Skeleton } from '../components/Skeleton';
 import { saveReadingProgress, toggleBookmark, isBookmarked } from '../services/storageService';
-import GiscusComments from '../components/GiscusComments';
+
+const GiscusComments = React.lazy(() => import('../components/GiscusComments'));
 
 const PageContainer = styled.div`
   max-width: 900px;
@@ -279,33 +280,36 @@ const CoursePartPage: React.FC = () => {
       setLoading(true);
       setCourse(null);
       setPart(null);
-      if (courseId) {
-        const courseData = await getCourseById(courseId);
-        setCourse(courseData);
+      if (courseId && partId) {
+        // Fetch course metadata and part content in parallel
+        const [courseData, partData] = await Promise.allSettled([
+          getCourseById(courseId),
+          getCoursePart(courseId, partId),
+        ]);
 
-        if (partId) {
-          try {
-            const partData = await getCoursePart(courseId, partId);
-            setPart(partData);
-            
-            // Save reading history
-            if (partData && courseData) {
-              saveReadingProgress(courseData.id, partData.id, partData.title);
-            }
-          } catch (partError) {
-            console.error('获取章节内容失败:', partError);
-            const foundPart = courseData.parts?.find(p => p.id === partId);
-            if (foundPart) {
-              setPart(foundPart);
-              setError('无法加载章节内容，请稍后再试');
-              // Also save history if we found the part metadata
-              saveReadingProgress(courseData.id, foundPart.id, foundPart.title);
-            } else {
-              setPart(null);
-              setError('未找到章节内容');
-            }
+        if (courseData.status === 'rejected') {
+          throw courseData.reason;
+        }
+        setCourse(courseData.value);
+
+        if (partData.status === 'fulfilled') {
+          setPart(partData.value);
+          saveReadingProgress(courseData.value.id, partData.value.id, partData.value.title);
+        } else {
+          console.error('获取章节内容失败:', partData.reason);
+          const foundPart = courseData.value.parts?.find(p => p.id === partId);
+          if (foundPart) {
+            setPart(foundPart);
+            setError('无法加载章节内容，请稍后再试');
+            saveReadingProgress(courseData.value.id, foundPart.id, foundPart.title);
+          } else {
+            setPart(null);
+            setError('未找到章节内容');
           }
         }
+      } else if (courseId) {
+        const courseData = await getCourseById(courseId);
+        setCourse(courseData);
       }
     } catch (err) {
       setError('加载内容时出错');
@@ -487,7 +491,9 @@ const CoursePartPage: React.FC = () => {
               allParts={course.parts || []}
             />
             
-            <GiscusComments />
+            <Suspense fallback={null}>
+              <GiscusComments />
+            </Suspense>
           </>
         )}
       </PageContainer>
