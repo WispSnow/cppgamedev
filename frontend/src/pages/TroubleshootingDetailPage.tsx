@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vs, vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { getTroubleshootingArticleById } from '../services/troubleshootingService';
@@ -12,6 +10,7 @@ import { useTheme } from '../context/ThemeContext';
 import SEOHelmet from '../components/SEOHelmet';
 import ErrorState from '../components/ErrorState';
 import { ArticleSkeleton } from '../components/Skeleton';
+import { useMarkdownComponents } from '../hooks/useMarkdownComponents';
 
 const PageContainer = styled.div`
   max-width: 900px;
@@ -107,27 +106,9 @@ const TroubleshootingDetailPage: React.FC = () => {
     fetchArticle();
   }, [fetchArticle]);
 
-  const markdownComponents = {
-    code({ inline, className, children, ...props }: any) {
-      const match = /language-(\w+)/.exec(className || '');
-      const code = String(children).replace(/\n$/, '');
-
-      return !inline && match ? (
-        <SyntaxHighlighter
-          style={theme === 'dark' ? (vscDarkPlus as any) : (vs as any)}
-          language={match[1]}
-          PreTag="div"
-          {...props}
-        >
-          {code}
-        </SyntaxHighlighter>
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    }
-  };
+  const markdownComponents = useMarkdownComponents(theme, {
+    useCodeWrappers: false,
+  });
 
   return (
     <PageContainer>

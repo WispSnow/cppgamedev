@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vs, vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useTheme } from '../context/ThemeContext';
 import VideoPlayer from './VideoPlayer';
+import { useMarkdownComponents } from '../hooks/useMarkdownComponents';
 
 const PageContainer = styled.div`
   max-width: 900px;
@@ -173,39 +172,6 @@ const ErrorMessage = styled.div`
   color: #e53935;
 `;
 
-const CodeWrapper = styled.div`
-  margin: 1.5rem 0;
-  border-radius: 8px;
-  background-color: var(--code-block-bg, #f6f8fa);
-  position: relative;
-  overflow: auto;
-`;
-
-const CodeBlockWrapper = styled.div`
-  position: relative;
-  padding: 1rem;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  
-  pre {
-    margin: 0 !important;
-    background-color: transparent !important;
-    border-radius: 6px;
-    font-size: 14px !important;
-    width: max-content;
-    min-width: 100%;
-  }
-  
-  code {
-    background-color: transparent !important;
-    padding: 0 !important;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
-    white-space: pre;
-  }
-`;
-
 interface MarkdownPageProps {
   title: string;
   contentUrl: string;
@@ -240,97 +206,47 @@ const MarkdownPage: React.FC<MarkdownPageProps> = ({ title, contentUrl }) => {
     fetchContent();
   }, [contentUrl]);
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.style.setProperty('--code-block-bg', '#161b22');
-    } else {
-      root.style.setProperty('--code-block-bg', '#f6f8fa');
-    }
-  }, [theme]);
-
-  const components = {
-    code({ node, inline, className, children, ...props }: any) {
-      const match = /language-(\w+)/.exec(className || '');
-      const codeString = String(children).replace(/\n$/, '');
-      
-      const codeStyle = theme === 'dark' ? vscDarkPlus : vs;
-      
-      return !inline && match ? (
-        <CodeWrapper>
-          <CodeBlockWrapper>
-            <SyntaxHighlighter
-              style={codeStyle}
-              language={match[1]}
-              PreTag="div"
-              customStyle={{ backgroundColor: 'transparent', margin: 0 }}
-              {...props}
-            >
-              {codeString}
-            </SyntaxHighlighter>
-          </CodeBlockWrapper>
-        </CodeWrapper>
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    },
-    div({ node, children, ...props }: any) {
+  // Memoize the video div handler separately so the reference is stable
+  const videoDivComponent = useMemo(() => {
+    const VideoDiv = ({ node, children, ...props }: any) => {
       if (node && node.properties && node.properties.className) {
         const className = node.properties.className;
-        
-        // 处理视频并排容器
+
         if (Array.isArray(className) && className.includes('videos-row')) {
           return <div className="videos-row">{children}</div>;
         }
-        
-        // 处理视频容器
+
         if (Array.isArray(className)) {
           const nodeChildren = node.children || [];
-          
-          // 处理自定义视频行容器
-          if (className.includes('videos-row')) {
-            return <div className="videos-row">{children}</div>;
-          }
-          
-          // 查找iframe元素
+
           const iframeElement = nodeChildren.find(
             (child: any) => child.tagName === 'iframe'
           );
-          
+
           if (iframeElement && iframeElement.properties && iframeElement.properties.src) {
             const src = iframeElement.properties.src;
-            
-            // 处理哔哩哔哩视频
+
             if (className.includes('video-container') && src.includes('player.bilibili.com')) {
               const bvidMatch = src.match(/bvid=([^&]+)/);
               const pageMatch = src.match(/page=([^&]+)/);
-              
+
               if (bvidMatch && bvidMatch[1]) {
                 const bvid = bvidMatch[1];
                 const page = pageMatch && pageMatch[1] ? parseInt(pageMatch[1], 10) : 1;
-                
                 return <VideoPlayer videoId={bvid} platform="bilibili" page={page} title="点击播放视频" />;
               }
             }
-            
-            // 处理YouTube视频
-            if ((className.includes('youtube-video-container') || src.includes('youtube.com/embed'))) {
-              // 从URL中提取视频ID
+
+            if (className.includes('youtube-video-container') || src.includes('youtube.com/embed')) {
               let videoId = '';
-              
               if (src.includes('youtube.com/embed/')) {
-                // 格式: https://www.youtube.com/embed/VIDEO_ID
                 videoId = src.split('/embed/')[1]?.split('?')[0];
               } else if (src.includes('youtube.com/watch')) {
-                // 格式: https://www.youtube.com/watch?v=VIDEO_ID
                 const match = src.match(/[?&]v=([^&]+)/);
                 if (match && match[1]) {
                   videoId = match[1];
                 }
               }
-              
               if (videoId) {
                 return <VideoPlayer videoId={videoId} platform="youtube" title="点击播放YouTube视频" />;
               }
@@ -338,11 +254,15 @@ const MarkdownPage: React.FC<MarkdownPageProps> = ({ title, contentUrl }) => {
           }
         }
       }
-      
-      // 默认渲染div
+
       return <div {...props}>{children}</div>;
-    }
-  };
+    };
+    return { div: VideoDiv };
+  }, []);
+
+  const components = useMarkdownComponents(theme, {
+    extraComponents: videoDivComponent,
+  });
 
   if (loading) return <LoadingMessage>加载内容中...</LoadingMessage>;
   if (error) return <ErrorMessage>{error}</ErrorMessage>;

@@ -2,11 +2,8 @@ import React, { useCallback, useEffect, useState, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vs, vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { getCourseById, getCoursePart } from '../services/courseService';
 import { Course, CoursePart } from '../types';
-import CopyButton from '../components/CopyButton';
 import ChapterNavigation from '../components/ChapterNavigation';
 import TableOfContents from '../components/TableOfContents';
 import ProgressIndicator from '../components/ProgressIndicator';
@@ -16,6 +13,7 @@ import remarkGfm from 'remark-gfm';
 import ErrorState from '../components/ErrorState';
 import { ArticleSkeleton, Skeleton } from '../components/Skeleton';
 import { saveReadingProgress, toggleBookmark, isBookmarked } from '../services/storageService';
+import { useMarkdownComponents } from '../hooks/useMarkdownComponents';
 
 const GiscusComments = React.lazy(() => import('../components/GiscusComments'));
 
@@ -215,48 +213,6 @@ const MarkdownContainer = styled.div`
   }
 `;
 
-const CodeWrapper = styled.div`
-  margin: 1.5rem 0;
-  border-radius: 8px;
-  background-color: var(--code-block-bg, #f6f8fa);
-  position: relative;
-  overflow: auto;
-  border: none;
-`;
-
-const CodeBlockWrapper = styled.div`
-  position: relative;
-  padding: 1rem;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  
-  pre {
-    margin: 0 !important;
-    background-color: transparent !important;
-    border-radius: 6px;
-    font-size: 14px !important;
-    border: none !important;
-    width: max-content;
-    min-width: 100%;
-  }
-  
-  code {
-    background-color: transparent !important;
-    padding: 0 !important;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
-    border: none !important;
-    white-space: pre;
-  }
-  
-  /* 覆盖SyntaxHighlighter中所有元素的边框 */
-  * {
-    border: none !important;
-    box-shadow: none !important;
-  }
-`;
-
 const ProgressSkeleton = styled.div`
   margin-bottom: 1.5rem;
 `;
@@ -336,85 +292,10 @@ const CoursePartPage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.style.setProperty('--code-block-bg', '#161b22');
-    } else {
-      root.style.setProperty('--code-block-bg', '#f6f8fa');
-    }
-  }, [theme]);
-  
-  const components = {
-    code({ node, inline, className, children, ...props }: any) {
-      const match = /language-(\w+)/.exec(className || '');
-      const codeString = String(children).replace(/\n$/, '');
-      
-      const codeStyle = theme === 'dark' ? {
-        ...vscDarkPlus,
-        'pre[class*="language-"]': {
-          ...vscDarkPlus['pre[class*="language-"]'],
-          backgroundColor: 'transparent',
-          margin: 0,
-          padding: 0,
-          overflow: 'visible',
-          border: 'none',
-        },
-        'code[class*="language-"]': {
-          ...vscDarkPlus['code[class*="language-"]'],
-          backgroundColor: 'transparent',
-          border: 'none',
-          padding: 0,
-          boxShadow: 'none',
-        },
-      } : {
-        ...vs,
-        'pre[class*="language-"]': {
-          ...vs['pre[class*="language-"]'],
-          backgroundColor: 'transparent',
-          margin: 0,
-          padding: 0,
-          overflow: 'visible',
-          border: 'none',
-        },
-        'code[class*="language-"]': {
-          ...vs['code[class*="language-"]'],
-          backgroundColor: 'transparent',
-          border: 'none',
-          padding: 0,
-          boxShadow: 'none',
-        },
-        'keyword': { color: '#0033cc' },
-        'function': { color: '#8250df' },
-        'string': { color: '#0a7a00' },
-        'number': { color: '#116644' },
-        'comment': { color: '#6e7781' },
-        'class-name': { color: '#953800' },
-      };
-      
-      return !inline && match ? (
-        <CodeWrapper>
-          <CodeBlockWrapper>
-            <CopyButton code={codeString} />
-            <SyntaxHighlighter
-              style={codeStyle}
-              language={match[1]}
-              PreTag="div"
-              customStyle={{ backgroundColor: 'transparent', border: 'none', margin: 0, padding: 0 }}
-              codeTagProps={{ style: { border: 'none', backgroundColor: 'transparent' } }}
-              {...props}
-            >
-              {codeString}
-            </SyntaxHighlighter>
-          </CodeBlockWrapper>
-        </CodeWrapper>
-      ) : (
-        <code className={className} style={{ border: 'none' }} {...props}>
-          {children}
-        </code>
-      );
-    }
-  };
+  const components = useMarkdownComponents(theme, {
+    showCopyButton: true,
+    fullStyleOverrides: true,
+  });
 
   const hasContent = !loading && !error && course && part;
 
