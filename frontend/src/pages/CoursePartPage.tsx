@@ -14,6 +14,7 @@ import ErrorState from '../components/ErrorState';
 import { ArticleSkeleton, Skeleton } from '../components/Skeleton';
 import { saveReadingProgress, toggleBookmark, isBookmarked } from '../services/storageService';
 import { useMarkdownComponents } from '../hooks/useMarkdownComponents';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 const GiscusComments = React.lazy(() => import('../components/GiscusComments'));
 
@@ -277,6 +278,7 @@ const CoursePartPage: React.FC = () => {
 
   useEffect(() => {
     fetchCourseAndPart();
+    window.scrollTo(0, 0);
   }, [fetchCourseAndPart]);
 
   useEffect(() => {
@@ -379,6 +381,7 @@ const CoursePartPage: React.FC = () => {
         )}
       </PageContainer>
 
+      <ScrollToTopButton />
     </>
   );
 };
