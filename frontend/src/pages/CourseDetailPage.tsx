@@ -347,7 +347,7 @@ const CourseDetailPage: React.FC = () => {
                 const isRead = readPartIds.has(part.id);
                 return (
                   <PartItem key={part.id} $isRead={isRead} onClick={() => handlePartClick(part.id)}>
-                    <PartNumber>{index + 1}</PartNumber>
+                    <PartNumber>{index}</PartNumber>
                     <PartContent>
                       <PartTitle>{part.title}</PartTitle>
                       {part.description && (
