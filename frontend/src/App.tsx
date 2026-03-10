@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import Navbar from './components/Navbar';
@@ -45,8 +45,27 @@ const FallbackContainer = styled.div`
   font-size: 1rem;
 `;
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+    _hmt?: unknown[][];
+  }
+}
+
+function usePageTracking() {
+  const location = useLocation();
+  useEffect(() => {
+    const url = location.pathname + location.search;
+    // GA4
+    window.gtag?.('config', 'G-JLHZH11YW4', { page_path: url });
+    // Baidu Analytics
+    window._hmt?.push(['_trackPageview', url]);
+  }, [location]);
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
+  usePageTracking();
   return (
     <MainContent key={location.pathname} $routeKey={location.pathname}>
       <Suspense fallback={<FallbackContainer>加载中...</FallbackContainer>}>
