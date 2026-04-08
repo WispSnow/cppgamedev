@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export interface FAQItem {
   question: string;
   answer: string | React.ReactNode;
@@ -68,8 +70,8 @@ export const faqData: FAQCategory[] = [
     title: "合作与交流",
     items: [
       {
-        question: "我可以成为你们的内容创作者吗？",
-        answer: "非常欢迎！如果您有丰富的游戏开发经验并热衷于分享，请通过 GitHub 或邮件联系我们。我们期待与更多优秀开发者共建这个开源社区。"
+        question: "我能和你一起开发游戏吗？",
+        answer: <>非常欢迎，详情请查看<Link to="/collaborate">合作开发页面</Link>。</>
       }
     ]
   }

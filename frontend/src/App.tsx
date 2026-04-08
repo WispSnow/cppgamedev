@@ -18,6 +18,7 @@ const AboutPage = React.lazy(() => import('./pages/AboutPage'));
 const ContactPage = React.lazy(() => import('./pages/ContactPage'));
 const RoadmapPage = React.lazy(() => import('./pages/RoadmapPage'));
 const FAQPage = React.lazy(() => import('./pages/FAQPage'));
+const CollaboratePage = React.lazy(() => import('./pages/CollaboratePage'));
 const MarkdownPage = React.lazy(() => import('./components/MarkdownPage'));
 
 const AppContainer = styled.div`
@@ -80,6 +81,7 @@ function AnimatedRoutes() {
         <Route path="/troubleshooting/:articleId" element={<TroubleshootingDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/collaborate" element={<CollaboratePage />} />
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/test-video" element={<MarkdownPage title="视频测试" contentUrl="/content/test-video.md" />} />

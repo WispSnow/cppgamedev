@@ -160,6 +160,7 @@ const Footer: React.FC = () => {
             <ColumnTitle>关于</ColumnTitle>
             <FooterLink to="/about">关于我们</FooterLink>
             <FooterLink to="/contact">联系我们</FooterLink>
+            <FooterLink to="/collaborate">合作开发</FooterLink>
           </FooterColumn>
 
           <FooterColumn>

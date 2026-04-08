@@ -33,10 +33,23 @@ Both servers must run simultaneously for local development. Frontend proxies `/a
 - **React 19 + TypeScript** with Create React App
 - **Styling:** styled-components (CSS-in-JS), theme via CSS variables and `ThemeContext`
 - **Routing:** React Router v7 — routes defined in `App.tsx`
-- **Markdown rendering pipeline:** `react-markdown` + `rehype-raw` + `remark-gfm` + `react-syntax-highlighter` (Prism)
+- **Markdown rendering pipeline:** `react-markdown` + `rehype-raw` + `remark-gfm` + `react-syntax-highlighter` (Prism), custom renderers via `hooks/useMarkdownComponents.tsx`
 - **API calls:** axios via service files in `services/` (`courseService.ts`, `troubleshootingService.ts`, `storageService.ts`)
 - **Comments:** Giscus integration configured in `config/giscus.ts`
 - **Static data:** `data/roadmapData.ts` (roadmap), `data/faqData.ts` (FAQ)
+- **Shared types:** `types/index.ts` — `Course`, `CoursePart`, `TroubleshootingArticle`, etc.
+- **Analytics:** GA4 (`G-JLHZH11YW4`) + 百度统计 (`_hmt`) — SPA page-view tracking wired in `App.tsx` via `usePageTracking`
+
+#### Key components
+- `SEOHelmet` — page-level SEO meta tags via `react-helmet`
+- `VideoPlayer` — lazy-load embedded Bilibili / YouTube iframe (click-to-play)
+- `MarkdownPage` — generic page that fetches and renders a static Markdown file from `frontend/public/content/`
+- `TableOfContents` — auto-generated TOC from heading structure, used in course pages
+- `ChapterNavigation` — prev/next chapter links at bottom of course pages
+- `ProgressIndicator` — reading progress bar for long pages
+- `ScrollToTopButton` — floating button + scroll-to-top on route change
+- `ErrorState` / `Skeleton` — standard error and loading-state UI
+- `utils/difficultyUtils.ts` — maps difficulty level (1–5) to label and color
 
 ### Backend (`backend/src/`)
 - **Express** server, entry point: `src/index.js`
@@ -51,13 +64,27 @@ Both servers must run simultaneously for local development. Frontend proxies `/a
 - **Search:** `services/searchService.js` builds index on startup from all course content
 
 ### Data Flow
+
+There are two distinct content delivery patterns:
+
+**Course content (API-served):**
 Frontend page → axios call to `/api/courses/:id/parts/:partId` → backend reads Markdown file from disk → frontend renders with react-markdown
+
+**Static info pages (directly served):**
+`MarkdownPage` component fetches `/content/{file}.md` directly from `frontend/public/content/` — no backend involved. Used by About, Contact, FAQ, Roadmap, and Collaborate pages.
 
 ## Adding New Content
 
+### New course chapter
 1. Create Markdown file in `backend/src/courses/{course-name}/` following existing naming pattern
 2. Add corresponding entry to the `parts` array in `backend/src/data/courseData.js` with `id`, `title`, `description`, and `contentPath`
 3. The search index rebuilds automatically on server restart
+
+### New static info page
+1. Create Markdown file in `frontend/public/content/{slug}.md`
+2. Create `frontend/src/pages/{Name}Page.tsx` using `<MarkdownPage title="..." contentUrl="/content/{slug}.md" />`
+3. Register the route in `App.tsx` (lazy import + `<Route>`)
+4. Add a link in `Footer.tsx` and/or relevant existing pages
 
 ## Conventions
 
