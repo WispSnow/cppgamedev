@@ -17,13 +17,13 @@ jobs:
     steps:
       # 第1步：检出你的仓库代码
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # 第2步：设置 Node.js 环境
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: '18'
+          node-version: '24'
 
       # 第3步：安装并构建 Frontend
       - name: Install Frontend Dependencies
@@ -41,7 +41,7 @@ jobs:
 
       # 第5步：部署 Frontend 到服务器
       - name: Deploy Frontend to Server
-        uses: easingthemes/ssh-deploy@main
+        uses: easingthemes/ssh-deploy@v6.0.1
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # Frontend 构建后的静态文件
@@ -53,7 +53,7 @@ jobs:
 
       # 第6步：部署 Backend 到服务器
       - name: Deploy Backend to Server
-        uses: easingthemes/ssh-deploy@main
+        uses: easingthemes/ssh-deploy@v6.0.1
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           # Backend 源代码和 node_modules
@@ -67,7 +67,7 @@ jobs:
       
       # 第7步：在服务器上重新安装 Backend 依赖并重启服务
       - name: Restart Backend Service
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
