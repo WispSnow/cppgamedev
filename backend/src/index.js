@@ -11,6 +11,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+// 只监听回环地址：生产环境由 nginx 反代到 127.0.0.1:5000，
+// 后端不应该在公网网卡上直接暴露一个明文 HTTP 入口。
+// 确有需要时可用 HOST=0.0.0.0 覆盖。
+const HOST = process.env.HOST || '127.0.0.1';
 
 // 中间件
 // Middleware to log requests
@@ -45,8 +49,8 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // 启动服务器
-app.listen(PORT, async () => {
-  console.log(`服务器运行在端口 ${PORT}`);
+app.listen(PORT, HOST, async () => {
+  console.log(`服务器运行在 ${HOST}:${PORT}`);
   // 启动时构建索引
   await buildIndex();
 }); 
