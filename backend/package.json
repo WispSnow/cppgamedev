@@ -18,5 +18,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
+  },
+  "overrides": {
+    "qs": "^6.16.0"
   }
 }

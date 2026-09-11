@@ -4,17 +4,13 @@ const { readMarkdownFile } = require('../utils/fileUtils');
 let searchIndex = [];
 let isIndexing = false;
 
-const fs = require('fs');
-const path = require('path');
-const logFile = path.resolve(__dirname, '../../search_debug.log');
+// 调试日志：默认关闭，需要排查搜索问题时设置 SEARCH_DEBUG=1
+// 输出走 stdout，由 systemd/journald 接管并轮转，不再同步写文件
+const SEARCH_DEBUG = process.env.SEARCH_DEBUG === '1';
 
 function log(msg) {
-  try {
-    const time = new Date().toISOString();
-    fs.appendFileSync(logFile, `[${time}] ${msg}\n`);
-  } catch (e) {
-    // ignore
-  }
+  if (!SEARCH_DEBUG) return;
+  console.log(`[search] ${msg}`);
 }
 
 // 移除 Markdown 符号，保留纯文本
@@ -72,7 +68,7 @@ async function buildIndex() {
             const rawContent = await readMarkdownFile(part.contentPath);
             content = stripMarkdown(rawContent);
           } catch (e) {
-            log(`无法读取章节内容: ${part.contentPath} - ${e.message}`);
+            console.error(`[search] 无法读取章节内容: ${part.contentPath} - ${e.message}`);
           }
 
           tempIndex.push({
@@ -91,8 +87,8 @@ async function buildIndex() {
     searchIndex = tempIndex;
     log(`搜索索引构建完成，耗时 ${Date.now() - startTime}ms，共条目: ${searchIndex.length}`);
   } catch (error) {
-    log('构建搜索索引失败: ' + error.message);
-    log(error.stack);
+    console.error('[search] 构建搜索索引失败: ' + error.message);
+    console.error(error.stack);
   } finally {
     isIndexing = false;
   }
