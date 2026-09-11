@@ -9,6 +9,9 @@
 .agents
 .playwright-mcp
 
+# credentials
+.env
+
 # testing
 /coverage
 
