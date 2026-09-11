@@ -50,6 +50,9 @@ jobs:
           REMOTE_USER: ${{ secrets.SSH_USER }}
           # 部署到 Web 服务器目录（例如 /var/www/html）
           TARGET: ${{ secrets.FRONTEND_DIR }}
+          # --delete：清掉上一次构建残留的旧 chunk，否则带哈希的文件会无限堆积。
+          # 该目录完全由 CI 产出，不含任何服务器侧数据。
+          ARGS: "-rlgoDzvc -i --delete"
 
       # 第6步：部署 Backend 到服务器
       - name: Deploy Backend to Server
@@ -64,6 +67,12 @@ jobs:
           TARGET: ${{ secrets.BACKEND_DIR }}
           # 排除不需要的文件
           EXCLUDE: "node_modules/, .git/, .env"
+          # --delete：让仓库里删掉的文件同步从服务器消失。
+          # rsync 默认不会删除被 EXCLUDE 保护的接收端文件（那需要 --delete-excluded，
+          # 本 action 不支持该选项），所以 node_modules/ 与服务器上的 .env 是安全的。
+          # 注意：今后若后端要在自己目录下写运行期数据（上传、缓存、数据库），
+          # 必须先加进 EXCLUDE，否则会被每次部署清掉。
+          ARGS: "-rlgoDzvc -i --delete"
       
       # 第7步：在服务器上重新安装 Backend 依赖并重启服务
       - name: Restart Backend Service
