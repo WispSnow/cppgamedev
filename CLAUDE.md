@@ -93,3 +93,13 @@ Frontend page → axios call to `/api/courses/:id/parts/:partId` → backend rea
 - **Difficulty scale:** 1 (entry) through 5 (expert)
 - **Content paths** in `courseData.js` are relative to the project root (e.g., `backend/src/courses/...`)
 - **Deployment:** Push to `deploy` branch triggers GitHub Actions CI/CD (`.github/workflows/deploy.yml`)
+
+## Agent Files
+
+- `AGENTS.md` is a symlink to this file — both Claude Code and other agents read the same guidance.
+- `SERVER.local.md` (gitignored, local only) documents the production server: SSH access,
+  directory layout, systemd/nginx setup, and the deploy pipeline. **Read it before any
+  server-side operation.** It is not in the repo; if it is missing, ask the user for it.
+- `.env` (gitignored) holds the server IP / username / password. Passwordless SSH is configured
+  as the host alias `cppgamedev`, so the password is rarely needed. Never copy credentials into
+  tracked files or send them to external services.

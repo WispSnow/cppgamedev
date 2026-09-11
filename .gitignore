@@ -12,6 +12,10 @@
 # credentials
 .env
 
+# local-only notes (server/runbook, not for the public repo)
+SERVER.local.md
+*.local.md
+
 # testing
 /coverage
 
