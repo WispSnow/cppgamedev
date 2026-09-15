@@ -1113,6 +1113,18 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://cppgamedev.top/courses/tiny-farm-rpg</loc>
+    <lastmod>2026-09-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://cppgamedev.top/courses/tiny-farm-rpg/parts/intro</loc>
+    <lastmod>2026-09-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://cppgamedev.top/courses/side-game-optimization-and-design-patterns</loc>
     <lastmod>2025-08-01</lastmod>
     <changefreq>weekly</changefreq>

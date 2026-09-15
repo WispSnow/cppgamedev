@@ -1123,6 +1123,28 @@ const courses = [
     ]
   },
   {
+    id: "tiny-farm-rpg",
+    title: "迷你农场RPG",
+    description: "在第五期《迷你农场》的基础上，把 2D 农场经营 Demo 扩展为一款日式 RPG：集成 Lua/sol2 脚本、RmlUi 界面与 Effekseer 特效，引入多线程，并实现任务、商店、队伍、装备与回合制战斗等核心玩法。本期最特别之处在于整个项目的代码几乎全部由 AI 生成，课程将分享一套可持续推进的 AI 驱动游戏开发工作流。",
+    coverImage: "https://theorhythm.top/gamedev/TFR/screen_shot_tfr4.webp",
+    category: "mainline",
+    difficulty: 4,
+    updateAt: "2026-09-15",
+    status: "已完成",
+    resources: {
+      githubLink: "https://github.com/WispSnow/TinyFarmRPG",
+      baiduLink: "https://pan.baidu.com/s/1-PfgIdlaxOTR5n5TqWk_Kw?pwd=bi7u"
+    },
+    parts: [
+      {
+        id: "intro",
+        title: "开篇",
+        description: "了解 TinyFarmRPG 相比 TinyFarm 新增了什么、为什么不推倒重来、6 个阶段 27 节课的路线图与前置准备，以及本期最特别之处——纯 AI 驱动的开发方式。",
+        contentPath: "backend/src/courses/迷你农场RPG/00-开篇.md"
+      }
+    ]
+  },
+  {
     id: "side-game-optimization-and-design-patterns",
     title: "游戏优化与设计模式",
     description: "学习在真实项目中优化与重构的技巧与关键设计模式。以动手实践为核心,理论简明扼要,强调'学即能用,改即见效'。",

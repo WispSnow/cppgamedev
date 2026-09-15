@@ -55,11 +55,12 @@ export const roadmapData: RoadmapItem[] = [
   },
   {
     id: 6,
-    title: "待定",
-    techStack: "Lua",
+    title: "迷你农场RPG",
+    techStack: "Lua, sol2, RmlUi, Effekseer",
     gameType: "日式RPG",
-    status: "planned",
-    description: "探索更复杂的RPG游戏系统开发，包括剧情系统、回合制战斗等。"
+    status: "completed",
+    description: "在迷你农场的基础上扩展为日式RPG：Lua脚本内容层、RmlUi生产UI、Effekseer特效、多线程，以及任务、商店、队伍、装备与回合制战斗等核心玩法。整个项目由AI驱动开发，课程将分享可持续推进的AI游戏开发工作流。",
+    courseId: "tiny-farm-rpg"
   },
   {
     id: 7,
