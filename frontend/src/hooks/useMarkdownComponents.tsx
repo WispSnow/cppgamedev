@@ -15,6 +15,7 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
 import rehypeRaw from 'rehype-raw';
 import CopyButton from '../components/CopyButton';
 import VideoPlayer from '../components/VideoPlayer';
+import MermaidDiagram from '../components/MermaidDiagram';
 
 // 只注册教程里实际用到的语言。全量 Prism 会把 277 种语言打进包里（约 570KB）。
 // 新增语言：从 react-syntax-highlighter/dist/esm/languages/prism/ 引入并在这里注册，
@@ -165,6 +166,20 @@ const MarkdownLink = ({ node, href, children, ...props }: any) => {
   return <a href={href} {...props}>{children}</a>;
 };
 
+// ```mermaid 代码块由 MermaidDiagram 渲染成图表，不需要外层的 <pre>；其他代码块保持原样。
+const isMermaidCodeNode = (node: any) => {
+  const className = node?.children?.[0]?.properties?.className;
+  const classes = Array.isArray(className) ? className : typeof className === 'string' ? [className] : [];
+  return classes.includes('language-mermaid');
+};
+
+const MarkdownPre = ({ node, children, ...props }: any) => {
+  if (isMermaidCodeNode(node)) {
+    return <>{children}</>;
+  }
+  return <pre {...props}>{children}</pre>;
+};
+
 // B 站 / YouTube 嵌入改为点击后才加载播放器，其他 iframe 延迟加载。
 const MarkdownIframe = ({ node, src, title, ...props }: any) => {
   const url = typeof src === 'string' ? src : '';
@@ -220,6 +235,9 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
       if (!inline && match) {
         // 语言名不区分大小写（内容里有 ```CPP 这种写法）
         const language = match[1].toLowerCase();
+        if (language === 'mermaid') {
+          return <MermaidDiagram chart={codeString} theme={theme} />;
+        }
         if (useCodeWrappers) {
           return (
             <CodeWrapper>
@@ -260,6 +278,7 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
 
     return {
       code: codeComponent,
+      pre: MarkdownPre,
       h1: MarkdownH1,
       img: MarkdownImage,
       a: MarkdownLink,

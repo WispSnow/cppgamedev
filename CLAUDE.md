@@ -34,6 +34,7 @@ Both servers must run simultaneously for local development. Frontend proxies `/a
 - **Styling:** styled-components (CSS-in-JS), theme via CSS variables and `ThemeContext`
 - **Routing:** React Router v7 — routes defined in `App.tsx`
 - **Markdown rendering pipeline:** `react-markdown` + `rehype-raw` + `remark-gfm` + `react-syntax-highlighter` (Prism), custom renderers via `hooks/useMarkdownComponents.tsx`
+- **Mermaid diagrams:** ```` ```mermaid ```` fences render as diagrams via `components/MermaidDiagram.tsx` (the `mermaid` package is dynamically imported only on pages that contain one)
 - **API calls:** axios via service files in `services/` (`courseService.ts`, `troubleshootingService.ts`, `storageService.ts`)
 - **Comments:** Giscus integration configured in `config/giscus.ts`
 - **Static data:** `data/roadmapData.ts` (roadmap), `data/faqData.ts` (FAQ)
