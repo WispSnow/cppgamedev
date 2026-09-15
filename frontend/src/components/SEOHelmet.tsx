@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
+import { useLocation } from 'react-router-dom';
+import { trackPageView } from '../utils/analytics';
 
 const SITE_URL = 'https://cppgamedev.top';
 
@@ -25,9 +27,16 @@ const SEOHelmet: React.FC<SEOProps> = ({
   canonical,
   noindex = false,
 }) => {
+  const location = useLocation();
   // 始终指向主域名，并去掉查询参数和锚点，避免 www 或带参数的地址被当成重复页面
-  const url = `${SITE_URL}${canonical ?? window.location.pathname}`;
+  const url = `${SITE_URL}${canonical ?? location.pathname}`;
   const image = toAbsoluteUrl(ogImage);
+
+  // 每个页面都会渲染 SEOHelmet，而且渲染时标题已经确定（需要数据的页面等数据到了才渲染它），
+  // 所以页面浏览在这里上报，统计里记下的标题就是当前页的
+  useEffect(() => {
+    trackPageView(location.key, location.pathname + location.search, title);
+  }, [location.key, location.pathname, location.search, title]);
 
   return (
     <Helmet>

@@ -50,7 +50,7 @@ const SearchInput = styled.input`
   background: transparent;
   color: var(--text-color, #333);
   outline: none;
-  
+
   &::placeholder {
     color: var(--secondary-text-color, #aaa);
   }
@@ -67,7 +67,7 @@ const ResultItem = styled.div<{ $selected: boolean }>`
   cursor: pointer;
   background-color: ${props => props.$selected ? 'var(--hover-bg-color, #f5f5f5)' : 'transparent'};
   border-left: 3px solid ${props => props.$selected ? 'var(--primary-color, #0066cc)' : 'transparent'};
-  
+
   &:hover {
     background-color: var(--hover-bg-color, #f5f5f5);
   }
@@ -93,7 +93,7 @@ const ResultSnippet = styled.div`
   font-size: 0.85rem;
   color: var(--secondary-text-color, #666);
   line-height: 1.4;
-  
+
   em {
     font-style: normal;
     background-color: rgba(255, 255, 0, 0.3);
@@ -124,6 +124,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -141,6 +142,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // 输入法组字时的按键（比如拼音输入回车上屏）交给输入法处理，不跳转也不关闭。
+      // Safari 确认上屏时 isComposing 已经是 false，只能靠 keyCode 229 识别
+      if (e.isComposing || e.keyCode === 229) return;
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -160,27 +164,44 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
   }, [results, selectedIndex, onClose, handleSelect]);
 
   useEffect(() => {
-    if (query.trim().length === 0) {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length === 0) {
       setResults([]);
+      setLoading(false);
+      setFailed(false);
       return;
     }
 
+    // 输入变化时取消上一次还没返回的请求，避免慢的旧响应覆盖新结果
+    const controller = new AbortController();
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
-        const apiUrl = process.env.REACT_APP_API_URL || '';
-        const response = await fetch(`${apiUrl}/api/search?q=${encodeURIComponent(query)}`);
-        const data = await response.json();
+        const response = await fetch(`/api/search?q=${encodeURIComponent(trimmedQuery)}`, {
+          signal: controller.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`搜索请求失败: ${response.status}`);
+        }
+        const data: SearchResult[] = await response.json();
+        if (controller.signal.aborted) return;
         setResults(data);
         setSelectedIndex(0);
+        setFailed(false);
+        setLoading(false);
       } catch (err) {
+        if (controller.signal.aborted) return;
         console.error(err);
-      } finally {
+        setResults([]);
+        setFailed(true);
         setLoading(false);
       }
     }, 300);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [query]);
 
 
@@ -201,16 +222,18 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
             onChange={e => setQuery(e.target.value)}
           />
         </SearchHeader>
-        
+
         <ResultsList>
           {loading && <EmptyState>搜索中...</EmptyState>}
-          
-          {!loading && results.length === 0 && query.trim().length > 0 && (
+
+          {!loading && failed && <EmptyState>搜索失败，请稍后再试</EmptyState>}
+
+          {!loading && !failed && results.length === 0 && query.trim().length > 0 && (
             <EmptyState>未找到相关内容</EmptyState>
           )}
 
           {!loading && results.map((result, index) => (
-            <ResultItem 
+            <ResultItem
               key={`${result.type}-${result.id}`}
               $selected={index === selectedIndex}
               onClick={() => handleSelect(result)}

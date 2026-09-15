@@ -78,14 +78,14 @@
 - **框架：** React 19 + TypeScript
 - **路由：** React Router v7
 - **样式：** Styled Components
-- **Markdown 渲染：** react-markdown + rehype-highlight + remark-gfm
+- **Markdown 渲染：** react-markdown + remark-gfm + rehype-raw
 - **代码高亮：** react-syntax-highlighter
 - **构建工具：** Create React App
 
 ### 后端
 - **运行时：** Node.js
 - **框架：** Express
-- **中间件：** CORS, dotenv
+- **配置：** dotenv
 
 ## 📂 项目结构
 
@@ -93,8 +93,7 @@
 cppgamedev/
 ├── frontend/               # React 前端应用
 │   ├── public/            # 静态资源
-│   │   ├── content/       # Markdown 内容页面
-│   │   └── css/           # 自定义样式
+│   │   └── content/       # Markdown 内容页面
 │   └── src/
 │       ├── components/    # React 组件
 │       ├── pages/         # 页面组件
@@ -116,7 +115,7 @@ cppgamedev/
 ## 🚀 本地运行
 
 ### 前置要求
-- Node.js (推荐 v18 或更高版本)
+- Node.js 22 或更高版本
 - npm 或 yarn
 
 ### 安装步骤
@@ -129,9 +128,6 @@ cd cppgamedev
 
 2. **安装依赖**
 ```bash
-# 安装根目录依赖
-npm install
-
 # 安装前端依赖
 cd frontend
 npm install

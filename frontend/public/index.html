@@ -6,11 +6,13 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" sizes="any" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <!-- 默认描述留给不执行 JS 的抓取方；带上 data-react-helmet，页面里的 SEOHelmet 会替换掉它们，而不是再追加一份 -->
     <meta
       name="description"
       content="C++游戏开发教程 - 从基础到高级，全面学习C++游戏开发技能，构建自己的游戏作品"
+      data-react-helmet="true"
     />
-    <meta name="keywords" content="C++,游戏开发,编程教程,游戏编程,C++教程" />
+    <meta name="keywords" content="C++,游戏开发,编程教程,游戏编程,C++教程" data-react-helmet="true" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -28,24 +30,31 @@
     -->
     <title>C++游戏开发 | 从入门到精通</title>
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JLHZH11YW4"></script>
+    <!--
+      统计：GA4 + 百度统计，只在生产构建里加载（npm start 本地开发时不产生数据）。
+      两边的自动 PV 都已关闭，页面浏览由 src/utils/analytics.ts 在页面标题确定后上报。
+      GA4 后台还需要关闭「增强型衡量 → 网页浏览 → 基于浏览器历史记录事件的网页变化」，否则站内跳转会重复计数。
+    -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-JLHZH11YW4');
-    </script>
+      if ('%NODE_ENV%' === 'production') {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-JLHZH11YW4', { send_page_view: false });
 
-    <!-- Baidu Analytics -->
-    <script>
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?ae1e702f9479de874856783623fcbaf9";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-      })();
+        window._hmt = window._hmt || [];
+        window._hmt.push(['_setAutoPageview', false]);
+
+        [
+          'https://www.googletagmanager.com/gtag/js?id=G-JLHZH11YW4',
+          'https://hm.baidu.com/hm.js?ae1e702f9479de874856783623fcbaf9'
+        ].forEach(function (src) {
+          var script = document.createElement('script');
+          script.async = true;
+          script.src = src;
+          document.head.appendChild(script);
+        });
+      }
     </script>
   </head>
   <body>

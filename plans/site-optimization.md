@@ -2,8 +2,16 @@
 
 > 基于 2026-09-14 的全站分析，按优先级排列。
 > 分析方式：前后端源码审查、线上只读请求实测、本地生产构建 + source map 包体拆解、全部 194 篇教程逐篇解析（与站点相同的 remark/rehype 管线）。
+> 2026-09-15 复核：P1–P3 逐项对照代码与线上（只读查看 nginx 配置、线上 API 实测、带 source map 的本地构建拆包、npm audit 按是否进入浏览器 bundle 分类、对照 React Router 官方预渲染文档），修正了几处描述，新发现标 🆕。
 > 完成一项就把 `[ ]` 改成 `[x]`，并注明完成日期和修改涉及的文件。
-> 尚未测到：真实加载指标（LCP / CLS 等）。建议在国内网络下用 Lighthouse 跑一次首页和一个章节页补上。
+> 尚未测到的见文末「待在国内网络 / 后台确认」。
+
+## 建议执行顺序（2026-09-15）
+
+1. ~~**第 1 批 · 小修复**（与 P1.1 不冲突）：P2.1、P2.5、P1.5、P1.6、P1.7、P3.1、P3.3、P3.4、P3.6、P3.2（只升运行时依赖）；P2.6 的小项穿插做~~（2026-09-15 已完成，剩 GA4 后台一项设置，见 P1.6）
+2. **决定 P1.1 近期做不做**：做的话，P1.2 的 API 缓存与 `.md` Content-Type、P1.3 的前三项、P2.4 都会被框架模式与路由 loader 替代，先不做；暂缓的话按原清单做
+3. **P1.1 分阶段做**（见 P1.1），每个阶段都能单独上线
+4. **服务器批次**（需要 sudo，一次做完）：brotli、删除 nginx 遗留的 `location /css/`
 
 ## P0 · 改动小、收益大
 
@@ -53,43 +61,114 @@
 ## P1 · 结构性改进
 
 - [ ] **1. 构建期预渲染 HTML（SEO 与首屏的根本解法）**
-  - 现状：所有 URL 返回同一个 1.3KB 空壳，用百度爬虫 UA 请求只拿到 `<div id="root"></div>`
-  - 路线：CRA → Vite（CRA 已停止维护、锁死 TypeScript 4.9，`npm audit` 的 71 条绝大多数来自其构建链）→ React Router v7 框架模式 `prerender` 全部课程 / 章节路由（styled-components 需接 ServerStyleSheet）；完成后后端基本只剩搜索
+  - 现状：所有 URL 返回同一个 1.3KB 空壳，用百度爬虫 UA 请求只拿到 `<div id="root"></div>`；不执行 JS 的分享卡片抓取同样只能拿到默认标题
+  - 章节页 JS 实测（2026-09-15，本地构建 + source map）：共 249KB gzip（brotli 207KB）。其中 Markdown 解析 + 代码高亮约 130KB（rehype-raw 带进来的 parse5 约 36KB），react-dom 约 55KB，axios 13KB，react-helmet 6KB
+  - 路线（分阶段，每个阶段都能单独上线）：
+    - **阶段 0 · 准备**（不迁移也有价值）：react-helmet → React 19 原生 `<title>` / `<meta>`；axios → fetch；主题改为 `<html data-theme>` + `<head>` 内联脚本驱动（即 P2.2 / P2.3）；可选 P3.5
+      - 主题是预渲染的前提：CSS 变量现在在 ThemeContext 的 useEffect 里才设置，预渲染 HTML 会先按浅色显示；代码高亮是按 JS 主题生成的内联样式，暗色用户 hydration 时会与服务端不一致
+    - **阶段 1 · CRA → Vite**（仍是 SPA）：npm audit 的 76 条里有 63 条不进浏览器，基本来自 CRA 构建 / 测试链；同时解锁 TS 5。Vite 默认资源目录是 `/assets/`，nginx 只给 `/static/` 配了一年缓存 → 设 `build.assetsDir: 'static'` 就不用动服务器
+    - **阶段 2 · React Router 框架模式**：`ssr: false` + `prerender` 全部课程 / 章节路由，styled-components 在 entry.server 里用 ServerStyleSheet 收集样式。官方文档确认：预渲染路由可以用 `loader`（构建期执行，并生成 `.data` 供站内跳转），预渲染了 `/` 时其余路径走 `__spa-fallback.html`。loader 在构建期直接读 Markdown，完成后后端基本只剩搜索
+    - **阶段 3 · loader 里直接把 Markdown 渲染成 HTML**：上面约 130KB 不再下发；高亮改成 CSS class，主题问题随之消失；P1.4 章内目录放在这一步做
+  - 上线注意：
+    - nginx 目前只有 `/index.html` 是 `no-cache`，预渲染出的 `*/index.html` 和 `.data` 也要加，否则发版后浏览器可能按启发式缓存拿到旧 HTML
+    - `try_files` 兜底改为 `/__spa-fallback.html`；CI 的 rsync 源目录改为 `build/client/`
+    - 回归 P0.1（发版后旧标签页进入没加载过的页面）
+    - 上线后在百度搜索资源平台用「抓取诊断」确认爬虫拿到正文，并提交 sitemap
+    - index.html 里的静态 description / keywords 带着 `data-react-helmet`（见 P1.7），换掉 react-helmet 时要一起处理，否则会重新变成两份
 
 - [ ] **2. 压缩与缓存**
-  - [ ] 开 brotli（构建时预压缩实测：主包 85→73KB、章节包 325→256KB；Ubuntu 24.04 源里有 `libnginx-mod-http-brotli-static`）
-  - [ ] API 响应加 `Cache-Control`（内容只在发版时变）
-  - [ ] `/content/*.md` 的 Content-Type 改为 `text/markdown; charset=utf-8`（现在是 octet-stream）
-  - [ ] 图床（Cloudflare）缓存只有 4 小时；在国内网络实测图片加载速度，慢则迁到 OSS + CDN
+  - [ ] 【服务器】开 brotli：线上 `gzip_comp_level 6` 与 gzip -9 只差 0.5%，预压缩 gzip 没有意义；brotli-11 实测全站 89 个 JS/CSS 1750KB → 1437KB（-18%），章节页 249KB → 207KB。apt 源里有 `libnginx-mod-http-brotli-static`（未安装），`.br` 文件用 Node 自带的 zlib 在构建后生成，不加依赖
+  - [ ] API 响应加 `Cache-Control`（内容只在发版时变）——做 P1.1 的话不再需要（前端不再请求课程接口）
+  - [ ] `/content/*.md` 的 Content-Type 改为 `text/markdown; charset=utf-8`（现在是 octet-stream）——fetch 读取不受影响，只是直接打开会下载，价值很低；做 P1.1 后也不再需要
+  - [ ] 图床：342 张图（291 张 webp、51 张 png），抽样 25 张中位数 41KB、最大 84KB，估算总共约 14MB；Cloudflare 缓存 `max-age=14400`。开发机访问 Cloudflare 的出口在美国（colo=LAX），测不出国内速度 → 用阿里云拨测或 17CE 在国内测；如果慢，图片总量小，直接挂到自己域名下（nginx `proxy_cache` 或拷到服务器）最省事
 
 - [ ] **3. 前端数据与渲染**
+  - 做 P1.1 的话：前三项由框架模式的 loader、导航取消和构建期渲染替代，先不做；最后一项并入 P1.1 阶段 0
   - [ ] 章节正文 `React.memo`（现在点收藏会整章重新解析 + 重新高亮）
   - [ ] courseService 加 Promise 缓存（每切一章都重新拉课程信息）
   - [ ] 请求可取消（章节没加载完就返回，该章仍会被记入「继续阅读」）
   - [ ] axios → fetch（-13KB gzip）；react-helmet → React 19 原生 `<title>` / `<meta>`（-6KB，也能解决开发模式 StrictMode 下标题不更新的问题）
 
-- [ ] **4. 章内目录**：`rehype-slug` + 「本章目录」（每章平均约 9 个 h2、10 个 h3，标题目前没有锚点）
+- [ ] **4. 章内目录**：`rehype-slug` + 「本章目录」（每章平均约 9 个 h2、10 个 h3，标题目前没有锚点）；做 P1.1 的话放到阶段 3
 
-- [ ] **5. 搜索**
-  - [ ] 按空格拆词做 AND 匹配（搜 `组件 状态机` 现在 0 条）
-  - [ ] SearchModal 回车判断 `isComposing`（macOS 拼音输入法回车上屏会误跳转）；请求可取消
+- [x] **5. 搜索**（2026-09-15 已完成）
+  - [x] 🆕 API 名搜不到：建索引时整段删掉了代码块；去斜体的正则 `/(\*|_)(.*?)\1/` 会吃掉同一行里成对的下划线（`SDL_DestroyTexture` 进索引后变成 `SDLDestroyTexture`）。线上 `SDL_GetError`（14 章含有）、`SDL_DestroyTexture`（16 章）、`SDL_FPoint`（10 章）都是 0 条，`SDL_Init`（7 章）只有 1 条；抽查代码块里 166 个 SDL / gl 类标识符，102 个一条结果都搜不到
+    - 做法：索引拆成正文和代码两部分，只在代码里命中的排在正文命中之后；去格式时行内代码先占位保护，斜体规则不再动单词内部的下划线；顺带去掉正文里的 HTML 标签（以前 iframe、div 的属性文字也进了索引）
+  - [x] 按空格拆词做 AND 匹配（`组件 状态机` 以前 0 条，按 AND 能匹配 25 章）
+  - [x] SearchModal：输入法组字时的按键一律交给输入法（`e.isComposing || e.keyCode === 229`，Safari 确认上屏时 `isComposing` 已经是 false）；输入变化时用 AbortController 取消上一次请求，慢的旧响应不再覆盖新结果；请求失败显示「搜索失败」，不再显示成「未找到」
+  - 顺带：`?q=a&q=b` 这种数组参数以前会让 `query.trim` 抛异常、接口返回 500，现在正常返回
+  - 实测（本地后端）：`SDL_GetError` 14 条、`SDL_DestroyTexture` 16 条、`SDL_FPoint` 10 条、`组件 状态机` 20 条（结果上限），`组件 + 不存在的词` 0 条
+  - 测试：`searchService.test.js`（node --test，含真实教程的回归用例）、`SearchModal.test.tsx`（输入法回车不跳转、慢的旧响应不覆盖新结果）
+  - 修改涉及：backend/src/services/searchService.js、searchService.test.js（新增）、backend/package.json、SearchModal.tsx、SearchModal.test.tsx（新增）
 
-- [ ] **6. 统计去重**：GA 的 `config` 和百度的自动 PV 在首屏各多记一次 → 关闭自动上报，统一由路由 hook 上报；顺带确认 GA4「基于浏览器历史记录事件的网页变化」设置
+- [x] **6. 统计去重**（2026-09-15 已完成，GA4 后台设置待确认）：GA 的 `config` 和百度的自动 PV 在首屏各多记一次 → 关闭自动上报，统一由路由 hook 上报；顺带确认 GA4「基于浏览器历史记录事件的网页变化」设置
+  - 🆕 GA 记录的页面标题是上一页的：路由一变就上报，但章节标题要等接口返回后才由 SEOHelmet 设置 → 上报要放到标题确定之后，并显式传 `page_title`
+  - 做法：index.html 里 GA `config` 加 `send_page_view: false`、百度 `_setAutoPageview false`；页面浏览不再由路由 hook 上报，改由 SEOHelmet 在标题确定后调用 `utils/analytics.ts`（显式传 `page_title`，同一次导航只报一次）；统计脚本只在生产构建里加载，`npm start` 本地开发不再产生数据
+  - 验证（本地生产构建，用 CSP 挡住外部脚本后检查 `dataLayer` / `_hmt`）：首屏 1 次 PV；站内跳转 章节 → 课程 → 全部任务 → 关于 → 浏览器后退，每步正好 +1，GA 标题和百度路径都是当前页
+  - [ ] 【GA4 后台】管理 → 数据流 → 网站数据流 → 增强型衡量 → 网页浏览 → 高级设置，关闭「基于浏览器历史记录事件的网页变化」，否则站内跳转会被 GA 自动再记一次（标题还是上一页的）
+  - 修改涉及：public/index.html、utils/analytics.ts（新增）、SEOHelmet.tsx、App.tsx
+
+- [x] 🆕 **7. 4 个页面没有 SEOHelmet**（2026-09-15 已完成）：关于 / 联系 / 合作（MarkdownPage）和全部课程（CoursesPage）都在 sitemap 里，直接打开是默认标题；站内跳过去时 react-helmet 不会重置，标题停在上一页
+  - 做法：MarkdownPage 增加 `description` 参数，加载中和出错时也渲染 SEOHelmet；CoursesPage 接入 SEOHelmet
+  - 🆕 顺带修复：index.html 里的静态 description / keywords 不归 react-helmet 管，每个页面都是「站点默认 + 页面自己的」两份，默认的排在前面。给静态标签加上 `data-react-helmet="true"` 后由 Helmet 替换，不执行 JS 的抓取方仍能看到默认描述
+  - 验证：本机 Chrome 无头模式逐页加载 212 个页面，标题全部是当前页，description 和 keywords 都只有一份
+  - 修改涉及：MarkdownPage.tsx、AboutPage.tsx、ContactPage.tsx、CollaboratePage.tsx、CoursesPage.tsx、public/index.html
 
 ## P2 · 体验与无障碍
 
-- [ ] **1. 窄屏（≤1200px）目录按钮被回顶按钮遮住**，手机上点「目录」实际回到顶部（TableOfContents.tsx / ScrollToTopButton.tsx）
+- [x] **1. 窄屏（≤1200px）目录按钮被回顶按钮遮住**，手机上点「目录」实际回到顶部（2026-09-15 已完成）
+  - 复核：目录按钮（`bottom:2rem; right:1rem`，48px，z-index 99）大半被回顶按钮（`bottom:2rem; right:2rem`，44px，z-index 100）盖住，滚动超过 400px 后基本点不到
+  - 做法：目录按钮移到回顶按钮正上方、中心对齐；抽屉底部留白，最后几项能滚到回顶按钮上方
+  - 验证：375px 下两个按钮不再重叠，目录按钮中心点上最上层的元素就是它，点击后抽屉展开、页面不跳动
+  - 修改涉及：TableOfContents.tsx
 - [ ] **2. 暗色模式**：定义 `--hover-bg-color`（搜索框选中项对比度 1.21:1）；设置 `data-theme`（写好的暗色表格样式从未生效）；主色按钮对比度 2.72:1；ChapterNavigation 硬编码浅色
 - [ ] **3. 暗色首屏闪白**：主题在 useEffect 里才生效 → `<head>` 内联脚本提前设置，并跟随 `prefers-color-scheme`
 - [ ] **4. 滚动位置**：前进导航统一回顶部，后退恢复原阅读位置
-- [ ] **5. 代码块**：没标语言的 495 个代码块没有背景、不能横向滚动（手机上撑宽整页）；~~疑难解决页行内代码被设成 `display:block`~~（2026-09-14 已修复）
-- [ ] **6. 其他**：搜索弹窗的对话框语义与焦点管理；收起的目录仍可 Tab 聚焦；正文链接只靠颜色区分；80% 图片缺 alt；手机菜单跳转后不关闭；`prefers-reduced-motion`
+  - 做 P1.1 的话由框架模式的 `<ScrollRestoration>` 解决：数据先于渲染到位，位置才恢复得准（现在数据在 useEffect 里拉，后退时页面还没有内容）
+- [x] **5. 代码块**：没标语言的 495 个代码块没有背景、不能横向滚动（手机上撑宽整页）；~~疑难解决页行内代码被设成 `display:block`~~（2026-09-14 已修复）（2026-09-15 已完成）
+  - 做法：没标语言的代码块放进和其他代码块一样的代码框（背景、块内横向滚动、复制按钮）
+  - 🆕 复核时发现，手机上把页面撑宽的还有宽表格和正文里的长网址 / 长标识符 → 表格外面包一层横向滚动容器；body 设 `overflow-wrap: break-word`，放不下的长词才断行
+  - 验证：本机 Chrome 无头模式按 375px 手机视口逐页加载 212 个页面，横向溢出 0 页；1400px 抽查 22 页也没有溢出。把代码框换回改动前的裸 `<pre>` 模拟旧版，两个章节分别被撑到 848px / 918px 宽
+  - 修改涉及：useMarkdownComponents.tsx、index.css
+- [ ] **6. 其他**：搜索弹窗的对话框语义与焦点管理；~~收起的目录仍可 Tab 聚焦~~（2026-09-15 已修复：收起后设为 `visibility: hidden`，按钮加 `aria-expanded`）；正文链接只靠颜色区分；80% 图片缺 alt；~~手机菜单开着时经搜索结果或浏览器后退跳转，菜单不关、`body` 保持 `overflow:hidden` 导致页面滚不动~~（2026-09-15 已修复：路由变化时收起菜单，滚动锁跟随菜单状态）；`prefers-reduced-motion`
+  - 修改涉及（已修复的两项）：TableOfContents.tsx、Navbar.tsx
 
 ## P3 · 工程与运维
 
-- [ ] **1. 测试与 CI**：~~修复失败的 `App.test.tsx`~~（2026-09-14 已修复，并新增 ErrorBoundary 测试）；部署前跑测试；~~重启后做健康检查~~（2026-09-15 已加；同时服务器上依赖没变就跳过 `npm ci`，安装限时 5 分钟且失败不重启）；去掉 CI 里白装的后端 `npm ci`；`setup-node` 加 npm 缓存
-- [ ] **2. 依赖升级**：`npm update`（react-router-dom 7.2.0→7.18.3、axios 1.8.1→1.20）
-- [ ] **3. 清理死代码**：`rehype-highlight`、`@types/react-router-dom@5`、`@types/styled-components`、`web-vitals`、`ThemeToggle.tsx`、`App.css`、`logo.svg`、`public/css/*`、`public/content/faq.md` 与 `roadmap.md`、`backend/src/test_search.js`、已被跟踪的 `frontend/build.log`、根目录 `package.json` 里的 helmet 依赖；`searchService.js:41` 引用了未定义的 `fs`
-- [ ] **4. 后端精简**：关闭 `x-powered-by`；去掉 `cors()` 与 `express.json()`（接口全是同源 GET）
+- [x] **1. 测试与 CI**（2026-09-15 全部完成）：~~修复失败的 `App.test.tsx`~~（2026-09-14 已修复，并新增 ErrorBoundary 测试）；~~部署前跑测试~~（前端 jest、后端 `node --test`，任何一项失败都不构建、不部署）；~~重启后做健康检查~~（2026-09-15 已加；同时服务器上依赖没变就跳过 `npm ci`，安装限时 5 分钟且失败不重启）；~~去掉 CI 里白装的后端 `npm ci`~~；~~`setup-node` 加 npm 缓存~~
+  - 顺带：App.test 在 act 里等懒加载页面加载完，去掉每次测试的 15 条 act 警告
+  - 修改涉及：.github/workflows/deploy.yml、App.test.tsx
+- [x] **2. 依赖升级**（2026-09-15 运行时依赖已升级；类型包等迁到 Vite 后再升）
+  - 复核：audit 共 76 条，只有 13 条的包会进浏览器 bundle。axios、react-router、mdast-util-to-hast、styled-components、@babel/runtime 在 semver 范围内升级即可修复；mermaid 12 全版本被 chevrotain → lodash-es 标记（npm 给的「修复」是降回 11，不采纳）；prismjs 要 react-syntax-highlighter 16 才能修。请求地址固定、内容都是自己写的，这几条实际都利用不了
+  - ⚠️ 不要直接 `npm update`：会把 `@types/react` 升到 19.3（声明需要 TS 5.6），项目锁在 TS 4.9 → 只升运行时包，类型包等迁到 Vite 后再升
+  - 结果：react / react-dom 19.3.0、react-router-dom 7.18.3、axios 1.20.0、mdast-util-to-hast 13.2.1、@babel/runtime 7.29.7；audit 76 → 68 条，进浏览器的包里剩下的主要是 mermaid 和 prismjs 两条依赖链
+  - 🆕 styled-components 锁在 `~6.4.4`：6.5 起类型声明用了 TS 5.4 的 `NoInfer`，在 TS 4.9 下事件处理函数的参数被推断成隐式 any，构建失败；6.4.4 已不在 audit 名单里
+  - 修改涉及：frontend/package.json、frontend/package-lock.json
+- [x] **3. 清理死代码**（2026-09-15 已完成，服务器上的 nginx 配置待处理）：`rehype-highlight`、`@types/react-router-dom@5`、`@types/styled-components`、`web-vitals`、`ThemeToggle.tsx`、`App.css`、`logo.svg`、`public/css/*`、`public/content/faq.md` 与 `roadmap.md`、`backend/src/test_search.js`、已被跟踪的 `frontend/build.log`、根目录 `package.json` 里的 helmet 依赖；`searchService.js:41` 引用了未定义的 `fs`
+  - 顺带：根目录 `package.json` / `package-lock.json` 里只有这几个没用到的依赖，整个删掉；SearchModal 去掉 `REACT_APP_API_URL`，和其他请求一样走同源 `/api`；index.tsx 去掉 reportWebVitals
+  - [ ] 【服务器】nginx 里遗留的 `location /css/`（指向服务器上另一个目录，前端没有任何地方引用 `/css/`）
+  - 修改涉及：删除 12 个文件，frontend/package.json（去掉 4 个依赖），searchService.js、SearchModal.tsx、index.tsx
+- [x] **4. 后端精简**（2026-09-15 已完成）：关闭 `x-powered-by`；去掉 `cors()` 与 `express.json()`（接口全是同源 GET）
+  - `cors` 依赖一并删除，部署脚本里的依赖自检同步去掉 cors
+  - 验证：本地接口响应头里不再有 `X-Powered-By` 和 `Access-Control-Allow-Origin`
+  - 修改涉及：backend/src/index.js、backend/package.json、backend/package-lock.json、.github/workflows/deploy.yml
 - [ ] **5. 重复代码**：课程卡片 4 份拷贝 → `CourseCard`；Markdown 容器样式 3 份 → `MarkdownBody`
-- [ ] **6. 过时配置与文档**：`manifest.json` 名称仍是「React App」；CLAUDE.md 里 MarkdownPage / ScrollToTopButton / TableOfContents 的描述已过时
+- [x] **6. 过时配置与文档**（2026-09-15 已完成）：`manifest.json` 名称仍是「React App」；CLAUDE.md 里 MarkdownPage / ScrollToTopButton / TableOfContents 的描述已过时
+  - manifest 改为「C++游戏开发教程」；CLAUDE.md 同时补上统计上报方式、搜索索引、前后端测试命令；README 去掉 rehype-highlight、CORS 和根目录 `npm install`，Node 版本改为 22+
+  - 修改涉及：public/manifest.json、CLAUDE.md、README.md
+
+## 待在国内网络 / 后台确认
+
+- 百度收录：开发机的 `site:cppgamedev.top` 查询触发了百度安全验证，需要在百度搜索资源平台查看
+- 图床在国内的速度：见 P1.2
+- 真实加载指标（LCP / CLS 等）：在国内网络下用 Lighthouse 跑一次首页和一个章节页
+- GA4 后台「增强型衡量 → 网页浏览 → 基于浏览器历史记录事件的网页变化」：见 P1.6
+
+## 复核时确认没问题的
+
+- 线上运行的就是 main 最新提交（deploy 与 main 同为 ac15af4）
+- 后端生产依赖 0 漏洞
+- Giscus 评论已是 `loading: lazy`
+- 教程里的原始 HTML 只有 img / div / iframe / br 四种，没有正文被误当成 HTML 标签吞掉
+- ErrorBoundary 已能识别 Chrome / Safari 的动态 import 失败（迁到 Vite 后仍适用）
+- 目录抽屉用负的 `right` 藏在屏幕外，在真实 Chrome 里不会撑宽页面（应用内浏览器面板隐藏时测到的溢出，是过渡动画被暂停造成的假象）

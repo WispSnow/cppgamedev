@@ -7,6 +7,7 @@ import {
   markdownRemarkPlugins,
   useMarkdownComponents,
 } from '../hooks/useMarkdownComponents';
+import SEOHelmet from './SEOHelmet';
 
 const PageContainer = styled.div`
   max-width: 900px;
@@ -180,10 +181,12 @@ const ErrorMessage = styled.div`
 
 interface MarkdownPageProps {
   title: string;
+  /** 页面描述，用于搜索结果和分享卡片 */
+  description: string;
   contentUrl: string;
 }
 
-const MarkdownPage: React.FC<MarkdownPageProps> = ({ title, contentUrl }) => {
+const MarkdownPage: React.FC<MarkdownPageProps> = ({ title, description, contentUrl }) => {
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -214,22 +217,28 @@ const MarkdownPage: React.FC<MarkdownPageProps> = ({ title, contentUrl }) => {
 
   const components = useMarkdownComponents(theme);
 
-  if (loading) return <LoadingMessage>加载内容中...</LoadingMessage>;
-  if (error) return <ErrorMessage>{error}</ErrorMessage>;
+  // 标题不依赖内容：加载中和出错时也渲染 SEOHelmet。三种情况下它都是 Fragment 的第一个子节点，内容加载完不会重新挂载
+  const seo = <SEOHelmet title={`${title} | C++游戏开发`} description={description} />;
+
+  if (loading) return <>{seo}<LoadingMessage>加载内容中...</LoadingMessage></>;
+  if (error) return <>{seo}<ErrorMessage>{error}</ErrorMessage></>;
 
   return (
-    <PageContainer>
-      <PageTitle>{title}</PageTitle>
-      <MarkdownContainer>
-        <ReactMarkdown 
-          remarkPlugins={markdownRemarkPlugins} 
-          rehypePlugins={markdownRehypePlugins} 
-          components={components}
-        >
-          {content}
-        </ReactMarkdown>
-      </MarkdownContainer>
-    </PageContainer>
+    <>
+      {seo}
+      <PageContainer>
+        <PageTitle>{title}</PageTitle>
+        <MarkdownContainer>
+          <ReactMarkdown
+            remarkPlugins={markdownRemarkPlugins}
+            rehypePlugins={markdownRehypePlugins}
+            components={components}
+          >
+            {content}
+          </ReactMarkdown>
+        </MarkdownContainer>
+      </PageContainer>
+    </>
   );
 };
 

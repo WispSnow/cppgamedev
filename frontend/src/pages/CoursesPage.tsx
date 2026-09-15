@@ -5,6 +5,7 @@ import { getAllCourses } from '../services/courseService';
 import { Course } from '../types';
 import ErrorState from '../components/ErrorState';
 import { CourseCardSkeletonGrid } from '../components/Skeleton';
+import SEOHelmet from '../components/SEOHelmet';
 
 const PageContainer = styled.div`
   max-width: 1200px;
@@ -149,6 +150,10 @@ const CoursesPage: React.FC = () => {
 
   return (
     <PageContainer>
+      <SEOHelmet
+        title="全部任务 | C++游戏开发"
+        description="C++游戏开发教程的全部课程，包括主线任务和支线任务。"
+      />
       <PageTitle>全部任务</PageTitle>
       {loading && <CourseCardSkeletonGrid />}
 

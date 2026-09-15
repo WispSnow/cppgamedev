@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
@@ -153,19 +153,23 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    if (!isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  };
-
-  const closeMenu = () => {
+  // 不管怎么跳转（菜单项、搜索结果、浏览器前进后退），都收起手机菜单
+  useEffect(() => {
     setIsMenuOpen(false);
-    document.body.style.overflow = 'unset';
-  };
+  }, [location.pathname]);
+
+  // 菜单打开时锁住页面滚动，收起或组件卸载时恢复
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
+  const toggleMenu = () => setIsMenuOpen(open => !open);
+
+  const closeMenu = () => setIsMenuOpen(false);
 
   const isActive = (path: string) => location.pathname === path;
 

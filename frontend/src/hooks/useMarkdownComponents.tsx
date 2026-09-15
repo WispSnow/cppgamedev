@@ -158,6 +158,13 @@ const MarkdownImage = ({ node, alt, ...props }: any) => (
   <img alt={alt ?? ''} loading="lazy" decoding="async" {...props} />
 );
 
+// 表格外面包一层横向滚动容器：列多或单元格里有长代码时只在表格内滚动，不把手机页面撑宽。
+const MarkdownTable = ({ node, ...props }: any) => (
+  <div style={{ overflowX: 'auto' }}>
+    <table {...props} />
+  </div>
+);
+
 // 站内链接走前端路由，不再整页刷新。
 const MarkdownLink = ({ node, href, children, ...props }: any) => {
   if (typeof href === 'string' && href.startsWith('/') && !href.startsWith('//')) {
@@ -166,18 +173,18 @@ const MarkdownLink = ({ node, href, children, ...props }: any) => {
   return <a href={href} {...props}>{children}</a>;
 };
 
-// ```mermaid 代码块由 MermaidDiagram 渲染成图表，不需要外层的 <pre>；其他代码块保持原样。
-const isMermaidCodeNode = (node: any) => {
-  const className = node?.children?.[0]?.properties?.className;
-  const classes = Array.isArray(className) ? className : typeof className === 'string' ? [className] : [];
-  return classes.includes('language-mermaid');
+// 从 class 里取代码块的语言名，比如 language-CPP → cpp；没标语言时返回 null
+const getCodeLanguage = (className: unknown): string | null => {
+  const names = Array.isArray(className) ? className.join(' ') : typeof className === 'string' ? className : '';
+  const match = /language-(\w+)/.exec(names);
+  // 语言名不区分大小写（内容里有 ```CPP 这种写法）
+  return match ? match[1].toLowerCase() : null;
 };
 
-const MarkdownPre = ({ node, children, ...props }: any) => {
-  if (isMermaidCodeNode(node)) {
-    return <>{children}</>;
-  }
-  return <pre {...props}>{children}</pre>;
+// hast 节点里的纯文本，给没标语言的代码块的复制按钮用
+const getNodeText = (node: any): string => {
+  if (node?.type === 'text') return node.value;
+  return Array.isArray(node?.children) ? node.children.map(getNodeText).join('') : '';
 };
 
 // B 站 / YouTube 嵌入改为点击后才加载播放器，其他 iframe 延迟加载。
@@ -228,13 +235,11 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
   return useMemo(() => {
     const codeStyle = fullStyleOverrides ? getFullCodeStyle(theme) : getSimpleCodeStyle(theme);
 
-    const codeComponent = ({ node, inline, className, children, ...props }: any) => {
-      const match = /language-(\w+)/.exec(className || '');
+    const codeComponent = ({ node, className, children, ...props }: any) => {
+      const language = getCodeLanguage(className);
       const codeString = String(children).replace(/\n$/, '');
 
-      if (!inline && match) {
-        // 语言名不区分大小写（内容里有 ```CPP 这种写法）
-        const language = match[1].toLowerCase();
+      if (language) {
         if (language === 'mermaid') {
           return <MermaidDiagram chart={codeString} theme={theme} />;
         }
@@ -276,9 +281,31 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
       );
     };
 
+    // ```mermaid 由 MermaidDiagram 渲染成图表，不需要外层的 <pre>；标了语言的代码块由上面的 code 渲染成代码框。
+    // 没标语言的代码块（终端输出、目录结构等）也放进同样的代码框：有背景、能横向滚动，不会把手机页面撑宽。
+    const preComponent = ({ node, children, ...props }: any) => {
+      const language = getCodeLanguage(node?.children?.[0]?.properties?.className);
+      if (language === 'mermaid') {
+        return <>{children}</>;
+      }
+      // 不用代码框的页面（疑难解决页）自己给 pre 定了样式
+      if (language || !useCodeWrappers) {
+        return <pre {...props}>{children}</pre>;
+      }
+      return (
+        <CodeWrapper>
+          <CodeBlockWrapper>
+            {showCopyButton && <CopyButton code={getNodeText(node).replace(/\n$/, '')} />}
+            <pre {...props}>{children}</pre>
+          </CodeBlockWrapper>
+        </CodeWrapper>
+      );
+    };
+
     return {
       code: codeComponent,
-      pre: MarkdownPre,
+      pre: preComponent,
+      table: MarkdownTable,
       h1: MarkdownH1,
       img: MarkdownImage,
       a: MarkdownLink,

@@ -1,5 +1,4 @@
 const express = require('express');
-const cors = require('cors');
 const dotenv = require('dotenv');
 const coursesRouter = require('./routes/courses');
 const troubleshootingRouter = require('./routes/troubleshooting');
@@ -15,6 +14,9 @@ const PORT = process.env.PORT || 5000;
 // 确有需要时可用 HOST=0.0.0.0 覆盖。
 const HOST = process.env.HOST || '127.0.0.1';
 
+// 不在响应头里暴露框架信息（X-Powered-By: Express）
+app.disable('x-powered-by');
+
 // 中间件
 // Middleware to log requests
 app.use((req, res, next) => {
@@ -22,8 +24,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cors());
-app.use(express.json());
+// 不需要 cors() 和 express.json()：前端和接口同源（线上由 nginx 反代，本地开发走 CRA 的 proxy），
+// 接口也全是只读 GET，没有请求体要解析。
 
 // 路由
 app.use('/api/courses', coursesRouter);
@@ -48,4 +50,4 @@ app.listen(PORT, HOST, async () => {
   console.log(`服务器运行在 ${HOST}:${PORT}`);
   // 启动时构建索引
   await buildIndex();
-}); 
+});

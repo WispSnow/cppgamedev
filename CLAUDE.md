@@ -9,8 +9,8 @@ A Chinese-language C++ game development tutorial website (cppgamedev.top). Full-
 ## Development Commands
 
 ```bash
-# Install all dependencies (run from root, then each subdirectory)
-npm install && cd frontend && npm install && cd ../backend && npm install
+# Install all dependencies (frontend and backend are separate npm projects; there is no root package.json)
+cd frontend && npm install && cd ../backend && npm install
 
 # Start backend dev server (port 5001, auto-reloads with nodemon)
 cd backend && npm run dev
@@ -21,8 +21,9 @@ cd frontend && npm start
 # Build frontend for production
 cd frontend && npm run build
 
-# Run frontend tests
+# Run tests (CI runs both before building and deploying)
 cd frontend && npm test
+cd backend && npm test   # node --test; needs no installed dependencies
 ```
 
 Both servers must run simultaneously for local development. Frontend proxies `/api/*` requests to backend via the `proxy` field in `frontend/package.json`.
@@ -35,25 +36,25 @@ Both servers must run simultaneously for local development. Frontend proxies `/a
 - **Routing:** React Router v7 — routes defined in `App.tsx`
 - **Markdown rendering pipeline:** `react-markdown` + `rehype-raw` + `remark-gfm` + `react-syntax-highlighter` (Prism), custom renderers via `hooks/useMarkdownComponents.tsx`
 - **Mermaid diagrams:** ```` ```mermaid ```` fences render as diagrams via `components/MermaidDiagram.tsx` (the `mermaid` package is dynamically imported only on pages that contain one)
-- **API calls:** axios via service files in `services/` (`courseService.ts`, `troubleshootingService.ts`, `storageService.ts`)
+- **API calls:** axios via service files in `services/` (`courseService.ts`, `troubleshootingService.ts`); `SearchModal` calls `/api/search` with `fetch`. `storageService.ts` wraps localStorage (bookmarks, reading progress)
 - **Comments:** Giscus integration configured in `config/giscus.ts`
-- **Static data:** `data/roadmapData.ts` (roadmap), `data/faqData.ts` (FAQ)
+- **Static data:** `data/roadmapData.ts` (roadmap), `data/faqData.tsx` (FAQ)
 - **Shared types:** `types/index.ts` — `Course`, `CoursePart`, `TroubleshootingArticle`, etc.
-- **Analytics:** GA4 (`G-JLHZH11YW4`) + 百度统计 (`_hmt`) — SPA page-view tracking wired in `App.tsx` via `usePageTracking`
+- **Analytics:** GA4 (`G-JLHZH11YW4`) + 百度统计 (`_hmt`). `public/index.html` loads both only in production builds and turns off their automatic page views; `SEOHelmet` reports each page view through `utils/analytics.ts` once the page title is known. Every routed page must render `SEOHelmet` (pages that fetch data render it after the data arrives, so the reported title is final)
 
 #### Key components
-- `SEOHelmet` — page-level SEO meta tags via `react-helmet`
+- `SEOHelmet` — page-level SEO meta tags via `react-helmet`; also reports the page view (see Analytics)
 - `VideoPlayer` — lazy-load embedded Bilibili / YouTube iframe (click-to-play)
-- `MarkdownPage` — generic page that fetches and renders a static Markdown file from `frontend/public/content/`
-- `TableOfContents` — auto-generated TOC from heading structure, used in course pages
+- `MarkdownPage` — generic page that fetches and renders a static Markdown file from `frontend/public/content/` (takes `title` and `description`)
+- `TableOfContents` — slide-out drawer listing the current course's chapters, used in chapter pages
 - `ChapterNavigation` — prev/next chapter links at bottom of course pages
 - `ProgressIndicator` — reading progress bar for long pages
-- `ScrollToTopButton` — floating button + scroll-to-top on route change
+- `ScrollToTopButton` — floating back-to-top button shown after scrolling 400px, used in chapter pages
 - `ErrorState` / `Skeleton` — standard error and loading-state UI
 - `utils/difficultyUtils.ts` — maps difficulty level (1–5) to label and color
 
 ### Backend (`backend/src/`)
-- **Express** server, entry point: `src/index.js`
+- **Express** server, entry point: `src/index.js` (no CORS or body parsing: the API is same-origin and read-only GET)
 - **API routes:**
   - `GET /api/courses` — list all courses
   - `GET /api/courses/:id` — course with parts list
@@ -62,7 +63,7 @@ Both servers must run simultaneously for local development. Frontend proxies `/a
   - `GET /api/search?q=keyword` — full-text search (in-memory index built at startup)
 - **Course metadata:** `data/courseData.js` — single source of truth for course structure, each part references a `contentPath` to a Markdown file
 - **Content files:** Markdown in `courses/` (mainline) and `side-courses/` (supplementary), named `{NN} {title}.md` or `{NN}-{title}.md`
-- **Search:** `services/searchService.js` builds index on startup from all course content
+- **Search:** `services/searchService.js` builds the index on startup from all course content. Prose and fenced code are indexed separately (code-only matches rank lower, so API names like `SDL_GetError` are searchable); whitespace-separated keywords are AND-matched. Tests live in `services/searchService.test.js`
 
 ### Data Flow
 
@@ -72,7 +73,7 @@ There are two distinct content delivery patterns:
 Frontend page → axios call to `/api/courses/:id/parts/:partId` → backend reads Markdown file from disk → frontend renders with react-markdown
 
 **Static info pages (directly served):**
-`MarkdownPage` component fetches `/content/{file}.md` directly from `frontend/public/content/` — no backend involved. Used by About, Contact, FAQ, Roadmap, and Collaborate pages.
+`MarkdownPage` component fetches `/content/{file}.md` directly from `frontend/public/content/` — no backend involved. Used by About, Contact, and Collaborate pages (FAQ and Roadmap render from `data/`).
 
 ## Adding New Content
 
@@ -83,8 +84,8 @@ Frontend page → axios call to `/api/courses/:id/parts/:partId` → backend rea
 
 ### New static info page
 1. Create Markdown file in `frontend/public/content/{slug}.md`
-2. Create `frontend/src/pages/{Name}Page.tsx` using `<MarkdownPage title="..." contentUrl="/content/{slug}.md" />`
-3. Register the route in `App.tsx` (lazy import + `<Route>`)
+2. Create `frontend/src/pages/{Name}Page.tsx` using `<MarkdownPage title="..." description="..." contentUrl="/content/{slug}.md" />`
+3. Register the route in `App.tsx` (lazy import + `<Route>`) and add it to `staticPages` in `scripts/generate-sitemap.js`
 4. Add a link in `Footer.tsx` and/or relevant existing pages
 
 ## Conventions
@@ -93,7 +94,7 @@ Frontend page → axios call to `/api/courses/:id/parts/:partId` → backend rea
 - **Course categories:** `mainline` (primary curriculum) or `side` (supplementary)
 - **Difficulty scale:** 1 (entry) through 5 (expert)
 - **Content paths** in `courseData.js` are relative to the project root (e.g., `backend/src/courses/...`)
-- **Deployment:** Push to `deploy` branch triggers GitHub Actions CI/CD (`.github/workflows/deploy.yml`)
+- **Deployment:** Push to `deploy` branch triggers GitHub Actions CI/CD (`.github/workflows/deploy.yml`): frontend and backend tests → build → rsync to the server → backend restart with a health check
 
 ## Agent Files
 

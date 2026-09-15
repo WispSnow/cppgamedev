@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import App from './App';
 
 jest.mock(
@@ -58,8 +58,11 @@ jest.mock('./pages/FAQPage', () => ({ __esModule: true, default: () => <div /> }
 jest.mock('./pages/NotFoundPage', () => ({ __esModule: true, default: () => <div /> }));
 
 describe('App', () => {
-  it('renders the main navigation links', () => {
-    render(<App />);
+  it('renders the main navigation links', async () => {
+    // 页面是 React.lazy 按需加载的，在 act 里等它们加载完，否则 React 会对每个页面报一次 act 警告
+    await act(async () => {
+      render(<App />);
+    });
 
     // 导航栏和页脚里有同名链接，所以用 getAllByText
     for (const label of ['主线', '支线', '路线图', '疑难解决', 'FAQ']) {

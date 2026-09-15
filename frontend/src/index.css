@@ -15,6 +15,9 @@ body {
   color: var(--text-color, #333333);
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* 长网址、长函数名、长路径放不下时允许断行，不把手机页面撑宽。
+     white-space: pre 的代码块不受影响；表格仍按内容撑开，由外层的滚动容器横向滚动 */
+  overflow-wrap: break-word;
 }
 
 /* 行内代码样式 */

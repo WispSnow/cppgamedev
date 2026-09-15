@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import Navbar from './components/Navbar';
@@ -47,27 +47,9 @@ const FallbackContainer = styled.div`
   font-size: 1rem;
 `;
 
-declare global {
-  interface Window {
-    gtag?: (...args: unknown[]) => void;
-    _hmt?: unknown[][];
-  }
-}
-
-function usePageTracking() {
-  const location = useLocation();
-  useEffect(() => {
-    const url = location.pathname + location.search;
-    // GA4
-    window.gtag?.('config', 'G-JLHZH11YW4', { page_path: url });
-    // Baidu Analytics
-    window._hmt?.push(['_trackPageview', url]);
-  }, [location]);
-}
-
+// 页面浏览统计不在路由层上报（路由刚变时新页面的标题还没确定），由 SEOHelmet 上报，见 utils/analytics.ts
 function AnimatedRoutes() {
   const location = useLocation();
-  usePageTracking();
   return (
     <MainContent key={location.pathname} $routeKey={location.pathname}>
       {/* 路由级错误边界：发版后旧 chunk 加载失败时自动刷新，不会整页白屏 */}

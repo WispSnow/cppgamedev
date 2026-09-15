@@ -24,22 +24,30 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: '24'
+          # 缓存 npm 下载目录，前端 lockfile 没变时 npm ci 不用重新下载依赖
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
-      # 第3步：安装并构建 Frontend
+      # 第3步：安装前端依赖，跑完前后端测试再构建。任何一步失败都不会部署
       - name: Install Frontend Dependencies
         working-directory: ./frontend
         run: npm ci
+
+      - name: Test Frontend
+        working-directory: ./frontend
+        run: npm test -- --watchAll=false
+
+      # 后端测试只用到 Node 内置模块和仓库里的教程内容，不需要安装依赖；
+      # 后端的生产依赖由第 6 步在服务器上安装，CI 里不用装
+      - name: Test Backend
+        working-directory: ./backend
+        run: npm test
 
       - name: Build Frontend
         working-directory: ./frontend
         run: npm run build
 
-      # 第4步：安装 Backend 依赖（生产环境）
-      - name: Install Backend Dependencies
-        working-directory: ./backend
-        run: npm ci --production
-
-      # 第5步：部署 Frontend 到服务器
+      # 第4步：部署 Frontend 到服务器
       - name: Deploy Frontend to Server
         uses: easingthemes/ssh-deploy@v6.0.1
         with:
@@ -54,7 +62,7 @@ jobs:
           # 该目录完全由 CI 产出，不含任何服务器侧数据。
           ARGS: "-rlgoDzvc -i --delete"
 
-      # 第6步：部署 Backend 到服务器
+      # 第5步：部署 Backend 到服务器
       - name: Deploy Backend to Server
         uses: easingthemes/ssh-deploy@v6.0.1
         with:
@@ -73,8 +81,8 @@ jobs:
           # 注意：今后若后端要在自己目录下写运行期数据（上传、缓存、数据库），
           # 必须先加进 EXCLUDE，否则会被每次部署清掉。
           ARGS: "-rlgoDzvc -i --delete"
-      
-      # 第7步：在服务器上按需安装 Backend 依赖、重启服务并做健康检查
+
+      # 第6步：在服务器上按需安装 Backend 依赖、重启服务并做健康检查
       - name: Restart Backend Service
         uses: appleboy/ssh-action@v1.2.5
         with:
@@ -97,7 +105,7 @@ jobs:
               timeout 300 npm ci --omit=dev --no-audit --no-fund --prefer-offline
               sha256sum package-lock.json > "$STAMP"
             fi
-            node -e "require('express'); require('cors'); require('dotenv')"
+            node -e "require('express'); require('dotenv')"
 
             sudo systemctl restart cppgamedev-backend.service
 
