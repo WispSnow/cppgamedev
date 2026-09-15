@@ -19,7 +19,7 @@
   - [x] 代码块语言名渲染时转小写，5 处 `CPP` 恢复高亮
   - [x] `SDL与太空战机/02 VScode配置.md`：图片缩进到列表项内，5 个步骤恢复为同一个有序列表
   - 顺带：Markdown 里的站内链接改为前端路由跳转，不再整页刷新
-  - 修改涉及：29 个课程 Markdown 文件、useMarkdownComponents.tsx、frontend/package.json
+  - 修改涉及：30 个课程 Markdown 文件、useMarkdownComponents.tsx、frontend/package.json
 
 - [x] **3. 课程页章节列表无法用键盘进入**（2026-09-14 已完成）
   - 章节行改为 `<Link>`，加键盘焦点样式
@@ -35,13 +35,13 @@
   - VideoPlayer 封面改为 `<button>`（可键盘操作）；点击后自动播放、弹幕默认关闭（与原嵌入参数一致）
   - 修改涉及：useMarkdownComponents.tsx、VideoPlayer.tsx、MarkdownPage.tsx、CoursePartPage.tsx、TroubleshootingDetailPage.tsx
 
-- [ ] **6. SEO 基础**（代码部分 2026-09-14 已完成，剩服务器配置）
+- [x] **6. SEO 基础**（2026-09-15 全部完成）
   - [x] 193 个章节页接入 SEOHelmet（标题 / 描述 / canonical / 封面图）；canonical 统一为主域名 + 当前路径，封面图支持完整 URL
   - [x] sitemap 由 `scripts/generate-sitemap.js` 在构建前自动生成（frontend 的 `prebuild`），共 210 个 URL
   - [x] 404：前端加 `path="*"` 的 NotFoundPage（带 noindex），不存在的课程 / 章节也显示 404；删掉 `/test-video` 路由
   - [x] 后端去掉生产环境静态兜底路由，未匹配的请求返回 404 JSON
   - [x] 每个页面只保留一个 `<h1>`：Markdown 里的一级标题渲染为 `<h2 data-md-h1>`，外观不变
-  - [ ] 【服务器】nginx 把 `www.cppgamedev.top` 301 到主域名（现在直接返回 200，会被重复收录）；候选配置已上传到服务器 `~/nginx-www-redirect/cppgamedev.conf`，待用 sudo 替换并 reload
+  - [x] 【服务器】nginx 把 `www.cppgamedev.top` 301 到主域名（2026-09-15 已生效）：https / http 的 www 都一跳直达 `https://cppgamedev.top`，主域名与 API 正常
   - 注意：开发模式（`npm start`）下 react-helmet 受 React StrictMode 影响不会更新标题，生产构建正常（已分别验证）
   - 修改涉及：SEOHelmet.tsx、CoursePartPage.tsx、CourseDetailPage.tsx、NotFoundPage.tsx（新增）、App.tsx、courseService.ts、backend/src/index.js、scripts/generate-sitemap.js（新增）、frontend/package.json、sitemap.xml
 
