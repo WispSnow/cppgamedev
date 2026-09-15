@@ -219,7 +219,7 @@ int main(int, char**) {
 
 ## SDL事件系统
 
-<img src="https://theorhythm.top/gamedev/SS/9 SDL事件系统.PNG" style='width: 800px;' />
+<img src="https://theorhythm.top/gamedev/SS/9 SDL事件系统.png" style='width: 800px;' />
 
 SDL事件系统是SDL处理用户输入和系统通知的机制。它基于一个事件队列，当发生某些事件（如按键、鼠标移动、窗口调整大小等）时，相应的事件会被加入队列。我们的程序可以通过SDL_PollEvent()函数从队列中获取并处理这些事件。
 

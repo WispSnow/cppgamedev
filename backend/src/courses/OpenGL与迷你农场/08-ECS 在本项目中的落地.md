@@ -265,7 +265,7 @@ struct DayOnlyTag {};      // 仅白天发光
 System 的核心逻辑通常就三步：
 1. 从 registry 创建 **view**（指定组件组合 + 排除条件）
 2. 遍历实体：**读取**组件、**写回**组件/Tag
-3. 必要时通过 **dispatcher** 发事件，解耦跨系统协作（参见 [事件系统](06-事件系统.md)）
+3. 必要时通过 **dispatcher** 发事件，解耦跨系统协作（参见 [事件系统](/courses/opengl-tiny-farm/parts/part-06)）
 
 来看一个典型的引擎层 System——`MovementSystem`：
 
@@ -325,7 +325,7 @@ void StateSystem::update() {
 
 这里有两个值得注意的模式：
 - **`StateDirtyTag` 触发处理**：只有被标记为"状态已变"的实体才会被处理——避免每帧对所有实体做无谓的计算
-- **`enqueue` 而非 `trigger`**：动画播放事件被放入队列，在本帧末尾批量分发（回忆 [事件系统](06-事件系统.md) 的区分）
+- **`enqueue` 而非 `trigger`**：动画播放事件被放入队列，在本帧末尾批量分发（回忆 [事件系统](/courses/opengl-tiny-farm/parts/part-06) 的区分）
 
 ### 5.3 顺序就是隐式依赖
 
@@ -383,7 +383,7 @@ void GameScene::update(float delta_time) {
 每一帧的运行逻辑是：
 1. **Systems 按固定顺序 update**：从 registry 的 view 中查询组件组合，读写数据、打 Tag、发事件
 2. **Systems 通过 Context 调用服务**：提交渲染数据给 Renderer、读取输入状态、播放音效等
-3. **dispatcher 分发事件**：解耦系统间的协作（参见 [事件系统](06-事件系统.md)）
+3. **dispatcher 分发事件**：解耦系统间的协作（参见 [事件系统](/courses/opengl-tiny-farm/parts/part-06)）
 
 实体的来源有两条主线：
 - **EntityFactory**：运行时按玩法语义创建实体（玩家/动物/作物/掉落物），组件组合由蓝图数据驱动

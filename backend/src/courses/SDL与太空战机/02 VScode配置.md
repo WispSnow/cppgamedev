@@ -29,14 +29,17 @@ VSCode（Visual Studio Code）是一款轻量化、高效的代码编辑器，�
 这一节所有平台都一样。
 1. 打开[官网](https://code.visualstudio.com/)，选择对应平台的安装包下载安装
 
-<img src="https://theorhythm.top/gamedev/f5a290cbf12c10e0feedd119034e5925.png" style='width: 800px;' />
+   <img src="https://theorhythm.top/gamedev/f5a290cbf12c10e0feedd119034e5925.png" style='width: 800px;' />
+
 2. 在插件页面搜索“C++”，然后安装插件：`C/C++ Extension Pack` 
 
-<img src="https://theorhythm.top/gamedev/a6aa4619a9095f51649b4393cc7afd8c.png" style='width: 800px;' /> 至此配置已经完成，后面几步可任选是否执行。
+   <img src="https://theorhythm.top/gamedev/a6aa4619a9095f51649b4393cc7afd8c.png" style='width: 800px;' /> 至此配置已经完成，后面几步可任选是否执行。
+
 3. 可选：再次搜索Chinese，安装插件 `Chinese (Simplified) (简体中文)` ，重启后即可改成中文界面。
 4. 可选：打开“设置”并搜索“cmake status bar”，将“Status Bar Visibility” 改为“visible”。（此设置可方便地更改编译模式为debug或者release等）。
 
-<img src="https://theorhythm.top/gamedev/aace361efb69b6c08ab5b783a27887af.png" style='width: 800px;' />
+   <img src="https://theorhythm.top/gamedev/aace361efb69b6c08ab5b783a27887af.png" style='width: 800px;' />
+
 5. 可选：搜索安装AI辅助插件（选一个安装即可，以免冲突）。
 	- 如果无法科学上网，推荐国内可用且下载量大的，例如 `CodeGeeX`，`fitten`等。
 	- 如果能够科学上网，免费的推荐`Codeium`，付费的推荐 `Github Copilot`。
