@@ -74,7 +74,7 @@ jobs:
           # 必须先加进 EXCLUDE，否则会被每次部署清掉。
           ARGS: "-rlgoDzvc -i --delete"
       
-      # 第7步：在服务器上重新安装 Backend 依赖并重启服务
+      # 第7步：在服务器上按需安装 Backend 依赖、重启服务并做健康检查
       - name: Restart Backend Service
         uses: appleboy/ssh-action@v1.2.5
         with:
@@ -82,7 +82,25 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
             cd ${{ secrets.BACKEND_DIR }}
-            npm ci --production
-            # 使用 systemctl 重启服务
+
+            # 服务器访问 npm 官方源不稳定：2026-09-15 部署时 npm ci 装完依赖后的收尾网络请求卡死，
+            # 10 分钟后整步超时，卡住的进程还留在了服务器上。因此：
+            # 1. package-lock.json 没变就跳过 npm ci。哈希记在 node_modules 里：rsync 排除了它，npm ci 重装时会一起清掉
+            # 2. 需要安装时关掉 audit / fund、优先用本地缓存，并限时 5 分钟
+            # 3. 任何一步失败都直接退出、不重启，线上继续跑旧进程
+            STAMP=node_modules/.deploy-lock.sha256
+            if [ -f "$STAMP" ] && sha256sum --status -c "$STAMP"; then
+              echo "后端依赖没有变化，跳过 npm ci"
+            else
+              timeout 300 npm ci --omit=dev --no-audit --no-fund --prefer-offline
+              sha256sum package-lock.json > "$STAMP"
+            fi
+            node -e "require('express'); require('cors'); require('dotenv')"
+
             sudo systemctl restart cppgamedev-backend.service
+
+            # 健康检查：后端没起来就让这一步失败，而不是显示部署成功
+            curl -fsS -o /dev/null --retry 10 --retry-connrefused --retry-delay 1 http://127.0.0.1:5000/api/courses
+            echo "后端已重启，健康检查通过"
