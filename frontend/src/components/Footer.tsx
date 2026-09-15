@@ -132,6 +132,16 @@ const FooterBottom = styled.div`
   }
 `;
 
+const BeianLink = styled.a`
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--primary-color, #0066cc);
+    text-decoration: underline;
+  }
+`;
+
 const Footer: React.FC = () => {
   return (
     <FooterContainer>
@@ -177,6 +187,10 @@ const Footer: React.FC = () => {
         <Divider />
         <FooterBottom>
           <span>&copy; {new Date().getFullYear()} cppgamedev.top</span>
+          {/* 按备案管理规定，首页底部展示备案号并链接到工信部备案系统 */}
+          <BeianLink href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
+            鄂ICP备2025098393号-1
+          </BeianLink>
           <span>Made with passion for game developers</span>
         </FooterBottom>
       </FooterContent>
