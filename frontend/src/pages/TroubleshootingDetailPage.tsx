@@ -2,15 +2,17 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 import { getTroubleshootingArticleById } from '../services/troubleshootingService';
 import { TroubleshootingArticle } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import SEOHelmet from '../components/SEOHelmet';
 import ErrorState from '../components/ErrorState';
 import { ArticleSkeleton } from '../components/Skeleton';
-import { useMarkdownComponents } from '../hooks/useMarkdownComponents';
+import {
+  markdownRehypePlugins,
+  markdownRemarkPlugins,
+  useMarkdownComponents,
+} from '../hooks/useMarkdownComponents';
 
 const PageContainer = styled.div`
   max-width: 900px;
@@ -71,7 +73,8 @@ const MarkdownContainer = styled.div`
     -webkit-overflow-scrolling: touch;
   }
 
-  code, .react-syntax-highlighter code {
+  /* 只作用于代码块，行内代码保持行内显示 */
+  pre code, .react-syntax-highlighter code {
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     white-space: pre;
     display: block;
@@ -132,8 +135,8 @@ const TroubleshootingDetailPage: React.FC = () => {
           <Subtitle>{article.description}</Subtitle>
           <MarkdownContainer>
             <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeRaw]}
+              remarkPlugins={markdownRemarkPlugins}
+              rehypePlugins={markdownRehypePlugins}
               components={markdownComponents}
             >
               {article.content || '内容正在整理中，敬请期待。'}

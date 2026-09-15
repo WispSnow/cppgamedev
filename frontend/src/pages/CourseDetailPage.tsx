@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { getCourseById } from '../services/courseService';
+import { getCourseById, isNotFoundError } from '../services/courseService';
 import { Course } from '../types';
 import SEOHelmet from '../components/SEOHelmet';
 import ErrorState from '../components/ErrorState';
 import { PartCardSkeletonList, Skeleton } from '../components/Skeleton';
 import { getReadingHistory } from '../services/storageService';
+import NotFoundPage from './NotFoundPage';
 
 const PageContainer = styled.div`
   max-width: 1000px;
@@ -81,12 +82,11 @@ const PartsList = styled.div`
   overflow: hidden;
 `;
 
-const PartItem = styled.div<{ $isRead?: boolean }>`
+const PartItem = styled(Link)<{ $isRead?: boolean }>`
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 0.875rem 1.25rem;
-  cursor: pointer;
   transition: background-color 0.15s ease;
   border-bottom: 1px solid var(--border-color, #eaeaea);
 
@@ -94,8 +94,14 @@ const PartItem = styled.div<{ $isRead?: boolean }>`
     border-bottom: none;
   }
 
-  &:hover {
+  &:hover,
+  &:focus-visible {
     background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.05));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color, #0066cc);
+    outline-offset: -2px;
   }
 
   opacity: ${props => props.$isRead ? 0.7 : 1};
@@ -231,7 +237,7 @@ const CourseDetailPage: React.FC = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [notFound, setNotFound] = useState(false);
 
   const readPartIds = useMemo(() => {
     const history = getReadingHistory();
@@ -246,13 +252,18 @@ const CourseDetailPage: React.FC = () => {
     try {
       if (!courseId) return;
       setError(null);
+      setNotFound(false);
       setLoading(true);
       setCourse(null);
       const data = await getCourseById(courseId);
       setCourse(data);
     } catch (err) {
-      setError('加载课程信息失败，请稍后再试');
-      console.error('Error fetching course:', err);
+      if (isNotFoundError(err)) {
+        setNotFound(true);
+      } else {
+        setError('加载课程信息失败，请稍后再试');
+        console.error('Error fetching course:', err);
+      }
     } finally {
       setLoading(false);
     }
@@ -262,9 +273,9 @@ const CourseDetailPage: React.FC = () => {
     fetchCourse();
   }, [fetchCourse]);
 
-  const handlePartClick = (partId: string) => {
-    navigate(`/courses/${courseId}/parts/${partId}`);
-  };
+  if (notFound) {
+    return <NotFoundPage message="这门课程不存在，可能已经下线或者地址有误。" />;
+  }
 
   return (
     <PageContainer>
@@ -346,7 +357,7 @@ const CourseDetailPage: React.FC = () => {
               {course.parts.map((part, index) => {
                 const isRead = readPartIds.has(part.id);
                 return (
-                  <PartItem key={part.id} $isRead={isRead} onClick={() => handlePartClick(part.id)}>
+                  <PartItem key={part.id} to={`/courses/${courseId}/parts/${part.id}`} $isRead={isRead}>
                     <PartNumber>{index}</PartNumber>
                     <PartContent>
                       <PartTitle>{part.title}</PartTitle>

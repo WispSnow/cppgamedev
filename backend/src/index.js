@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const dotenv = require('dotenv');
 const coursesRouter = require('./routes/courses');
 const troubleshootingRouter = require('./routes/troubleshooting');
@@ -37,16 +36,12 @@ app.get('/api/search', (req, res) => {
   res.json(results);
 });
 
-// 静态文件服务（生产环境使用）
-if (process.env.NODE_ENV === 'production') {
-  // 提供前端构建文件夹作为静态资源
-  app.use(express.static(path.join(__dirname, '../../frontend/build')));
-
-  // 处理所有其他请求，返回index.html
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
-  });
-}
+// 未匹配的请求一律返回 404 JSON。
+// 前端静态文件由 nginx 提供，后端不再兜底返回 index.html，
+// 否则 /api/任意路径 都会得到 200 + HTML。
+app.use((req, res) => {
+  res.status(404).json({ message: '接口不存在' });
+});
 
 // 启动服务器
 app.listen(PORT, HOST, async () => {

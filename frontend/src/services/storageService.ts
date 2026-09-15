@@ -9,11 +9,23 @@ const HISTORY_KEY = 'cppgamedev_history';
 const BOOKMARKS_KEY = 'cppgamedev_bookmarks';
 const MAX_HISTORY_ITEMS = 10;
 
+// 读取本地存储里的列表。数据被改坏（不是数组、条目缺字段）时按空列表处理，
+// 否则后续的 filter / some 调用会让页面崩溃。
+const readList = (key: string): HistoryItem[] => {
+  const json = localStorage.getItem(key);
+  if (!json) return [];
+  const value: unknown = JSON.parse(json);
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (item: any): item is HistoryItem =>
+      !!item && typeof item.courseId === 'string' && typeof item.partId === 'string'
+  );
+};
+
 // Reading History
 export const saveReadingProgress = (courseId: string, partId: string, title: string) => {
   try {
-    const historyJson = localStorage.getItem(HISTORY_KEY);
-    let history: HistoryItem[] = historyJson ? JSON.parse(historyJson) : [];
+    let history = readList(HISTORY_KEY);
 
     // Remove existing entry for this chapter if it exists (to move it to top)
     history = history.filter(item => !(item.courseId === courseId && item.partId === partId));
@@ -39,8 +51,7 @@ export const saveReadingProgress = (courseId: string, partId: string, title: str
 
 export const getReadingHistory = (): HistoryItem[] => {
   try {
-    const historyJson = localStorage.getItem(HISTORY_KEY);
-    return historyJson ? JSON.parse(historyJson) : [];
+    return readList(HISTORY_KEY);
   } catch (e) {
     console.warn('Failed to get reading history', e);
     return [];
@@ -50,8 +61,7 @@ export const getReadingHistory = (): HistoryItem[] => {
 // Bookmarks
 export const toggleBookmark = (courseId: string, partId: string, title: string) => {
   try {
-    const bookmarksJson = localStorage.getItem(BOOKMARKS_KEY);
-    let bookmarks: HistoryItem[] = bookmarksJson ? JSON.parse(bookmarksJson) : [];
+    const bookmarks = readList(BOOKMARKS_KEY);
 
     const existingIndex = bookmarks.findIndex(item => item.courseId === courseId && item.partId === partId);
 
@@ -78,8 +88,7 @@ export const toggleBookmark = (courseId: string, partId: string, title: string) 
 
 export const getBookmarks = (): HistoryItem[] => {
   try {
-    const bookmarksJson = localStorage.getItem(BOOKMARKS_KEY);
-    return bookmarksJson ? JSON.parse(bookmarksJson) : [];
+    return readList(BOOKMARKS_KEY);
   } catch (e) {
     console.warn('Failed to get bookmarks', e);
     return [];

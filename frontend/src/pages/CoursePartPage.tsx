@@ -2,19 +2,23 @@ import React, { useCallback, useEffect, useState, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
-import { getCourseById, getCoursePart } from '../services/courseService';
+import { getCourseById, getCoursePart, isNotFoundError } from '../services/courseService';
 import { Course, CoursePart } from '../types';
 import ChapterNavigation from '../components/ChapterNavigation';
 import TableOfContents from '../components/TableOfContents';
 import ProgressIndicator from '../components/ProgressIndicator';
 import { useTheme } from '../context/ThemeContext';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 import ErrorState from '../components/ErrorState';
 import { ArticleSkeleton, Skeleton } from '../components/Skeleton';
 import { saveReadingProgress, toggleBookmark, isBookmarked } from '../services/storageService';
-import { useMarkdownComponents } from '../hooks/useMarkdownComponents';
+import {
+  markdownRehypePlugins,
+  markdownRemarkPlugins,
+  useMarkdownComponents,
+} from '../hooks/useMarkdownComponents';
 import ScrollToTopButton from '../components/ScrollToTopButton';
+import SEOHelmet from '../components/SEOHelmet';
+import NotFoundPage from './NotFoundPage';
 
 const GiscusComments = React.lazy(() => import('../components/GiscusComments'));
 
@@ -81,9 +85,12 @@ const MarkdownContainer = styled.div`
   color: var(--text-color, #333);
   font-size: 1rem;
 
-  h1 {
+  /* Markdown 里的一级标题渲染成 h2（页面标题才是 h1），这里保留原来一级标题的外观 */
+  h2[data-md-h1] {
     margin-top: 2.5rem;
     margin-bottom: 1rem;
+    padding-bottom: 0;
+    border-bottom: none;
     font-size: 1.75rem;
     color: var(--text-color, #333);
   }
@@ -229,11 +236,13 @@ const CoursePartPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bookmarked, setBookmarked] = useState(false);
+  const [notFound, setNotFound] = useState(false);
   const { theme } = useTheme();
 
   const fetchCourseAndPart = useCallback(async () => {
     try {
       setError(null);
+      setNotFound(false);
       setLoading(true);
       setCourse(null);
       setPart(null);
@@ -245,6 +254,10 @@ const CoursePartPage: React.FC = () => {
         ]);
 
         if (courseData.status === 'rejected') {
+          if (isNotFoundError(courseData.reason)) {
+            setNotFound(true);
+            return;
+          }
           throw courseData.reason;
         }
         setCourse(courseData.value);
@@ -252,6 +265,8 @@ const CoursePartPage: React.FC = () => {
         if (partData.status === 'fulfilled') {
           setPart(partData.value);
           saveReadingProgress(courseData.value.id, partData.value.id, partData.value.title);
+        } else if (isNotFoundError(partData.reason)) {
+          setNotFound(true);
         } else {
           console.error('获取章节内容失败:', partData.reason);
           const foundPart = courseData.value.parts?.find(p => p.id === partId);
@@ -301,6 +316,10 @@ const CoursePartPage: React.FC = () => {
 
   const hasContent = !loading && !error && course && part;
 
+  if (notFound) {
+    return <NotFoundPage message="这个章节不存在，可能已经调整或者地址有误。" />;
+  }
+
   return (
     <>
       {course && (
@@ -334,6 +353,13 @@ const CoursePartPage: React.FC = () => {
 
         {hasContent && (
           <>
+            <SEOHelmet
+              title={`${part.title} - ${course.title} | C++游戏开发教程`}
+              description={part.description || course.description}
+              keywords={`C++,游戏开发,${course.title},${part.title}`}
+              canonical={`/courses/${course.id}/parts/${part.id}`}
+              ogImage={course.coverImage}
+            />
             <ProgressIndicator
               currentPartId={partId || ''}
               allParts={course.parts || []}
@@ -357,8 +383,8 @@ const CoursePartPage: React.FC = () => {
               <MarkdownContainer>
                 <ReactMarkdown
                   components={components}
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
+                  remarkPlugins={markdownRemarkPlugins}
+                  rehypePlugins={markdownRehypePlugins}
                 >
                   {part.content}
                 </ReactMarkdown>

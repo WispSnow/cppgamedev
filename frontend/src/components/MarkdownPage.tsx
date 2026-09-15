@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
 import { useTheme } from '../context/ThemeContext';
-import VideoPlayer from './VideoPlayer';
-import { useMarkdownComponents } from '../hooks/useMarkdownComponents';
+import {
+  markdownRehypePlugins,
+  markdownRemarkPlugins,
+  useMarkdownComponents,
+} from '../hooks/useMarkdownComponents';
 
 const PageContainer = styled.div`
   max-width: 900px;
@@ -61,6 +62,11 @@ const MarkdownContainer = styled.div`
     margin-top: 2rem;
     margin-bottom: 1rem;
     color: var(--text-color, #333);
+  }
+
+  /* Markdown 里的一级标题渲染成 h2（页面标题才是 h1），保留一级标题的字号 */
+  h2[data-md-h1] {
+    font-size: 2em;
   }
   
   p {
@@ -206,63 +212,7 @@ const MarkdownPage: React.FC<MarkdownPageProps> = ({ title, contentUrl }) => {
     fetchContent();
   }, [contentUrl]);
 
-  // Memoize the video div handler separately so the reference is stable
-  const videoDivComponent = useMemo(() => {
-    const VideoDiv = ({ node, children, ...props }: any) => {
-      if (node && node.properties && node.properties.className) {
-        const className = node.properties.className;
-
-        if (Array.isArray(className) && className.includes('videos-row')) {
-          return <div className="videos-row">{children}</div>;
-        }
-
-        if (Array.isArray(className)) {
-          const nodeChildren = node.children || [];
-
-          const iframeElement = nodeChildren.find(
-            (child: any) => child.tagName === 'iframe'
-          );
-
-          if (iframeElement && iframeElement.properties && iframeElement.properties.src) {
-            const src = iframeElement.properties.src;
-
-            if (className.includes('video-container') && src.includes('player.bilibili.com')) {
-              const bvidMatch = src.match(/bvid=([^&]+)/);
-              const pageMatch = src.match(/page=([^&]+)/);
-
-              if (bvidMatch && bvidMatch[1]) {
-                const bvid = bvidMatch[1];
-                const page = pageMatch && pageMatch[1] ? parseInt(pageMatch[1], 10) : 1;
-                return <VideoPlayer videoId={bvid} platform="bilibili" page={page} title="点击播放视频" />;
-              }
-            }
-
-            if (className.includes('youtube-video-container') || src.includes('youtube.com/embed')) {
-              let videoId = '';
-              if (src.includes('youtube.com/embed/')) {
-                videoId = src.split('/embed/')[1]?.split('?')[0];
-              } else if (src.includes('youtube.com/watch')) {
-                const match = src.match(/[?&]v=([^&]+)/);
-                if (match && match[1]) {
-                  videoId = match[1];
-                }
-              }
-              if (videoId) {
-                return <VideoPlayer videoId={videoId} platform="youtube" title="点击播放YouTube视频" />;
-              }
-            }
-          }
-        }
-      }
-
-      return <div {...props}>{children}</div>;
-    };
-    return { div: VideoDiv };
-  }, []);
-
-  const components = useMarkdownComponents(theme, {
-    extraComponents: videoDivComponent,
-  });
+  const components = useMarkdownComponents(theme);
 
   if (loading) return <LoadingMessage>加载内容中...</LoadingMessage>;
   if (error) return <ErrorMessage>{error}</ErrorMessage>;
@@ -272,8 +222,8 @@ const MarkdownPage: React.FC<MarkdownPageProps> = ({ title, contentUrl }) => {
       <PageTitle>{title}</PageTitle>
       <MarkdownContainer>
         <ReactMarkdown 
-          remarkPlugins={[remarkGfm]} 
-          rehypePlugins={[rehypeRaw]} 
+          remarkPlugins={markdownRemarkPlugins} 
+          rehypePlugins={markdownRehypePlugins} 
           components={components}
         >
           {content}

@@ -23,13 +23,23 @@ const VideoContainer = styled.div`
   }
 `;
 
-const Thumbnail = styled.div<{ thumbnailUrl: string }>`
+const Thumbnail = styled.button<{ $thumbnailUrl: string }>`
+  display: block;
+  padding: 0;
+  border: none;
+  font: inherit;
+
+  &:focus-visible {
+    outline: 3px solid var(--primary-color, #0066cc);
+    outline-offset: 2px;
+  }
+
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url(${props => props.thumbnailUrl});
+  background-image: url(${props => props.$thumbnailUrl});
   background-size: cover;
   background-position: center;
   cursor: pointer;
@@ -40,7 +50,7 @@ const Thumbnail = styled.div<{ thumbnailUrl: string }>`
   }
 `;
 
-const PlayButton = styled.div`
+const PlayButton = styled.span`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -69,7 +79,7 @@ const PlayButton = styled.div`
   }
 `;
 
-const VideoLabel = styled.div`
+const VideoLabel = styled.span`
   position: absolute;
   bottom: 16px;
   left: 16px;
@@ -86,7 +96,7 @@ const VideoLabel = styled.div`
   }
 `;
 
-const PlatformLogo = styled.div<{ platform: VideoType }>`
+const PlatformLogo = styled.span`
   position: absolute;
   top: 16px;
   right: 16px;
@@ -178,7 +188,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       case 'bilibili':
         return {
           defaultThumbnail: `https://pic.rmb.bdstatic.com/bjh/52a33d9773b51fb7ede1e46d3af1b3bd.jpeg`,
-          embedUrl: `//player.bilibili.com/player.html?bvid=${videoId}&page=${page}&danmaku=1&high_quality=1&as_wide=1&allowfullscreen=true`,
+          embedUrl: `https://player.bilibili.com/player.html?bvid=${videoId}&page=${page}&autoplay=1&danmaku=0&high_quality=1&as_wide=1&allowfullscreen=true`,
           platformName: '哔哩哔哩'
         };
       case 'youtube':
@@ -202,13 +212,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   return (
     <VideoContainer>
       {!isPlaying ? (
-        <Thumbnail 
-          onClick={handlePlay} 
-          thumbnailUrl={actualThumbnail}
+        <Thumbnail
+          type="button"
+          onClick={handlePlay}
+          $thumbnailUrl={actualThumbnail}
+          aria-label={`${title}（${platformName}）`}
         >
           <PlayButton />
           <VideoLabel>{title}</VideoLabel>
-          <PlatformLogo platform={platform}>{platformName}</PlatformLogo>
+          <PlatformLogo>{platformName}</PlatformLogo>
         </Thumbnail>
       ) : (
         <>

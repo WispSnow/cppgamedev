@@ -4,6 +4,7 @@ import styled, { keyframes } from 'styled-components';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { ThemeProvider } from './context/ThemeContext';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Route-level code splitting: each page is loaded on demand
 const HomePage = React.lazy(() => import('./pages/HomePage'));
@@ -19,7 +20,7 @@ const ContactPage = React.lazy(() => import('./pages/ContactPage'));
 const RoadmapPage = React.lazy(() => import('./pages/RoadmapPage'));
 const FAQPage = React.lazy(() => import('./pages/FAQPage'));
 const CollaboratePage = React.lazy(() => import('./pages/CollaboratePage'));
-const MarkdownPage = React.lazy(() => import('./components/MarkdownPage'));
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 const AppContainer = styled.div`
   display: flex;
@@ -69,6 +70,8 @@ function AnimatedRoutes() {
   usePageTracking();
   return (
     <MainContent key={location.pathname} $routeKey={location.pathname}>
+      {/* 路由级错误边界：发版后旧 chunk 加载失败时自动刷新，不会整页白屏 */}
+      <ErrorBoundary>
       <Suspense fallback={<FallbackContainer>加载中...</FallbackContainer>}>
       <Routes location={location}>
         <Route path="/" element={<HomePage />} />
@@ -84,9 +87,10 @@ function AnimatedRoutes() {
         <Route path="/collaborate" element={<CollaboratePage />} />
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/test-video" element={<MarkdownPage title="视频测试" contentUrl="/content/test-video.md" />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
       </Suspense>
+      </ErrorBoundary>
     </MainContent>
   );
 }

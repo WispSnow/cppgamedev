@@ -1,8 +1,36 @@
 import React, { useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
+import bash from 'react-syntax-highlighter/dist/esm/languages/prism/bash';
+import c from 'react-syntax-highlighter/dist/esm/languages/prism/c';
+import cmake from 'react-syntax-highlighter/dist/esm/languages/prism/cmake';
+import cpp from 'react-syntax-highlighter/dist/esm/languages/prism/cpp';
+import diff from 'react-syntax-highlighter/dist/esm/languages/prism/diff';
+import glsl from 'react-syntax-highlighter/dist/esm/languages/prism/glsl';
+import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
 import { vs, vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import remarkGfm from 'remark-gfm';
+import remarkCjkFriendly from 'remark-cjk-friendly';
+import rehypeRaw from 'rehype-raw';
 import CopyButton from '../components/CopyButton';
+import VideoPlayer from '../components/VideoPlayer';
+
+// 只注册教程里实际用到的语言。全量 Prism 会把 277 种语言打进包里（约 570KB）。
+// 新增语言：从 react-syntax-highlighter/dist/esm/languages/prism/ 引入并在这里注册，
+// 未注册的语言会按纯文本显示。
+SyntaxHighlighter.registerLanguage('bash', bash);
+SyntaxHighlighter.registerLanguage('c', c);
+SyntaxHighlighter.registerLanguage('cmake', cmake);
+SyntaxHighlighter.registerLanguage('cpp', cpp);
+SyntaxHighlighter.registerLanguage('diff', diff);
+SyntaxHighlighter.registerLanguage('glsl', glsl);
+SyntaxHighlighter.registerLanguage('json', json);
+
+// 所有 Markdown 页面共用的插件。放在模块级，保证引用稳定。
+// remark-cjk-friendly：让 `**` 紧挨全角标点时（如 **组件（component）**是）也能正确加粗。
+export const markdownRemarkPlugins = [remarkGfm, remarkCjkFriendly];
+export const markdownRehypePlugins = [rehypeRaw];
 
 // --- Shared styled components for code blocks ---
 
@@ -116,6 +144,48 @@ function getSimpleCodeStyle(theme: string) {
   return theme === 'dark' ? vscDarkPlus : vs;
 }
 
+// --- Element renderers shared by every Markdown page ---
+
+// 页面自己渲染了标题 <h1>，Markdown 里的一级标题降为 <h2>，保证每页只有一个 h1。
+// data-md-h1 用来在各页面的样式里保留原来的一级标题外观。
+const MarkdownH1 = ({ node, children, ...props }: any) => (
+  <h2 data-md-h1="" {...props}>{children}</h2>
+);
+
+// 正文图片懒加载；教程图片大多没写 alt，缺省时按装饰图处理，避免读屏念出文件名。
+const MarkdownImage = ({ node, alt, ...props }: any) => (
+  <img alt={alt ?? ''} loading="lazy" decoding="async" {...props} />
+);
+
+// 站内链接走前端路由，不再整页刷新。
+const MarkdownLink = ({ node, href, children, ...props }: any) => {
+  if (typeof href === 'string' && href.startsWith('/') && !href.startsWith('//')) {
+    return <Link to={href} {...props}>{children}</Link>;
+  }
+  return <a href={href} {...props}>{children}</a>;
+};
+
+// B 站 / YouTube 嵌入改为点击后才加载播放器，其他 iframe 延迟加载。
+const MarkdownIframe = ({ node, src, title, ...props }: any) => {
+  const url = typeof src === 'string' ? src : '';
+
+  if (/(^|\/\/)player\.bilibili\.com\/player\.html/.test(url)) {
+    const params = new URLSearchParams(url.split('?')[1] || '');
+    const bvid = params.get('bvid');
+    if (bvid) {
+      const page = Number(params.get('page')) || 1;
+      return <VideoPlayer videoId={bvid} platform="bilibili" page={page} title={title || '点击播放视频'} />;
+    }
+  }
+
+  const youtube = url.match(/youtube(?:-nocookie)?\.com\/embed\/([\w-]+)/);
+  if (youtube) {
+    return <VideoPlayer videoId={youtube[1]} platform="youtube" title={title || '点击播放 YouTube 视频'} />;
+  }
+
+  return <iframe src={src} title={title} loading="lazy" {...props} />;
+};
+
 // --- Hook options ---
 
 interface UseMarkdownComponentsOptions {
@@ -125,8 +195,6 @@ interface UseMarkdownComponentsOptions {
   fullStyleOverrides?: boolean;
   /** Use CodeWrapper/CodeBlockWrapper around code blocks (default: true) */
   useCodeWrappers?: boolean;
-  /** Extra components to merge (e.g. div handler for video) */
-  extraComponents?: Record<string, React.ComponentType<any>>;
 }
 
 /**
@@ -138,7 +206,6 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
     showCopyButton = false,
     fullStyleOverrides = false,
     useCodeWrappers = true,
-    extraComponents,
   } = options;
 
   useCodeBlockThemeEffect(theme);
@@ -151,6 +218,8 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
       const codeString = String(children).replace(/\n$/, '');
 
       if (!inline && match) {
+        // 语言名不区分大小写（内容里有 ```CPP 这种写法）
+        const language = match[1].toLowerCase();
         if (useCodeWrappers) {
           return (
             <CodeWrapper>
@@ -158,7 +227,7 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
                 {showCopyButton && <CopyButton code={codeString} />}
                 <SyntaxHighlighter
                   style={codeStyle}
-                  language={match[1]}
+                  language={language}
                   PreTag="div"
                   customStyle={{ backgroundColor: 'transparent', border: 'none', margin: 0, padding: 0 }}
                   codeTagProps={{ style: { border: 'none', backgroundColor: 'transparent' } }}
@@ -173,7 +242,7 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
         return (
           <SyntaxHighlighter
             style={codeStyle as any}
-            language={match[1]}
+            language={language}
             PreTag="div"
             {...props}
           >
@@ -191,7 +260,10 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
 
     return {
       code: codeComponent,
-      ...extraComponents,
+      h1: MarkdownH1,
+      img: MarkdownImage,
+      a: MarkdownLink,
+      iframe: MarkdownIframe,
     };
-  }, [theme, showCopyButton, fullStyleOverrides, useCodeWrappers, extraComponents]);
+  }, [theme, showCopyButton, fullStyleOverrides, useCodeWrappers]);
 }

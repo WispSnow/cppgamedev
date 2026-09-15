@@ -17,3 +17,7 @@ export const getCoursePart = async (courseId: string, partId: string): Promise<C
   const response = await axios.get(`${baseUrl}/courses/${courseId}/parts/${partId}`);
   return response.data;
 };
+
+// 接口返回 404（课程或章节不存在）时为 true，用来和网络错误区分开
+export const isNotFoundError = (error: unknown): boolean =>
+  axios.isAxiosError(error) && error.response?.status === 404;

@@ -25,7 +25,7 @@ jest.mock(
       NavLink: Link,
       useParams: () => ({}),
       useNavigate: () => () => undefined,
-      useLocation: () => ({ pathname: '/' }),
+      useLocation: () => ({ pathname: '/', search: '' }),
     };
   },
   { virtual: true }
@@ -41,7 +41,9 @@ jest.mock('axios', () => {
   };
 });
 
+// 页面都是按需加载的，这里全部替换成空组件，只验证应用外壳能正常渲染
 jest.mock('./pages/HomePage', () => ({ __esModule: true, default: () => <div /> }));
+jest.mock('./pages/MainlinePage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/CourseDetailPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/CoursePartPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/CoursesPage', () => ({ __esModule: true, default: () => <div /> }));
@@ -50,17 +52,18 @@ jest.mock('./pages/TroubleshootingPage', () => ({ __esModule: true, default: () 
 jest.mock('./pages/TroubleshootingDetailPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/AboutPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/ContactPage', () => ({ __esModule: true, default: () => <div /> }));
+jest.mock('./pages/CollaboratePage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/RoadmapPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/FAQPage', () => ({ __esModule: true, default: () => <div /> }));
-jest.mock('./components/MarkdownPage', () => ({ __esModule: true, default: () => <div /> }));
+jest.mock('./pages/NotFoundPage', () => ({ __esModule: true, default: () => <div /> }));
 
 describe('App', () => {
   it('renders the main navigation links', () => {
     render(<App />);
 
-    expect(screen.getByText('主线')).toBeInTheDocument();
-    expect(screen.getByText('支线')).toBeInTheDocument();
-    expect(screen.getByText('疑难解决')).toBeInTheDocument();
-    expect(screen.getByText('全部任务')).toBeInTheDocument();
+    // 导航栏和页脚里有同名链接，所以用 getAllByText
+    for (const label of ['主线', '支线', '路线图', '疑难解决', 'FAQ']) {
+      expect(screen.getAllByText(label).length).toBeGreaterThan(0);
+    }
   });
 });

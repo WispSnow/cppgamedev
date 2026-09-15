@@ -26,6 +26,7 @@
     "react-syntax-highlighter": "^15.6.1",
     "rehype-highlight": "^7.0.2",
     "rehype-raw": "^7.0.0",
+    "remark-cjk-friendly": "^2.3.1",
     "remark-gfm": "^4.0.1",
     "styled-components": "^6.1.15",
     "typescript": "^4.9.5",
@@ -36,7 +37,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prebuild": "node ../scripts/generate-sitemap.js"
   },
   "eslintConfig": {
     "extends": [
