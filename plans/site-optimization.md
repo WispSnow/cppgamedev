@@ -87,7 +87,7 @@
 
 ## P3 · 工程与运维
 
-- [ ] **1. 测试与 CI**：~~修复失败的 `App.test.tsx`~~（2026-09-14 已修复，并新增 ErrorBoundary 测试）；部署前跑测试；重启后做健康检查；去掉 CI 里白装的后端 `npm ci`；`setup-node` 加 npm 缓存
+- [ ] **1. 测试与 CI**：~~修复失败的 `App.test.tsx`~~（2026-09-14 已修复，并新增 ErrorBoundary 测试）；部署前跑测试；~~重启后做健康检查~~（2026-09-15 已加；同时服务器上依赖没变就跳过 `npm ci`，安装限时 5 分钟且失败不重启）；去掉 CI 里白装的后端 `npm ci`；`setup-node` 加 npm 缓存
 - [ ] **2. 依赖升级**：`npm update`（react-router-dom 7.2.0→7.18.3、axios 1.8.1→1.20）
 - [ ] **3. 清理死代码**：`rehype-highlight`、`@types/react-router-dom@5`、`@types/styled-components`、`web-vitals`、`ThemeToggle.tsx`、`App.css`、`logo.svg`、`public/css/*`、`public/content/faq.md` 与 `roadmap.md`、`backend/src/test_search.js`、已被跟踪的 `frontend/build.log`、根目录 `package.json` 里的 helmet 依赖；`searchService.js:41` 引用了未定义的 `fs`
 - [ ] **4. 后端精简**：关闭 `x-powered-by`；去掉 `cors()` 与 `express.json()`（接口全是同源 GET）
