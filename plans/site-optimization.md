@@ -79,7 +79,8 @@
     - index.html 里的默认 description / keywords 现在带 `data-default-seo`，由 index.tsx 启动时移除（第 2 批换掉 react-helmet 时处理）；预渲染后每个页面的 HTML 自带自己的标签，这两个默认标签和 index.tsx 里的移除代码可以一起删掉
 
 - [ ] **2. 压缩与缓存**
-  - [ ] 开 brotli：线上 `gzip_comp_level 6` 与 gzip -9 只差 0.5%，预压缩 gzip 没有意义；brotli-11 实测全站 89 个 JS/CSS 1750KB → 1437KB（-18%），章节页 246KB → 204KB
+  - [x] 开 brotli（2026-09-16 构建期与服务器两侧都完成并上线）：线上 `gzip_comp_level 6` 与 gzip -9 只差 0.5%，预压缩 gzip 没有意义；brotli-11 实测全站 89 个 JS/CSS 1750KB → 1437KB（-18%），章节页 246KB → 204KB
+    - 上线后实测（服务器本机请求）：main.js 102KB（gzip）→ 87KB（br），最大的 chunk 原始 1.49MB → 332KB（br），首页 HTML 也是 br 且 `cache-control: no-cache` 不变
     - [x] 构建期生成 `.br`（2026-09-15）：新增 `scripts/precompress.js`，前端 `postbuild` 钩子自动执行，用 Node 自带 zlib，不加依赖；构建产物里 ≥1KB 的 js/css/html/json/svg/xml/txt/md 各压一份 `.br`，随 CI 的 rsync 一起上传
     - [x] 【服务器】2026-09-16 已开：装 `libnginx-mod-http-brotli-static` 1.0.0~rc-5build1，新建 `/etc/nginx/conf.d/brotli.conf`（`brotli_static on;`，nginx.conf 的 http 段本来就 include conf.d，没动 nginx.conf），`nginx -t` 通过后 reload（worker 已换新）
       - 验证（在服务器本机用 `--resolve` 请求，开发机的 curl 走透明代理测不准）：`Accept-Encoding: gzip` 仍返回 gzip，首页和 API 都是 200；`.br` 要等这批部署后才会命中
@@ -174,9 +175,14 @@
   - 结果：react / react-dom 19.3.0、react-router-dom 7.18.3、axios 1.20.0、mdast-util-to-hast 13.2.1、@babel/runtime 7.29.7；audit 76 → 68 条，进浏览器的包里剩下的主要是 mermaid 和 prismjs 两条依赖链
   - 🆕 styled-components 锁在 `~6.4.4`：6.5 起类型声明用了 TS 5.4 的 `NoInfer`，在 TS 4.9 下事件处理函数的参数被推断成隐式 any，构建失败；6.4.4 已不在 audit 名单里
   - 修改涉及：frontend/package.json、frontend/package-lock.json
-- [x] **3. 清理死代码**（2026-09-15 已完成，服务器上的 nginx 配置待处理）：`rehype-highlight`、`@types/react-router-dom@5`、`@types/styled-components`、`web-vitals`、`ThemeToggle.tsx`、`App.css`、`logo.svg`、`public/css/*`、`public/content/faq.md` 与 `roadmap.md`、`backend/src/test_search.js`、已被跟踪的 `frontend/build.log`、根目录 `package.json` 里的 helmet 依赖；`searchService.js:41` 引用了未定义的 `fs`
+- [x] **3. 清理死代码**（2026-09-15 已完成；服务器上遗留的 nginx `/css/` 已于 2026-09-16 删除）：`rehype-highlight`、`@types/react-router-dom@5`、`@types/styled-components`、`web-vitals`、`ThemeToggle.tsx`、`App.css`、`logo.svg`、`public/css/*`、`public/content/faq.md` 与 `roadmap.md`、`backend/src/test_search.js`、已被跟踪的 `frontend/build.log`、根目录 `package.json` 里的 helmet 依赖；`searchService.js:41` 引用了未定义的 `fs`
   - 顺带：根目录 `package.json` / `package-lock.json` 里只有这几个没用到的依赖，整个删掉；SearchModal 去掉 `REACT_APP_API_URL`，和其他请求一样走同源 `/api`；index.tsx 去掉 reportWebVitals
-  - [ ] 【服务器，需要 sudo 密码，由用户执行】nginx 里遗留的 `location /css/`（配置文件第 28–34 行，alias 到 `/var/www/html/css/`，里面还有 2025-03 的 tableStyles.css / videoStyles.css）：线上跑的还是第 1 批之前的构建，`index.html` 仍引用 `/css/`，**要等这批部署完、确认站点正常之后再删**；改前备份 `cppgamedev.conf`，`nginx -t` 通过再 reload
+  - [x] 【服务器】2026-09-16 已删掉 nginx 里遗留的 `location /css/`（配置第 28–34 行，alias 到 `/var/www/html/css/`）
+    - 顺序：先部署，确认整个构建目录不再引用 `/css/`（唯一匹配是 `/static/css/main.*.css` 里的子串），再删配置
+    - 做法：备份成 `cppgamedev.conf.bak.before-css-removal` → 删那 7 行 → 看 diff（`28,34d27`，其余一字未动）→ `nginx -t` 通过 → 单独 reload
+    - 验证：worker 年龄从 2616 秒归零；`/css/tableStyles.css` 由 `text/css` 变成 SPA 兜底的 `text/html`；首页 / API / 静态资源均 200，brotli 照常
+    - 回滚：`sudo cp /etc/nginx/sites-available/cppgamedev.conf.bak.before-css-removal /etc/nginx/sites-available/cppgamedev.conf && sudo nginx -t && sudo systemctl reload nginx`
+    - 剩余：`/var/www/html/css/` 里 2025-03 的两个 css 现在无人引用也访问不到，可以删（需要 sudo）
   - 修改涉及：删除 12 个文件，frontend/package.json（去掉 4 个依赖），searchService.js、SearchModal.tsx、index.tsx
 - [x] **4. 后端精简**（2026-09-15 已完成）：关闭 `x-powered-by`；去掉 `cors()` 与 `express.json()`（接口全是同源 GET）
   - `cors` 依赖一并删除，部署脚本里的依赖自检同步去掉 cors
