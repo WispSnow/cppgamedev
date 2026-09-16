@@ -38,7 +38,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({ width, height, radius, class
 
 const CardGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 2rem;
   margin-top: 2rem;
 `;
@@ -46,7 +46,7 @@ const CardGrid = styled.div`
 const Card = styled.div`
   background-color: var(--card-bg-color, #ffffff);
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
   overflow: hidden;
 `;
 
@@ -77,7 +77,7 @@ export const CourseCardSkeletonGrid: React.FC<{ count?: number }> = ({ count = 6
 
 const PartsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
 `;

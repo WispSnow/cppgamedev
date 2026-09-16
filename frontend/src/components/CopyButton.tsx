@@ -4,6 +4,7 @@ import styled from 'styled-components';
 const CopyButtonContainer = styled.button`
   position: absolute;
   top: 5px;
+  min-height: 32px;
   right: 5px;
   background-color: var(--subtle-button-bg, #f0f0f0);
   color: var(--text-color, #333);
@@ -41,7 +42,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ code }) => {
   };
   
   return (
-    <CopyButtonContainer onClick={handleCopy}>
+    <CopyButtonContainer onClick={handleCopy} aria-label="复制代码" aria-live="polite">
       {copied ? '已复制!' : '复制'}
     </CopyButtonContainer>
   );

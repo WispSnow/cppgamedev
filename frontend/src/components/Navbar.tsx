@@ -1,222 +1,135 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import SearchModal from './SearchModal';
+import Icon from './Icon';
 
-const NavbarContainer = styled.header`
-  background-color: var(--card-bg-color, #ffffff);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  padding: 1rem 0;
+const Header = styled.header`
   position: sticky;
   top: 0;
   z-index: 100;
-  transition: background-color 0.3s ease;
+  background: var(--card-bg-color);
+  border-bottom: 1px solid var(--border-color);
 `;
-
-const NavbarContent = styled.div`
-  max-width: 1200px;
+const Content = styled.div`
+  max-width: 1240px;
+  min-height: 76px;
+  padding: 0.8rem 2rem;
   margin: 0 auto;
-  padding: 0 2rem;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  position: relative;
+  gap: 1.5rem;
+  @media (max-width: 600px) { min-height: 68px; padding: 0.65rem 1rem; gap: 1rem; }
 `;
-
 const Logo = styled(Link)`
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--text-color, #333);
-  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--text-color);
+  font: 750 1.15rem var(--font-mono);
+  letter-spacing: -0.07em;
+  flex-shrink: 0;
+`;
+const Badge = styled.span`
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--text-color);
+  border-radius: 4px;
+  box-shadow: 3px 3px 0 var(--accent-fill);
+  font: 700 0.8rem var(--font-mono);
+`;
+const LogoText = styled.span`@media (max-width: 440px) { display: none; }`;
+const DesktopNav = styled.nav`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  z-index: 102;
-  letter-spacing: -0.03em;
-
-  &:hover {
-    opacity: 0.85;
-  }
+  gap: 1.3rem;
+  @media (max-width: 1000px) { display: none; }
 `;
-
-const LogoBracket = styled.span`
+const NavItem = styled(Link)`
+  color: var(--secondary-text-color);
+  font-size: 0.9rem;
+  padding: 0.65rem 0;
+  white-space: nowrap;
+  &[aria-current='page'] { color: var(--primary-color); box-shadow: 0 2px 0 var(--primary-color); }
+  &:hover { color: var(--primary-color); }
+`;
+const Actions = styled.div`display: flex; gap: 0.3rem; align-items: center;`;
+const IconButton = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--primary-color, #0066cc), #7c3aed);
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 700;
-  font-family: 'SFMono-Regular', Consolas, monospace;
-  flex-shrink: 0;
-`;
-
-const LogoText = styled.span`
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-
-  /* 平板宽度下导航项还是一整排，6 个入口加站名会把右侧的搜索和主题按钮挤出屏幕，
-     这一档只保留 C++ 徽章（徽章本身也是回首页的链接） */
-  @media (max-width: 1024px) and (min-width: 769px) {
-    display: none;
-  }
-
-  @media (max-width: 480px) {
-    display: none;
-  }
-`;
-
-const NavLinks = styled.nav<{ $isOpen: boolean }>`
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-
-  @media (max-width: 1024px) and (min-width: 769px) {
-    gap: 0.25rem;
-  }
-
-  @media (max-width: 768px) {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--card-bg-color, #ffffff);
-    flex-direction: column;
-    justify-content: center;
-    padding: 2rem;
-    gap: 2rem;
-    transform: ${props => props.$isOpen ? 'translateX(0)' : 'translateX(100%)'};
-    transition: transform 0.3s ease-in-out;
-    z-index: 101;
-  }
-`;
-
-const NavLink = styled(Link)<{ $isActive?: boolean }>`
-  color: ${props => props.$isActive ? 'var(--primary-color, #0066cc)' : 'var(--text-color, #333)'};
-  text-decoration: none;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: all 0.2s;
-  font-size: 1rem;
-  white-space: nowrap;
-  
-  &:hover {
-    color: var(--primary-color, #0066cc);
-    background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.1));
-  }
-
-  @media (max-width: 1024px) and (min-width: 769px) {
-    padding: 0.5rem 0.75rem;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 1.5rem;
-    width: 100%;
-    text-align: center;
-    padding: 1rem;
-  }
-`;
-
-const ActionGroup = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  z-index: 102;
-`;
-
-const IconButton = styled.button`
-  background: none;
-  border: none;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--text-color);
+  background: transparent;
   cursor: pointer;
-  color: var(--text-color, #333);
-  font-size: 1.2rem;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  border-radius: 4px;
-  
-  &:hover {
-    background-color: var(--toc-hover-bg, rgba(0, 0, 0, 0.05));
-  }
+  &:hover { background: var(--hover-bg-color); border-color: var(--border-color); }
 `;
-
-const HamburgerButton = styled(IconButton)`
-  display: none;
-  font-size: 1.5rem;
-  margin-left: 0.5rem;
-  
-  @media (max-width: 768px) {
-    display: flex;
-  }
+const MenuButton = styled(IconButton)`@media (min-width: 1001px) { display: none; }`;
+const MenuDialog = styled.dialog`
+  margin: 0 0 0 auto;
+  width: min(360px, 100%);
+  max-width: 100%;
+  max-height: 100dvh;
+  height: 100dvh;
+  padding: 1.5rem;
+  background: var(--card-bg-color);
+  color: var(--text-color);
+  border: none;
+  border-left: 1px solid var(--border-color);
+  &::backdrop { background: rgba(9, 18, 10, 0.55); }
+  nav { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 2rem; }
+  nav a { padding: 0.8rem; font-size: 1.1rem; border-radius: 4px; }
+  nav a[aria-current='page'] { box-shadow: none; background: var(--toc-active-bg); }
 `;
+const MenuHeading = styled.div`display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-weight: 600;`;
+const links = [
+  ['/mainline', '主线'], ['/side-quests', '支线'], ['/roadmap', '路线图'],
+  ['/troubleshooting', '疑难解决'], ['/faq', 'FAQ'], ['/projects', 'Works'],
+];
 
-const Navbar: React.FC = () => {
+export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-
-  // 不管怎么跳转（菜单项、搜索结果、浏览器前进后退），都收起手机菜单
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => { if (dialog.current?.open) dialog.current.close(); setMenuOpen(false); }, [location.pathname]);
   useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
-
-  // 菜单打开时锁住页面滚动，收起或组件卸载时恢复
-  useEffect(() => {
-    if (!isMenuOpen) return;
+    if (!menuOpen) return;
+    const previous = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isMenuOpen]);
-
-  const toggleMenu = () => setIsMenuOpen(open => !open);
-
-  const closeMenu = () => setIsMenuOpen(false);
-
-  const isActive = (path: string) => location.pathname === path;
-
-  return (
-    <NavbarContainer>
-      <NavbarContent>
-        <Logo to="/" onClick={closeMenu}>
-          <LogoBracket>C++</LogoBracket>
-          <LogoText>cppgamedev</LogoText>
-        </Logo>
-
-        <NavLinks $isOpen={isMenuOpen}>
-          <NavLink to="/mainline" $isActive={isActive('/mainline')} onClick={closeMenu}>主线</NavLink>
-          <NavLink to="/side-quests" $isActive={isActive('/side-quests')} onClick={closeMenu}>支线</NavLink>
-          <NavLink to="/roadmap" $isActive={isActive('/roadmap')} onClick={closeMenu}>路线图</NavLink>
-          <NavLink to="/troubleshooting" $isActive={isActive('/troubleshooting')} onClick={closeMenu}>疑难解决</NavLink>
-          <NavLink to="/faq" $isActive={isActive('/faq')} onClick={closeMenu}>FAQ</NavLink>
-          {/* 作品是课程之外的附属内容，放在最后；和 FAQ 一样用英文短标签，页面标题仍是「作品」 */}
-          <NavLink to="/projects" $isActive={isActive('/projects')} onClick={closeMenu}>Works</NavLink>
-        </NavLinks>
-
-        <ActionGroup>
-          <IconButton onClick={() => setIsSearchOpen(true)} aria-label="搜索">
-            🔍
-          </IconButton>
-          <IconButton onClick={toggleTheme} aria-label="切换主题">
-            {theme === 'light' ? '🌙' : '☀️'}
-          </IconButton>
-          <HamburgerButton onClick={toggleMenu} aria-label="菜单">
-            {isMenuOpen ? '✕' : '☰'}
-          </HamburgerButton>
-        </ActionGroup>
-
-      </NavbarContent>
-      {isSearchOpen && <SearchModal onClose={() => setIsSearchOpen(false)} />}
-    </NavbarContainer>
-  );
-};
-
-export default Navbar; 
+    return () => { document.body.style.overflow = previous; };
+  }, [menuOpen]);
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const query = window.matchMedia('(min-width: 1001px)');
+    const closeOnDesktop = () => { if (query.matches) dialog.current?.close(); };
+    query.addEventListener('change', closeOnDesktop);
+    return () => query.removeEventListener('change', closeOnDesktop);
+  }, []);
+  const navLinks = () => links.map(([path, label]) => <NavItem key={path} to={path} aria-current={location.pathname === path || location.pathname.startsWith(`${path}/`) ? 'page' : undefined}>{label}</NavItem>);
+  return <>
+    <Header><Content>
+      <Logo to="/" aria-label="cppgamedev 首页"><Badge>C++</Badge><LogoText>cppgamedev</LogoText></Logo>
+      <DesktopNav aria-label="主导航">{navLinks()}</DesktopNav>
+      <Actions>
+        <IconButton onClick={() => setIsSearchOpen(true)} aria-label="搜索"><Icon name="search" /></IconButton>
+        <IconButton onClick={toggleTheme} aria-label="切换主题" title={theme === 'light' ? '切换到深色主题' : '切换到浅色主题'}><Icon name={theme === 'light' ? 'moon' : 'sun'} /></IconButton>
+        <MenuButton onClick={() => { dialog.current?.showModal(); setMenuOpen(true); }} aria-label="菜单" aria-expanded={menuOpen} aria-controls="mobile-navigation"><Icon name="menu" /></MenuButton>
+      </Actions>
+    </Content></Header>
+    <MenuDialog ref={dialog} id="mobile-navigation" aria-label="站点导航" onClose={() => setMenuOpen(false)} onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
+      <MenuHeading>探索游戏开发<IconButton aria-label="关闭菜单" onClick={() => dialog.current?.close()}><Icon name="close" /></IconButton></MenuHeading>
+      <nav aria-label="移动端导航">{navLinks()}</nav>
+    </MenuDialog>
+    {isSearchOpen && <SearchModal onClose={() => setIsSearchOpen(false)} />}
+  </>;
+}

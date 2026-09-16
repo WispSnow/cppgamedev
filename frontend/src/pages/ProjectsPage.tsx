@@ -3,16 +3,17 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import SEOHelmet from '../components/SEOHelmet';
 import ProjectCard from '../components/ProjectCard';
+import { Eyebrow } from '../components/Workshop';
 import { projects } from '../data/projectsData';
 
 const PageContainer = styled.div`
-  max-width: 1000px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 2rem 1rem 3rem;
 `;
 
 const Header = styled.div`
-  text-align: center;
+  text-align: left;
   margin-bottom: 2.5rem;
 `;
 
@@ -30,7 +31,7 @@ const Subtitle = styled.p`
   color: var(--secondary-text-color);
   font-size: 1.05rem;
   max-width: 620px;
-  margin: 0 auto;
+  margin: 0;
   line-height: 1.7;
 `;
 
@@ -61,7 +62,8 @@ const ProjectsPage: React.FC = () => (
       canonical="/projects"
     />
     <Header>
-      <Title>作品</Title>
+      <Eyebrow>PLAYGROUND / 作品与实验</Eyebrow>
+      <Title>代码之外，游戏之中</Title>
       <Subtitle>
         课程之外做的小游戏和实验，技术栈不限于 C++，大多可以直接在浏览器里打开。
       </Subtitle>

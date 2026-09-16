@@ -1,149 +1,131 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useRef, useState } from 'react';
+import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { CoursePart } from '../types';
+import Icon from './Icon';
 
-interface TOCContainerProps {
-  $isVisible: boolean;
-}
-
-const TOCContainer = styled.div<TOCContainerProps>`
-  position: fixed;
-  right: ${props => props.$isVisible ? '2rem' : '-280px'};
-  top: 10rem;
-  width: 250px;
-  max-height: 70vh;
+const panel = css`
+  background: var(--card-bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+  padding: 1.2rem 0.8rem;
+`;
+const Sidebar = styled.aside`
+  ${panel}
+  position: sticky;
+  top: 100px;
+  align-self: start;
+  max-height: calc(100dvh - 124px);
   overflow-y: auto;
-  background-color: var(--toc-bg-color, #f8f9fa);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overscroll-behavior: contain;
+  @media (max-width: 1100px) { display: none; }
+`;
+const Title = styled.h2`
+  padding: 0 0.6rem 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.8rem;
+  small { display: block; font: 0.65rem/1.8 var(--font-mono); letter-spacing: 0.1em; color: var(--primary-color); margin-bottom: 0.35rem; }
+`;
+const List = styled.ol`list-style: none; margin: 0; padding: 0;`;
+const Chapter = styled(Link)`
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  border-left: 2px solid transparent;
+  padding: 0.6rem;
+  border-radius: 3px;
+  margin: 0.2rem 0;
+  font-size: 0.8rem;
+  color: var(--secondary-text-color);
+  span:first-child { font: 0.7rem var(--font-mono); flex-shrink: 0; }
+  &[aria-current='page'] { border-left-color: var(--primary-color); background: var(--toc-active-bg); color: var(--primary-color); font-weight: 600; }
+  &:hover { background: var(--toc-hover-bg); color: var(--text-color); }
+`;
+const Toggle = styled.button`
+  display: none;
+  @media (max-width: 1100px) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: fixed;
+    bottom: calc(2rem + 44px + 0.75rem);
+    right: 1.8rem;
+    min-height: 46px;
+    padding: 0.7rem 0.9rem;
+    z-index: 90;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--primary-color);
+    color: var(--on-primary-color);
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+`;
+const Drawer = styled.dialog`
+  ${panel}
+  margin: 0 0 0 auto;
+  width: min(360px, 100%);
+  max-width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  border-radius: 0;
   padding: 1rem;
-  /* 收起后设为 hidden，里面的链接就不会再被 Tab 键聚焦；等滑出动画结束再隐藏 */
-  visibility: ${props => props.$isVisible ? 'visible' : 'hidden'};
-  transition: right 0.3s ease, visibility 0s linear ${props => props.$isVisible ? '0s' : '0.3s'};
-  z-index: 100;
-
-  @media (max-width: 1200px) {
-    top: 80px;
-    height: calc(100vh - 100px);
-    right: ${props => props.$isVisible ? '0' : '-100%'};
-    width: 280px;
-    /* 回顶按钮浮在面板右下角，底部留白让最后几项能滚到它上方 */
-    padding-bottom: 6rem;
-    border-radius: 8px 0 0 8px;
-  }
+  &::backdrop { background: rgba(9, 18, 10, 0.55); }
 `;
-
-const TOCTitle = styled.h3`
-  margin-top: 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color, #eaeaea);
-  color: var(--text-color, #333);
-`;
-
-const TOCList = styled.ul`
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-`;
-
-const TOCItem = styled.li`
-  margin: 0.5rem 0;
-`;
-
-const TOCLink = styled(Link)<{ $active: boolean }>`
-  display: block;
-  padding: 0.5rem;
-  color: ${props => props.$active ? 'var(--primary-color, #0066cc)' : 'var(--text-color, #333)'};
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: ${props => props.$active ? 'bold' : 'normal'};
-  background-color: ${props => props.$active ? 'var(--toc-active-bg, rgba(0, 102, 204, 0.1))' : 'transparent'};
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: var(--toc-hover-bg, rgba(0, 0, 0, 0.05));
-  }
-`;
-
-const ToggleButton = styled.button<{ $isVisible: boolean }>`
-  position: fixed;
-  right: ${props => props.$isVisible ? '260px' : '1rem'};
-  top: 10rem;
-  width: 40px;
-  height: 40px;
-  background-color: var(--primary-color, #0066cc);
-  color: var(--on-primary-color, #fff);
-  border: none;
-  border-radius: 8px 0 0 8px;
+const Close = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem auto;
+  padding: 0.65rem;
+  min-height: 44px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--hover-bg-color);
+  color: var(--text-color);
   cursor: pointer;
-  z-index: 99;
-  transition: right 0.3s ease;
-  box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.1);
-  font-size: 1.2rem;
-
-  &:hover {
-    background-color: var(--primary-hover-color, #0055aa);
-  }
-
-  @media (max-width: 1200px) {
-    top: auto;
-    /* 放在回顶按钮（ScrollToTopButton：bottom 2rem、right 2rem、44px）正上方，两者不再重叠；
-       right 比它少 2px，让这个 48px 的按钮和回顶按钮中心对齐 */
-    bottom: calc(2rem + 44px + 0.75rem);
-    right: ${props => props.$isVisible ? '280px' : 'calc(2rem - 2px)'};
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  }
 `;
+interface Props { courseId: string; courseTitle?: string; parts: CoursePart[]; currentPartId?: string; }
 
-interface TableOfContentsProps {
-  courseId: string;
-  parts: CoursePart[];
-  currentPartId?: string;
+export default function TableOfContents({ courseId, courseTitle, parts, currentPartId }: Props) {
+  const sidebar = useRef<HTMLElement>(null);
+  const drawer = useRef<HTMLDialogElement>(null);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (drawer.current?.open) drawer.current.close();
+    setOpen(false);
+    const container = sidebar.current;
+    const active = container?.querySelector('[aria-current="page"]');
+    if (container && active) {
+      const panel = container.getBoundingClientRect();
+      const chapter = active.getBoundingClientRect();
+      if (chapter.top < panel.top || chapter.bottom > panel.bottom) {
+        container.scrollTop += chapter.top - panel.top - container.clientHeight / 2;
+      }
+    }
+  }, [currentPartId]);
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previous; };
+  }, [open]);
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const query = window.matchMedia('(min-width: 1101px)');
+    const closeOnDesktop = () => { if (query.matches) drawer.current?.close(); };
+    query.addEventListener('change', closeOnDesktop);
+    return () => query.removeEventListener('change', closeOnDesktop);
+  }, []);
+  const chapters = <List>{parts.map((part, index) => <li key={part.id}><Chapter to={`/courses/${courseId}/parts/${part.id}`} aria-current={part.id === currentPartId ? 'page' : undefined} onClick={() => drawer.current?.close()}><span>{String(index).padStart(2, '0')}</span><span>{part.title}</span></Chapter></li>)}</List>;
+  return <>
+    <Sidebar ref={sidebar} aria-label="课程目录"><Title><small>COURSE EXPLORER</small>{courseTitle || '课程目录'}</Title><nav aria-label="章节">{chapters}</nav></Sidebar>
+    <Toggle onClick={() => { drawer.current?.showModal(); setOpen(true); }} aria-label="显示目录" aria-expanded={open} aria-controls="course-toc"><Icon name="book" size={18} />目录</Toggle>
+    <Drawer ref={drawer} id="course-toc" aria-label="课程目录" onClose={() => setOpen(false)} onClick={event => { if (event.target === event.currentTarget) drawer.current?.close(); }}><Close onClick={() => drawer.current?.close()} aria-label="关闭目录"><Icon name="close" size={18} />关闭目录</Close><Title>{courseTitle || '课程目录'}</Title><nav aria-label="章节">{chapters}</nav></Drawer>
+  </>;
 }
-
-const TableOfContents: React.FC<TableOfContentsProps> = ({ courseId, parts, currentPartId }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  const toggleVisibility = () => {
-    setIsVisible(!isVisible);
-  };
-
-  return (
-    <>
-      <ToggleButton
-        onClick={toggleVisibility}
-        $isVisible={isVisible}
-        aria-label={isVisible ? "隐藏目录" : "显示目录"}
-        aria-expanded={isVisible}
-        aria-controls="course-toc"
-      >
-        {isVisible ? "≫" : "≪"}
-      </ToggleButton>
-
-      <TOCContainer id="course-toc" $isVisible={isVisible}>
-        <TOCTitle>目录</TOCTitle>
-        <TOCList>
-          {parts.map(part => (
-            <TOCItem key={part.id}>
-              <TOCLink
-                to={`/courses/${courseId}/parts/${part.id}`}
-                $active={currentPartId === part.id}
-              >
-                {part.title}
-              </TOCLink>
-            </TOCItem>
-          ))}
-        </TOCList>
-      </TOCContainer>
-    </>
-  );
-};
-
-export default TableOfContents;

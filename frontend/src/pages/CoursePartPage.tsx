@@ -19,15 +19,30 @@ import {
 import ScrollToTopButton from '../components/ScrollToTopButton';
 import SEOHelmet from '../components/SEOHelmet';
 import NotFoundPage from './NotFoundPage';
+import Icon from '../components/Icon';
 
 const GiscusComments = React.lazy(() => import('../components/GiscusComments'));
 
-const PageContainer = styled.div`
-  max-width: 900px;
+const ReaderLayout = styled.div`
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 2rem;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: var(--card-bg-color, #ffffff);
-  transition: background-color 0.3s ease;
+  align-items: start;
+  @media (max-width: 1100px) { display: block; max-width: 880px; }
+  @media (max-width: 600px) { padding: 1.25rem 1rem; }
+`;
+const PageContainer = styled.div`
+  grid-column: 2;
+  min-width: 0;
+  max-width: 840px;
+  padding: 2rem;
+  background: var(--card-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+  @media (max-width: 600px) { padding: 1.25rem 1rem; }
 `;
 
 const BackLink = styled(Link)`
@@ -49,11 +64,14 @@ const ContentHeader = styled.div`
 `;
 
 const PartTitle = styled.h1`
+  font-size: clamp(1.7rem, 3vw, 2.25rem);
+  line-height: 1.4;
+  letter-spacing: -0.035em;
   margin-bottom: 0.5rem;
   color: var(--text-color, #333);
 `;
 
-const CourseName = styled.h3`
+const CourseName = styled.p`
   margin-top: 0;
   color: var(--secondary-text-color, #666);
   font-weight: normal;
@@ -64,7 +82,14 @@ const BookmarkButton = styled.button<{ $active: boolean }>`
   border: none;
   cursor: pointer;
   font-size: 1.5rem;
-  color: ${props => props.$active ? '#ffc107' : 'var(--secondary-text-color, #999)'};
+  color: ${props => props.$active ? 'var(--primary-color)' : 'var(--secondary-text-color)'};
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  svg { fill: ${props => props.$active ? 'var(--toc-active-bg)' : 'none'}; }
   transition: all 0.2s;
   padding: 0.5rem;
   margin-left: 1rem;
@@ -76,6 +101,18 @@ const BookmarkButton = styled.button<{ $active: boolean }>`
 
 const HeaderLeft = styled.div`
   flex: 1;
+  min-width: 0;
+`;
+
+const ChapterIntro = styled.p`
+  padding: 1rem 1.2rem;
+  margin-bottom: 2rem;
+  border-left: 3px solid var(--primary-color);
+  background: var(--toc-active-bg);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  strong { display: block; color: var(--primary-color); font-size: 0.8rem; margin-bottom: 0.3rem; }
 `;
 
 const MarkdownContainer = styled.div`
@@ -83,7 +120,7 @@ const MarkdownContainer = styled.div`
   margin: 0 auto;
   line-height: 1.85;
   color: var(--text-color, #333);
-  font-size: 1rem;
+  font-size: 1.0625rem;
 
   /* Markdown 里的一级标题渲染成 h2（页面标题才是 h1），这里保留原来一级标题的外观 */
   h2[data-md-h1] {
@@ -178,7 +215,7 @@ const MarkdownContainer = styled.div`
   
   thead {
     background-color: var(--primary-color, #0066cc);
-    color: white;
+    color: var(--on-primary-color);
   }
   
   th {
@@ -213,7 +250,7 @@ const MarkdownContainer = styled.div`
     }
     
     thead {
-      background-color: #1a73e8;
+      background-color: var(--primary-color);
     }
     
     tbody tr {
@@ -350,10 +387,11 @@ const CoursePartPage: React.FC = () => {
   }
 
   return (
-    <>
+    <ReaderLayout>
       {course && (
         <TableOfContents
           courseId={courseId || ''}
+          courseTitle={course.title}
           parts={course.parts || []}
           currentPartId={partId}
         />
@@ -406,9 +444,11 @@ const CoursePartPage: React.FC = () => {
                 aria-label="收藏章节"
                 title={bookmarked ? "取消收藏" : "收藏章节"}
               >
-                {bookmarked ? '★' : '☆'}
+                <Icon name="bookmark" />
               </BookmarkButton>
             </ContentHeader>
+
+            {part.description && <ChapterIntro><strong>本节内容</strong>{part.description}</ChapterIntro>}
 
             {part.content ? (
               <MarkdownContainer>
@@ -433,7 +473,7 @@ const CoursePartPage: React.FC = () => {
       </PageContainer>
 
       <ScrollToTopButton />
-    </>
+    </ReaderLayout>
   );
 };
 

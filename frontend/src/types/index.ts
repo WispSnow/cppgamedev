@@ -6,6 +6,7 @@ export interface Course {
   title: string;
   description: string;
   parts?: CoursePart[];
+  partCount?: number;
   coverImage?: string;
   category?: CourseCategory;
   difficulty?: number;

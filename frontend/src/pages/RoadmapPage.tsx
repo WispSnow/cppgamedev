@@ -3,243 +3,84 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import SEOHelmet from '../components/SEOHelmet';
 import { roadmapData } from '../data/roadmapData';
+import { PageShell, Eyebrow, PageHeading, PageIntro } from '../components/Workshop';
+import Icon from '../components/Icon';
 
-const PageContainer = styled.div`
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+const Phase = styled.section`
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 2.5rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--border-color);
+  @media (max-width: 700px) { grid-template-columns: 1fr; gap: 1.5rem; }
 `;
-
-const Header = styled.div`
-  text-align: center;
-  margin-bottom: 4rem;
+const PhaseTitle = styled.div`
+  h2 { font-size: 1.35rem; margin: 0.4rem 0 0.7rem; }
+  p { font-size: 0.85rem; line-height: 1.8; color: var(--secondary-text-color); }
 `;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  color: var(--text-color);
-`;
-
-const Subtitle = styled.p`
-  color: var(--secondary-text-color);
-  font-size: 1.1rem;
-  max-width: 700px;
-  margin: 0 auto;
-  line-height: 1.6;
-`;
-
-const TimelineContainer = styled.div`
+const StepList = styled.ol`
+  list-style: none;
+  padding-left: 2.5rem;
   position: relative;
-  max-width: 800px;
-  margin: 0 auto;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 20px;
-    width: 2px;
-    background: var(--border-color, #e0e0e0);
-    
-    @media (min-width: 768px) {
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  }
+  &::before { content: ''; position: absolute; left: 12px; top: 20px; bottom: 20px; width: 1px; background: var(--border-color); }
 `;
-
-const TimelineItem = styled.div<{ $isLeft: boolean }>`
+const Step = styled.li`
   position: relative;
-  margin-bottom: 3rem;
-  width: 100%;
-  
-  @media (min-width: 768px) {
-    width: 50%;
-    margin-left: ${props => props.$isLeft ? '0' : '50%'};
-    padding-right: ${props => props.$isLeft ? '40px' : '0'};
-    padding-left: ${props => props.$isLeft ? '0' : '40px'};
-    text-align: ${props => props.$isLeft ? 'right' : 'left'};
-  }
-  
-  padding-left: 50px; // Mobile spacing
+  background: var(--card-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+  padding: 1.4rem;
+  & + & { margin-top: 1rem; }
+  h3 { font-size: 1.15rem; margin: 0.7rem 0 0.5rem; }
+  h3 a:hover { color: var(--primary-color); }
+  p { font-size: 0.9rem; color: var(--secondary-text-color); line-height: 1.85; }
+  @media (max-width: 500px) { padding: 1rem; }
 `;
-
-const IndexCircle = styled.div<{ $status: string; $isLeft?: boolean }>`
+const Number = styled.span`
   position: absolute;
-  left: 6px;
-  width: 30px;
-  height: 30px;
-  background-color: ${props => {
-    switch(props.$status) {
-      case 'completed': return 'var(--primary-color, #0066cc)';
-      case 'in-progress': return '#ff9800';
-      default: return 'var(--card-bg-color, #fff)';
-    }
-  }};
-  border: 2px solid ${props => {
-    switch(props.$status) {
-      case 'completed': return 'var(--primary-color, #0066cc)';
-      case 'in-progress': return '#ff9800';
-      default: return '#bdc3c7';
-    }
-  }};
-  border-radius: 50%;
-  color: ${props => props.$status === 'planned' ? '#bdc3c7' : props.$status === 'completed' ? 'var(--on-primary-color, #fff)' : '#fff'};
+  left: -2.5rem;
+  top: 1.3rem;
+  width: 24px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: var(--background-color);
+  color: var(--primary-color);
+  font: 0.8rem var(--font-mono);
+`;
+const Meta = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  z-index: 2;
-  font-size: 0.9rem;
-  
-  @media (min-width: 768px) {
-    left: ${props => props.$isLeft ? 'auto' : '-15px'};
-    right: ${props => props.$isLeft ? '-15px' : 'auto'};
-  }
-`;
-
-const ContentCard = styled.div<{ $status: string }>`
-  background: var(--card-bg-color, #fff);
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  border-left: 4px solid ${props => {
-    switch(props.$status) {
-      case 'completed': return 'var(--primary-color, #0066cc)';
-      case 'in-progress': return '#ff9800';
-      default: return '#bdc3c7';
-    }
-  }};
-  transition: transform 0.2s, box-shadow 0.2s;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-  }
-`;
-
-const CourseTitle = styled.h3`
-  margin: 0 0 0.5rem 0;
-  color: var(--text-color);
-  font-size: 1.25rem;
-  
-  a {
-    color: inherit;
-    text-decoration: none;
-    &:hover {
-      color: var(--primary-color, #0066cc);
-    }
-  }
-`;
-
-const TechStack = styled.div`
-  font-size: 0.85rem;
-  color: var(--primary-color, #0066cc);
-  margin-bottom: 0.8rem;
-  font-weight: 500;
-  font-family: monospace;
-`;
-
-const Description = styled.p`
-  color: var(--secondary-text-color);
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-`;
-
-const StatusBadge = styled.span<{ $status: string }>`
-  display: inline-block;
-  padding: 0.25rem 0.6rem;
-  border-radius: 4px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
   font-size: 0.75rem;
-  font-weight: bold;
-  background-color: ${props => {
-    switch(props.$status) {
-      case 'completed': return 'rgba(0, 102, 204, 0.1)';
-      case 'in-progress': return 'rgba(255, 152, 0, 0.1)';
-      default: return 'var(--hover-bg-color, #f5f5f5)';
-    }
-  }};
-  color: ${props => {
-    switch(props.$status) {
-      case 'completed': return 'var(--primary-color, #0066cc)';
-      case 'in-progress': return '#f57c00';
-      default: return 'var(--secondary-text-color, #999)';
-    }
-  }};
+  color: var(--secondary-text-color);
 `;
-
-const LearnMoreLink = styled(Link)`
-  display: inline-block;
-  margin-top: 0.5rem;
-  color: var(--primary-color, #0066cc);
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.9rem;
-  
-  &:hover {
-    text-decoration: underline;
-  }
+const Badge = styled.span<{ $status: string }>`
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  background: ${p => p.$status === 'completed' ? 'var(--toc-active-bg)' : p.$status === 'in-progress' ? 'var(--warning-bg)' : 'var(--hover-bg-color)'};
+  color: ${p => p.$status === 'completed' ? 'var(--primary-color)' : p.$status === 'in-progress' ? 'var(--warning-color)' : 'var(--secondary-text-color)'};
 `;
-
-const RoadmapPage: React.FC = () => {
-  return (
-    <PageContainer>
-      <SEOHelmet
-        title="课程路线图 | C++游戏开发"
-        description="系统化的C++游戏开发学习路线，从SDL入门到高级引擎架构。"
-        keywords="C++学习路线,游戏开发教程,编程路线图"
-        canonical="/roadmap"
-      />
-      
-      <Header>
-        <Title>学习路线图</Title>
-        <Subtitle>
-          一份精心设计的系统化学习指南，带您从零开始，循序渐进地掌握C++游戏开发的核心技术。
-        </Subtitle>
-      </Header>
-
-      <TimelineContainer>
-        {roadmapData.map((item, index) => {
-          const isLeft = index % 2 === 0;
-          return (
-            <TimelineItem key={item.id} $isLeft={isLeft}>
-              <IndexCircle $status={item.status} $isLeft={isLeft}>
-                {item.id}
-              </IndexCircle>
-              <ContentCard $status={item.status}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <StatusBadge $status={item.status}>
-                    {item.status === 'completed' ? '已发布' : item.status === 'in-progress' ? '制作中' : '计划中'}
-                  </StatusBadge>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--secondary-text-color, #999)', fontWeight: 500 }}>{item.gameType}</span>
-                </div>
-                
-                <CourseTitle>
-                  {item.courseId ? (
-                    <Link to={`/courses/${item.courseId}`}>{item.title}</Link>
-                  ) : (
-                    item.title
-                  )}
-                </CourseTitle>
-                
-                <TechStack>🛠 {item.techStack}</TechStack>
-                <Description>{item.description}</Description>
-                
-                {item.courseId && (
-                  <LearnMoreLink to={`/courses/${item.courseId}`}>
-                    开始学习 →
-                  </LearnMoreLink>
-                )}
-              </ContentCard>
-            </TimelineItem>
-          );
-        })}
-      </TimelineContainer>
-    </PageContainer>
-  );
-};
-
-export default RoadmapPage;
+const Tech = styled.div`font: 0.75rem/1.8 var(--font-mono); color: var(--primary-color); margin-bottom: 0.7rem; overflow-wrap: anywhere;`;
+const LearnLink = styled(Link)`display: inline-flex; align-items: center; gap: 0.7rem; margin-top: 1rem; color: var(--primary-color); font-size: 0.85rem; &:hover { text-decoration: underline; }`;
+const phases = [
+  { title: '让游戏跑起来', description: '从输入、画面到声音，完成第一款游戏。', start: 1, end: 1 },
+  { title: '把项目组织好', description: '随着项目变大，学习模块化、分层与 ECS 架构。', start: 2, end: 4 },
+  { title: '探索更大的世界', description: '从图形渲染走向复杂玩法，继续拓展游戏的边界。', start: 5, end: 8 },
+];
+export default function RoadmapPage() {
+  return <PageShell>
+    <SEOHelmet title="课程路线图 | C++游戏开发" description="系统化的C++游戏开发学习路线，从SDL入门到高级引擎架构。" keywords="C++学习路线,游戏开发教程,编程路线图" canonical="/roadmap" />
+    <Eyebrow>LEARNING MAP / 开发者的成长路线</Eyebrow><PageHeading>每做完一款游戏，向前一步。</PageHeading><PageIntro>从第一帧画面到完整的游戏系统，按阶段找到下一步。下面的标记表示课程发布状态，你可以自由进入任何已上线课程。</PageIntro>
+    {phases.map((phase, index) => <Phase key={phase.start} aria-labelledby={`phase-${phase.start}`}>
+      <PhaseTitle><Eyebrow>STAGE {String(index + 1).padStart(2, '0')}</Eyebrow><h2 id={`phase-${phase.start}`}>{phase.title}</h2><p>{phase.description}</p></PhaseTitle>
+      <StepList>{roadmapData.filter(item => item.id >= phase.start && item.id <= phase.end).map(item => <Step key={item.id}>
+        <Number>{String(item.id).padStart(2, '0')}</Number><Meta><Badge $status={item.status}>{item.status === 'completed' ? '已发布' : item.status === 'in-progress' ? '制作中' : '计划中'}</Badge><span>{item.gameType}</span></Meta>
+        <h3>{item.courseId ? <Link to={`/courses/${item.courseId}`}>{item.title}</Link> : item.title}</h3><Tech>{item.techStack}</Tech><p>{item.description}</p>
+        {item.courseId && <LearnLink to={`/courses/${item.courseId}`}>查看课程 <Icon name="arrow" size={16} /></LearnLink>}
+      </Step>)}</StepList>
+    </Phase>)}
+  </PageShell>;
+}

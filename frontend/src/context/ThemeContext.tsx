@@ -16,7 +16,7 @@ export const useTheme = () => useContext(ThemeContext);
 
 const STORAGE_KEY = 'theme';
 // 浏览器地址栏等界面的颜色，和导航栏背景（--card-bg-color）一致；public/index.html 的内联脚本里用的是同样的值
-const THEME_COLORS: Record<Theme, string> = { light: '#ffffff', dark: '#1e1e1e' };
+const THEME_COLORS: Record<Theme, string> = { light: '#fffef9', dark: '#1b241c' };
 
 // 用户手动切换过的主题；没切换过或读不到 localStorage 时为 null
 const getStoredTheme = (): Theme | null => {

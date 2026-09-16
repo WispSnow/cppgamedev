@@ -13,13 +13,14 @@ const Card = styled.article<{ $variant: CardVariant }>`
   grid-template-columns: ${props => (props.$variant === 'row' ? 'minmax(0, 300px) minmax(0, 1fr)' : '1fr')};
   background-color: var(--card-bg-color, #ffffff);
   border: 1px solid var(--border-color, #eaeaea);
-  border-radius: 10px;
+  border-radius: var(--card-radius);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow);
+    border-color: var(--primary-color);
   }
 
   &:focus-within {
@@ -63,7 +64,7 @@ const Cover = styled.img<{ $pixelated?: boolean }>`
   transition: transform 0.3s ease;
 
   ${Card}:hover & {
-    transform: scale(1.04);
+    transform: scale(1.025);
   }
 `;
 

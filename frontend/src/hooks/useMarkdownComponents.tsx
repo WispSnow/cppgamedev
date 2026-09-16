@@ -40,8 +40,20 @@ export const CodeWrapper = styled.div`
   border-radius: 8px;
   background-color: var(--code-block-bg, #f6f8fa);
   position: relative;
-  overflow: auto;
-  border: none;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+`;
+
+const CodeHeader = styled.div`
+  position: relative;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0.65rem 5rem 0.65rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--secondary-text-color);
+  font: 0.7rem/1.5 var(--font-mono);
+  letter-spacing: 0.08em;
 `;
 
 export const CodeBlockWrapper = styled.div`
@@ -231,8 +243,8 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
         if (useCodeWrappers) {
           return (
             <CodeWrapper>
+              <CodeHeader>{language.toUpperCase()}{showCopyButton && <CopyButton code={codeString} />}</CodeHeader>
               <CodeBlockWrapper>
-                {showCopyButton && <CopyButton code={codeString} />}
                 <SyntaxHighlighter
                   style={codeStyle}
                   language={language}
@@ -274,13 +286,12 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
         return <>{children}</>;
       }
       // 不用代码框的页面（疑难解决页）自己给 pre 定了样式
-      if (language || !useCodeWrappers) {
-        return <pre {...props}>{children}</pre>;
-      }
+      if (language) return <>{children}</>;
+      if (!useCodeWrappers) return <pre {...props}>{children}</pre>;
       return (
         <CodeWrapper>
+          <CodeHeader>TEXT{showCopyButton && <CopyButton code={getNodeText(node).replace(/\n$/, '')} />}</CodeHeader>
           <CodeBlockWrapper>
-            {showCopyButton && <CopyButton code={getNodeText(node).replace(/\n$/, '')} />}
             <pre {...props}>{children}</pre>
           </CodeBlockWrapper>
         </CodeWrapper>

@@ -7,92 +7,89 @@
 /* 主题颜色。<html data-theme> 由 public/index.html 的内联脚本在首屏绘制前设置
    （切换过就用切换的，否则跟随系统），之后由 context/ThemeContext.tsx 切换 */
 :root {
-  --background-color: #ffffff;
-  --text-color: #333333;
-  --secondary-text-color: #666666;
-  --primary-color: #0066cc;
-  --primary-hover-color: #0055aa;
-  /* 主色背景上的文字 */
+  color-scheme: light;
+  --font-body: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  --background-color: #f3f4ee;
+  --text-color: #233027;
+  --secondary-text-color: #59675c;
+  --primary-color: #416b16;
+  --primary-hover-color: #30530d;
   --on-primary-color: #ffffff;
-  --border-color: #eaeaea;
-  --hover-bg-color: #f5f5f5;
-  --error-color: #c62828;
-  --error-bg: rgba(229, 57, 53, 0.08);
+  --accent-fill: #d7efad;
+  --on-accent-color: #243714;
+  --border-color: #d8ded1;
+  --hover-bg-color: #e8eddf;
+  --card-bg-color: #fffef9;
+  --error-color: #b42323;
+  --error-bg: #fceaea;
   --on-error-color: #ffffff;
-  --success-color: #2e7d32;
-  --success-bg: rgba(76, 175, 80, 0.12);
-  --skeleton-base: rgba(0, 0, 0, 0.06);
-  --skeleton-highlight: rgba(0, 0, 0, 0.12);
-
-  /* 目录 */
-  --toc-bg-color: #f8f9fa;
-  --toc-active-bg: rgba(0, 102, 204, 0.1);
-  --toc-hover-bg: rgba(0, 0, 0, 0.05);
-
-  /* 进度条 */
-  --progress-bg-color: #f5f7fa;
-  --progress-bar-bg: #e0e0e0;
-
-  /* 卡片和代码 */
-  --card-bg-color: #ffffff;
+  --success-color: #356226;
+  --success-bg: #e5efd9;
+  --warning-color: #8a520b;
+  --warning-bg: #f8ebd5;
+  --skeleton-base: rgba(45, 66, 37, 0.07);
+  --skeleton-highlight: rgba(45, 66, 37, 0.13);
+  --toc-bg-color: #edf0e7;
+  --toc-active-bg: #e4eed8;
+  --toc-hover-bg: #e4e9db;
+  --progress-bg-color: #edf0e7;
+  --progress-bar-bg: #d9dfd0;
   --code-bg-color: transparent;
-  --code-block-bg: #f6f8fa;
-  --inline-code-bg: #f3f4f5;
-  --subtle-button-bg: #f0f0f0;
-  --subtle-button-hover-bg: #e0e0e0;
-
-  /* 首页 Hero 区域 */
-  --hero-bg-start: #eef4ff;
-  --hero-bg-end: #f0f0ff;
-  --hero-grid-color: rgba(0, 102, 204, 0.04);
-  --hero-badge-bg: rgba(0, 102, 204, 0.08);
+  --code-block-bg: #eef1e8;
+  --inline-code-bg: #e9edde;
+  --subtle-button-bg: #e6ebdd;
+  --subtle-button-hover-bg: #d8e1ca;
+  --hero-bg-start: #edf1e3;
+  --hero-bg-end: #f3f4ee;
+  --hero-grid-color: rgba(65, 107, 22, 0.08);
+  --hero-badge-bg: #e4eed8;
+  --card-shadow: 0 8px 24px rgba(35, 48, 39, 0.06);
+  --card-radius: 10px;
 }
 
 :root[data-theme='dark'] {
-  /* 滚动条、输入框等浏览器自带的部分也用暗色 */
   color-scheme: dark;
-  --background-color: #121212;
-  --text-color: #e0e0e0;
-  --secondary-text-color: #aaaaaa;
-  --primary-color: #4d9fff;
-  --primary-hover-color: #7ab6ff;
-  /* 暗色下主色偏亮，白字对比度只有 2.7:1，改用深色字 */
-  --on-primary-color: #0d1117;
-  --border-color: #333333;
-  --hover-bg-color: #2a2d31;
-  --error-color: #ef9a9a;
-  --error-bg: rgba(239, 83, 80, 0.12);
-  --on-error-color: #1a0f0f;
-  --success-color: #81c784;
-  --success-bg: rgba(129, 199, 132, 0.12);
-  --skeleton-base: rgba(255, 255, 255, 0.06);
-  --skeleton-highlight: rgba(255, 255, 255, 0.12);
-
-  --toc-bg-color: #1e1e1e;
-  --toc-active-bg: rgba(77, 159, 255, 0.15);
-  --toc-hover-bg: rgba(255, 255, 255, 0.05);
-
-  --progress-bg-color: #1e1e1e;
-  --progress-bar-bg: #333333;
-
-  --card-bg-color: #1e1e1e;
+  --background-color: #121813;
+  --text-color: #e9eedf;
+  --secondary-text-color: #abb8a9;
+  --primary-color: #c0e98a;
+  --primary-hover-color: #d4f5ac;
+  --on-primary-color: #1c2c13;
+  --accent-fill: #c0e98a;
+  --on-accent-color: #1c2c13;
+  --border-color: #354335;
+  --hover-bg-color: #283427;
+  --card-bg-color: #1b241c;
+  --error-color: #ffb4ab;
+  --error-bg: #3b2424;
+  --on-error-color: #291615;
+  --success-color: #b6daa0;
+  --success-bg: #2a3925;
+  --warning-color: #edbf7f;
+  --warning-bg: #3b3021;
+  --skeleton-base: rgba(220, 236, 202, 0.06);
+  --skeleton-highlight: rgba(220, 236, 202, 0.13);
+  --toc-bg-color: #1b241c;
+  --toc-active-bg: #2c3c24;
+  --toc-hover-bg: #283427;
+  --progress-bg-color: #1b241c;
+  --progress-bar-bg: #354335;
   --code-bg-color: transparent;
-  --code-block-bg: #161b22;
-  --inline-code-bg: #2d333b;
-  --subtle-button-bg: #30363d;
-  --subtle-button-hover-bg: #3d444d;
-
-  --hero-bg-start: #1a1a2e;
-  --hero-bg-end: #16213e;
-  --hero-grid-color: rgba(77, 159, 255, 0.06);
-  --hero-badge-bg: rgba(77, 159, 255, 0.12);
+  --code-block-bg: #172019;
+  --inline-code-bg: #2a3528;
+  --subtle-button-bg: #2c382a;
+  --subtle-button-hover-bg: #394a34;
+  --hero-bg-start: #202e1e;
+  --hero-bg-end: #121813;
+  --hero-grid-color: rgba(192, 233, 138, 0.07);
+  --hero-badge-bg: #2c3c24;
+  --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--background-color, #ffffff);
@@ -191,3 +188,12 @@ pre *, code * {
     font-size: 1.5rem;
   }
 }
+
+/* 键盘导航在两种主题下都保留清楚的焦点。 */
+:where(a, button, input, select, summary):focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 4px;
+}
+button, input, select { font: inherit; }
+:where(h1, h2, h3, [id]) { scroll-margin-top: 6rem; }
+::selection { background: var(--accent-fill); color: var(--on-accent-color); }

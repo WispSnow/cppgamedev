@@ -39,6 +39,7 @@ export const roadmapData: RoadmapItem[] = [
   {
     id: 4,
     title: "ECS与怪物战争",
+    courseId: "ecs-monster-war",
     techStack: "entt, imgui",
     gameType: "塔防游戏",
     status: "completed",

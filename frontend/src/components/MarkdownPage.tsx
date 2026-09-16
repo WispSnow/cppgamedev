@@ -124,7 +124,7 @@ const MarkdownContainer = styled.div`
   
   thead {
     background-color: var(--primary-color, #0066cc);
-    color: white;
+    color: var(--on-primary-color);
   }
   
   th {
@@ -159,7 +159,7 @@ const MarkdownContainer = styled.div`
     }
     
     thead {
-      background-color: #1a73e8;
+      background-color: var(--primary-color);
     }
     
     tbody tr {

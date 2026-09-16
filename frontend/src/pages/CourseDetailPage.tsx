@@ -8,11 +8,14 @@ import ErrorState from '../components/ErrorState';
 import { PartCardSkeletonList, Skeleton } from '../components/Skeleton';
 import { getReadingHistory } from '../services/storageService';
 import NotFoundPage from './NotFoundPage';
+import { Eyebrow, PrimaryLink } from '../components/Workshop';
+import Icon from '../components/Icon';
 
 const PageContainer = styled.div`
-  max-width: 1000px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 2rem;
+  @media (max-width: 600px) { padding: 1.25rem 1rem; }
 `;
 
 const BackLink = styled(Link)`
@@ -31,7 +34,7 @@ const CourseHeader = styled.div`
   margin-bottom: 2rem;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
   background-color: var(--card-bg-color, #ffffff);
   
   @media (max-width: 768px) {
@@ -40,8 +43,11 @@ const CourseHeader = styled.div`
 `;
 
 const CourseImage = styled.img`
-  width: 40%;
-  object-fit: cover;
+  width: 43%;
+  align-self: center;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  background: var(--code-block-bg);
   
   @media (max-width: 768px) {
     width: 100%;
@@ -52,6 +58,8 @@ const CourseImage = styled.img`
 const CourseInfo = styled.div`
   padding: 2rem;
   flex-grow: 1;
+  min-width: 0;
+  @media (max-width: 600px) { padding: 1.25rem; }
 `;
 
 const CourseTitle = styled.h1`
@@ -78,7 +86,7 @@ const PartsList = styled.div`
   flex-direction: column;
   background-color: var(--card-bg-color, #ffffff);
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
   overflow: hidden;
 `;
 
@@ -104,7 +112,7 @@ const PartItem = styled(Link)<{ $isRead?: boolean }>`
     outline-offset: -2px;
   }
 
-  opacity: ${props => props.$isRead ? 0.7 : 1};
+  background: ${props => props.$isRead ? 'var(--background-color)' : 'transparent'};
 `;
 
 const PartNumber = styled.span`
@@ -114,7 +122,8 @@ const PartNumber = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 4px;
+  font-family: var(--font-mono);
   background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.1));
   color: var(--primary-color, #0066cc);
   font-size: 0.8rem;
@@ -186,7 +195,7 @@ const CourseInfoSkeleton = styled.div`
 const DownloadSection = styled.div`
   background-color: var(--card-bg-color, #ffffff);
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
   padding: 1.5rem;
   margin-bottom: 2rem;
   display: flex;
@@ -207,6 +216,7 @@ const DownloadTitle = styled.h3`
 
 const ButtonGroup = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 `;
 
@@ -317,15 +327,17 @@ const CourseDetailPage: React.FC = () => {
           <CourseHeader>
             <CourseImage src={course.coverImage} alt={course.title} />
             <CourseInfo>
+              <Eyebrow>{course.category === 'side' ? 'SIDE QUEST / 支线专题' : 'MAIN QUEST / 主线课程'}</Eyebrow>
               <CourseTitle>{course.title}</CourseTitle>
               <CourseDescription>{course.description}</CourseDescription>
+              {course.parts?.[0] && <PrimaryLink to={`/courses/${course.id}/parts/${course.parts[0].id}`}>开始学习 <Icon name="arrow" size={18} /></PrimaryLink>}
             </CourseInfo>
           </CourseHeader>
 
           {course.resources && (
             <DownloadSection>
               <DownloadTitle>
-                📥 课程资源下载
+                课程资源与源码
               </DownloadTitle>
               <ButtonGroup>
                 {course.resources.githubLink && (
@@ -365,7 +377,7 @@ const CourseDetailPage: React.FC = () => {
                         <PartDescription>{part.description}</PartDescription>
                       )}
                     </PartContent>
-                    {isRead && <PartReadBadge>已读</PartReadBadge>}
+                    {isRead && <PartReadBadge>浏览过</PartReadBadge>}
                     <PartArrow>›</PartArrow>
                   </PartItem>
                 );

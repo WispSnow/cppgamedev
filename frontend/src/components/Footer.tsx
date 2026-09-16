@@ -10,7 +10,7 @@ const FooterContainer = styled.footer`
 `;
 
 const FooterContent = styled.div`
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 0 2rem;
 `;
@@ -57,8 +57,9 @@ const BrandBadge = styled.span`
   width: 1.6rem;
   height: 1.6rem;
   border-radius: 5px;
-  background: linear-gradient(135deg, var(--primary-color, #0066cc), #7c3aed);
-  color: #fff;
+  background: var(--accent-fill);
+  border: 1px solid var(--border-color);
+  color: var(--on-accent-color);
   font-size: 0.65rem;
   font-weight: 700;
   font-family: 'SFMono-Regular', Consolas, monospace;
@@ -192,7 +193,7 @@ const Footer: React.FC = () => {
           <BeianLink href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
             鄂ICP备2025098393号-1
           </BeianLink>
-          <span>Made with passion for game developers</span>
+          <span>LEARN. BUILD. PLAY.</span>
         </FooterBottom>
       </FooterContent>
     </FooterContainer>
