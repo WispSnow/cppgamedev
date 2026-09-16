@@ -32,15 +32,11 @@ const Logo = styled(Link)`
   letter-spacing: -0.07em;
   flex-shrink: 0;
 `;
-const Badge = styled.span`
+const Badge = styled.img`
   width: 34px;
   height: 34px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--text-color);
-  border-radius: 4px;
-  box-shadow: 3px 3px 0 var(--accent-fill);
-  font: 700 0.8rem var(--font-mono);
+  display: block;
+  border-radius: 7px;
 `;
 const LogoText = styled.span`@media (max-width: 440px) { display: none; }`;
 const DesktopNav = styled.nav`
@@ -118,7 +114,7 @@ export default function Navbar() {
   const navLinks = () => links.map(([path, label]) => <NavItem key={path} to={path} aria-current={location.pathname === path || location.pathname.startsWith(`${path}/`) ? 'page' : undefined}>{label}</NavItem>);
   return <>
     <Header><Content>
-      <Logo to="/" aria-label="cppgamedev 首页"><Badge>C++</Badge><LogoText>cppgamedev</LogoText></Logo>
+      <Logo to="/" aria-label="cppgamedev 首页"><Badge src="/brand/cppgamedev-logo-64.png?v=cpp-controller-3" alt="" width={34} height={34} /><LogoText>cppgamedev</LogoText></Logo>
       <DesktopNav aria-label="主导航">{navLinks()}</DesktopNav>
       <Actions>
         <IconButton onClick={() => setIsSearchOpen(true)} aria-label="搜索"><Icon name="search" /></IconButton>

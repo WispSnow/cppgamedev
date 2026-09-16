@@ -2,19 +2,18 @@
   "short_name": "C++游戏开发",
   "name": "C++游戏开发教程 - cppgamedev",
   "icons": [
-    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" },
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "src": "favicon.ico?v=cpp-controller-3",
+      "sizes": "64x64 48x48 32x32 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "logo192.png?v=cpp-controller-3",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "logo512.png?v=cpp-controller-3",
       "type": "image/png",
       "sizes": "512x512"
     }

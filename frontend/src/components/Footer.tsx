@@ -50,19 +50,11 @@ const BrandName = styled(Link)`
   letter-spacing: -0.03em;
 `;
 
-const BrandBadge = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.6rem;
-  height: 1.6rem;
+const BrandBadge = styled.img`
+  display: block;
+  width: 32px;
+  height: 32px;
   border-radius: 5px;
-  background: var(--accent-fill);
-  border: 1px solid var(--border-color);
-  color: var(--on-accent-color);
-  font-size: 0.65rem;
-  font-weight: 700;
-  font-family: 'SFMono-Regular', Consolas, monospace;
 `;
 
 const BrandDescription = styled.p`
@@ -150,7 +142,7 @@ const Footer: React.FC = () => {
         <FooterGrid>
           <FooterBrand>
             <BrandName to="/">
-              <BrandBadge>C++</BrandBadge>
+              <BrandBadge src="/brand/cppgamedev-logo-64.png?v=cpp-controller-3" alt="" width={32} height={32} />
               cppgamedev
             </BrandName>
             <BrandDescription>

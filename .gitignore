@@ -50,4 +50,7 @@ yarn-error.log*
 skills-lock.json
 backend/search_debug.log
 **/*.png
+!frontend/public/brand/*.png
+!frontend/public/logo192.png
+!frontend/public/logo512.png
 **/*.log

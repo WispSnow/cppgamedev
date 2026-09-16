@@ -24,7 +24,7 @@ const Hero = styled.section`
   @media (max-width: 700px) { grid-template-columns: 1fr; padding-top: 0.5rem; }
 `;
 const HeroTitle = styled.h1`
-  font-size: clamp(2.25rem, 4.3vw, 3.6rem);
+  font-size: clamp(2rem, 4vw, 3.25rem);
   letter-spacing: -0.055em;
   line-height: 1.25;
   margin: 1.25rem 0;
@@ -198,7 +198,7 @@ const HomePage: React.FC = () => {
     <Hero>
       <div>
         <Eyebrow>THE GAME DEV WORKSHOP / 游戏开发工作台</Eyebrow>
-        <HeroTitle>把第一行代码，<br />变成<em>自己的游戏。</em></HeroTitle>
+        <HeroTitle>从第一行代码开始，<br /><em>做出自己的游戏。</em></HeroTitle>
         <HeroIntro>从太空战机到迷你农场，在一个个完整项目里，学会 C++ 与游戏开发。</HeroIntro>
         <HeroActions>
           <PrimaryLink to={resumePath}>{latest ? '继续上次阅读' : '从太空战机开始'}<Icon name="arrow" size={18} /></PrimaryLink>

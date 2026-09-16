@@ -1,0 +1,9 @@
+# cppgamedev 品牌图标
+
+设计：手柄轮廓与 C++ 融合。左侧保留十字方向键，中央和右侧以粗体 C++ 替代常规游戏按键；既能识别游戏手柄，也能读出编程语言。深绿底与浅黄绿色延续网站主题，首页标题保持不变。
+
+使用内置 image_gen 生成。原图为 `cppgamedev-logo-original.png`；ImageMagick 仅用于缩放和导出 PNG / ICO。导航与页脚使用 64px PNG，浏览器使用 32px PNG 和包含 16/32/48/64px 的 favicon.ico，Apple 图标为 180px，应用清单图标为 192/512px。资源引用带有 `cpp-controller-3` 版本参数。
+
+## 生成提示词
+
+Use case: logo-brand. Create ONE finished production square brand icon for cppgamedev, a C++ GAME DEVELOPMENT teaching site. The mark MUST clearly communicate both a game controller AND the literal programming language C++. Design an integrated iconic controller: bold compact angular gamepad silhouette in warm lime #CDEB8B on a solid deep charcoal green #101A14 square background; two distinctive lower grips and subtle shoulders, pixel-inspired chamfered corners. Inside the gamepad body, left side has ONE small dark plus-shaped directional pad; right and center are occupied by a VERY LARGE bold dark monospaced 'C++' wordmark, with both plus signs perfectly visible on the same baseline. Exact text: C++ (uppercase C followed by exactly two plus signs). These characters replace the controller's normal action buttons, physically integrated as cutouts in the lime body, not a separate caption underneath. Prioritize C++ recognition: its wordmark spans at least half the full icon width, and the C and plus signs are chunky, optically balanced and legible at 32px. Gamepad uses about 88 percent canvas width and 65 percent canvas height, centered, minimal outer padding. Flat vector-like logo, only two solid colors, clean crisp edges. No play triangle, no arrows, no circles for action buttons, no cables, no extra words or labels, no gradient, no glow, no shadows, no texture, no perspective or 3D, no presentation board, no multiple variants, no watermark. Opaque background fills the entire square.
