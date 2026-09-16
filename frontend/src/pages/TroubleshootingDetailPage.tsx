@@ -63,6 +63,18 @@ const MarkdownContainer = styled.div`
     padding-left: 2rem;
   }
 
+  /* 正文链接带下划线，不只靠颜色和普通文字区分 */
+  a {
+    color: var(--primary-color, #0066cc);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+
+    &:hover {
+      text-decoration-thickness: 2px;
+    }
+  }
+
   pre, .react-syntax-highlighter {
     margin: 1.5rem 0;
     border-radius: 8px;

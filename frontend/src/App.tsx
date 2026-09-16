@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { ThemeProvider } from './context/ThemeContext';
 import ErrorBoundary from './components/ErrorBoundary';
+import ScrollManager from './components/ScrollManager';
 
 // Route-level code splitting: each page is loaded on demand
 const HomePage = React.lazy(() => import('./pages/HomePage'));
@@ -81,6 +82,8 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
+        {/* 进入新页面时回到顶部，后退时回到原来的阅读位置 */}
+        <ScrollManager />
         <AppContainer>
           <Navbar />
           <AnimatedRoutes />

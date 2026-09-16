@@ -32,18 +32,19 @@ Both servers must run simultaneously for local development. Frontend proxies `/a
 
 ### Frontend (`frontend/src/`)
 - **React 19 + TypeScript** with Create React App
-- **Styling:** styled-components (CSS-in-JS), theme via CSS variables and `ThemeContext`
+- **Styling:** styled-components (CSS-in-JS). Theme colors are CSS variables defined in `index.css` and switched by `<html data-theme>`: an inline script in `public/index.html` sets it before first paint (the stored choice, otherwise the system preference) and `context/ThemeContext.tsx` toggles it. Use the variables (e.g. `--on-primary-color` for text on primary-colored backgrounds) instead of hard-coded colors so dark mode keeps working
 - **Routing:** React Router v7 — routes defined in `App.tsx`
 - **Markdown rendering pipeline:** `react-markdown` + `rehype-raw` + `remark-gfm` + `react-syntax-highlighter` (Prism), custom renderers via `hooks/useMarkdownComponents.tsx`
 - **Mermaid diagrams:** ```` ```mermaid ```` fences render as diagrams via `components/MermaidDiagram.tsx` (the `mermaid` package is dynamically imported only on pages that contain one)
-- **API calls:** axios via service files in `services/` (`courseService.ts`, `troubleshootingService.ts`); `SearchModal` calls `/api/search` with `fetch`. `storageService.ts` wraps localStorage (bookmarks, reading progress)
+- **API calls:** `fetch` via service files in `services/` (`api.ts` holds the shared JSON helper and `isNotFoundError`; `courseService.ts` and `troubleshootingService.ts` take an optional `AbortSignal`); `SearchModal` calls `/api/search` directly. `storageService.ts` wraps localStorage (bookmarks, reading progress)
 - **Comments:** Giscus integration configured in `config/giscus.ts`
 - **Static data:** `data/roadmapData.ts` (roadmap), `data/faqData.tsx` (FAQ)
 - **Shared types:** `types/index.ts` — `Course`, `CoursePart`, `TroubleshootingArticle`, etc.
 - **Analytics:** GA4 (`G-JLHZH11YW4`) + 百度统计 (`_hmt`). `public/index.html` loads both only in production builds and turns off their automatic page views; `SEOHelmet` reports each page view through `utils/analytics.ts` once the page title is known. Every routed page must render `SEOHelmet` (pages that fetch data render it after the data arrives, so the reported title is final)
 
 #### Key components
-- `SEOHelmet` — page-level SEO meta tags via `react-helmet`; also reports the page view (see Analytics)
+- `SEOHelmet` — page-level `<title>` / `<meta>` / canonical tags using React 19's built-in metadata support (React hoists them into `<head>`; `index.tsx` removes the default description/keywords from `index.html` at startup so each exists once); also reports the page view (see Analytics)
+- `ScrollManager` — rendered in `App.tsx`; scrolls to the top on link navigation. On back / forward / reload it restores what was on screen: it records the element at the top of the viewport (DOM path + offset) and re-aligns to it once the async content renders, so lazy images that have not loaded yet do not throw the position off. Positions live in sessionStorage; a freshly opened page is never restored
 - `VideoPlayer` — lazy-load embedded Bilibili / YouTube iframe (click-to-play)
 - `MarkdownPage` — generic page that fetches and renders a static Markdown file from `frontend/public/content/` (takes `title` and `description`)
 - `TableOfContents` — slide-out drawer listing the current course's chapters, used in chapter pages
@@ -70,7 +71,7 @@ Both servers must run simultaneously for local development. Frontend proxies `/a
 There are two distinct content delivery patterns:
 
 **Course content (API-served):**
-Frontend page → axios call to `/api/courses/:id/parts/:partId` → backend reads Markdown file from disk → frontend renders with react-markdown
+Frontend page → `fetch` call to `/api/courses/:id/parts/:partId` → backend reads Markdown file from disk → frontend renders with react-markdown
 
 **Static info pages (directly served):**
 `MarkdownPage` component fetches `/content/{file}.md` directly from `frontend/public/content/` — no backend involved. Used by About, Contact, and Collaborate pages (FAQ and Roadmap render from `data/`).

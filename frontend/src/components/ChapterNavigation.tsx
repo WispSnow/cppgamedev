@@ -8,20 +8,26 @@ const NavContainer = styled.div`
   justify-content: space-between;
   margin-top: 3rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-color, #eee);
+
+  /* 手机上三栏并排太挤，标题一行只剩两三个字：上一章、下一章各占一行，反馈链接放最后 */
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 `;
 
 const NavLink = styled(Link)`
   display: flex;
   align-items: center;
-  color: #0066cc;
+  color: var(--primary-color, #0066cc);
   text-decoration: none;
   padding: 0.7rem 1rem;
   border-radius: 4px;
   transition: background-color 0.2s;
   
   &:hover {
-    background-color: #f0f5ff;
+    background-color: var(--toc-active-bg, #f0f5ff);
   }
 `;
 
@@ -37,18 +43,22 @@ const FeedbackLink = styled.a`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
+  color: var(--secondary-text-color, #666);
   text-decoration: none;
   padding: 0.7rem 1rem;
   border-radius: 4px;
   font-size: 0.9rem;
   transition: all 0.2s;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color, #eee);
 
   &:hover {
-    background-color: #f5f5f5;
-    color: #333;
-    border-color: #ccc;
+    background-color: var(--hover-bg-color, #f5f5f5);
+    color: var(--text-color, #333);
+    border-color: var(--secondary-text-color, #ccc);
+  }
+
+  @media (max-width: 600px) {
+    order: 1;
   }
 `;
 
@@ -63,7 +73,7 @@ const NavText = styled.span`
 
 const NavDirection = styled.span`
   font-size: 0.8rem;
-  color: #666;
+  color: var(--secondary-text-color, #666);
   margin-bottom: 0.2rem;
 `;
 
@@ -73,6 +83,10 @@ const NavTitle = styled.span`
 
 const Spacer = styled.div`
   width: 1rem;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 interface ChapterNavigationProps {

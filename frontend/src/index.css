@@ -4,6 +4,90 @@
   padding: 0;
 }
 
+/* 主题颜色。<html data-theme> 由 public/index.html 的内联脚本在首屏绘制前设置
+   （切换过就用切换的，否则跟随系统），之后由 context/ThemeContext.tsx 切换 */
+:root {
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --secondary-text-color: #666666;
+  --primary-color: #0066cc;
+  --primary-hover-color: #0055aa;
+  /* 主色背景上的文字 */
+  --on-primary-color: #ffffff;
+  --border-color: #eaeaea;
+  --hover-bg-color: #f5f5f5;
+  --error-color: #c62828;
+  --error-bg: rgba(229, 57, 53, 0.08);
+  --on-error-color: #ffffff;
+  --success-color: #2e7d32;
+  --success-bg: rgba(76, 175, 80, 0.12);
+  --skeleton-base: rgba(0, 0, 0, 0.06);
+  --skeleton-highlight: rgba(0, 0, 0, 0.12);
+
+  /* 目录 */
+  --toc-bg-color: #f8f9fa;
+  --toc-active-bg: rgba(0, 102, 204, 0.1);
+  --toc-hover-bg: rgba(0, 0, 0, 0.05);
+
+  /* 进度条 */
+  --progress-bg-color: #f5f7fa;
+  --progress-bar-bg: #e0e0e0;
+
+  /* 卡片和代码 */
+  --card-bg-color: #ffffff;
+  --code-bg-color: transparent;
+  --code-block-bg: #f6f8fa;
+  --inline-code-bg: #f3f4f5;
+  --subtle-button-bg: #f0f0f0;
+  --subtle-button-hover-bg: #e0e0e0;
+
+  /* 首页 Hero 区域 */
+  --hero-bg-start: #eef4ff;
+  --hero-bg-end: #f0f0ff;
+  --hero-grid-color: rgba(0, 102, 204, 0.04);
+  --hero-badge-bg: rgba(0, 102, 204, 0.08);
+}
+
+:root[data-theme='dark'] {
+  /* 滚动条、输入框等浏览器自带的部分也用暗色 */
+  color-scheme: dark;
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --secondary-text-color: #aaaaaa;
+  --primary-color: #4d9fff;
+  --primary-hover-color: #7ab6ff;
+  /* 暗色下主色偏亮，白字对比度只有 2.7:1，改用深色字 */
+  --on-primary-color: #0d1117;
+  --border-color: #333333;
+  --hover-bg-color: #2a2d31;
+  --error-color: #ef9a9a;
+  --error-bg: rgba(239, 83, 80, 0.12);
+  --on-error-color: #1a0f0f;
+  --success-color: #81c784;
+  --success-bg: rgba(129, 199, 132, 0.12);
+  --skeleton-base: rgba(255, 255, 255, 0.06);
+  --skeleton-highlight: rgba(255, 255, 255, 0.12);
+
+  --toc-bg-color: #1e1e1e;
+  --toc-active-bg: rgba(77, 159, 255, 0.15);
+  --toc-hover-bg: rgba(255, 255, 255, 0.05);
+
+  --progress-bg-color: #1e1e1e;
+  --progress-bar-bg: #333333;
+
+  --card-bg-color: #1e1e1e;
+  --code-bg-color: transparent;
+  --code-block-bg: #161b22;
+  --inline-code-bg: #2d333b;
+  --subtle-button-bg: #30363d;
+  --subtle-button-hover-bg: #3d444d;
+
+  --hero-bg-start: #1a1a2e;
+  --hero-bg-end: #16213e;
+  --hero-grid-color: rgba(77, 159, 255, 0.06);
+  --hero-badge-bg: rgba(77, 159, 255, 0.12);
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -47,6 +131,8 @@ a {
 img {
   max-width: 100%;
   height: auto;
+  /* 教程里有用 display:flex 并排的定宽图片，允许它们在窄屏上等比缩小，不把页面撑宽 */
+  min-width: 0;
 }
 
 /* 设置滚动条样式 */
@@ -82,6 +168,18 @@ pre code span {
 /* 移除所有代码元素上的边框 */
 pre *, code * {
   border: none !important;
+}
+
+/* 系统设置了「减少动态效果」时，去掉过渡和动画（页面淡入、骨架屏闪烁、悬停位移、抽屉滑动等） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @media (max-width: 768px) {

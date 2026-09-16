@@ -11,7 +11,12 @@ const shimmer = keyframes`
 `;
 
 const BaseSkeleton = styled.div<{ $width?: string; $height?: string; $radius?: string }>`
-  background: linear-gradient(90deg, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.12) 37%, rgba(0,0,0,0.06) 63%);
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base, rgba(0,0,0,0.06)) 25%,
+    var(--skeleton-highlight, rgba(0,0,0,0.12)) 37%,
+    var(--skeleton-base, rgba(0,0,0,0.06)) 63%
+  );
   background-size: 400px 100%;
   animation: ${shimmer} 1.4s ease infinite;
   border-radius: ${({ $radius }) => $radius || '8px'};

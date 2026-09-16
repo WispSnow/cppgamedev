@@ -5,14 +5,33 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" sizes="any" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <!-- 默认描述留给不执行 JS 的抓取方；带上 data-react-helmet，页面里的 SEOHelmet 会替换掉它们，而不是再追加一份 -->
+    <meta name="theme-color" content="#ffffff" />
+    <!--
+      在首屏绘制前确定主题，暗色用户不会先看到一闪白屏：切换过就用切换的（localStorage 'theme'），否则跟随系统。
+      颜色变量在 src/index.css 里按 data-theme 定义，之后的切换由 src/context/ThemeContext.tsx 负责（theme-color 的取值也在那里）
+    -->
+    <script>
+      (function () {
+        var theme = null;
+        try {
+          theme = localStorage.getItem('theme');
+        } catch (e) {}
+        if (theme !== 'dark' && theme !== 'light') {
+          theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1e1e1e');
+        }
+      })();
+    </script>
+    <!-- 默认描述留给不执行 JS 的抓取方。每个页面都会用 SEOHelmet 渲染自己的，src/index.tsx 启动时先移除这两个，head 里不会出现两份 -->
     <meta
       name="description"
       content="C++游戏开发教程 - 从基础到高级，全面学习C++游戏开发技能，构建自己的游戏作品"
-      data-react-helmet="true"
+      data-default-seo="true"
     />
-    <meta name="keywords" content="C++,游戏开发,编程教程,游戏编程,C++教程" data-react-helmet="true" />
+    <meta name="keywords" content="C++,游戏开发,编程教程,游戏编程,C++教程" data-default-seo="true" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a

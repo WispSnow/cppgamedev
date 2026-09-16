@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Helmet } from 'react-helmet';
 import { useLocation } from 'react-router-dom';
 import { trackPageView } from '../utils/analytics';
 
@@ -38,8 +37,10 @@ const SEOHelmet: React.FC<SEOProps> = ({
     trackPageView(location.key, location.pathname + location.search, title);
   }, [location.key, location.pathname, location.search, title]);
 
+  // React 19 会把这些标签放进 <head>，组件卸载时移除，不需要 react-helmet。
+  // index.html 里的默认 description / keywords 在 index.tsx 启动时已移除，head 里不会出现两份
   return (
-    <Helmet>
+    <>
       {/* 基础元标签 */}
       <title>{title}</title>
       <meta name="description" content={description} />
@@ -57,12 +58,12 @@ const SEOHelmet: React.FC<SEOProps> = ({
       <meta property="og:image" content={image} />
 
       {/* Twitter */}
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content={url} />
-      <meta property="twitter:title" content={title} />
-      <meta property="twitter:description" content={description} />
-      <meta property="twitter:image" content={image} />
-    </Helmet>
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:url" content={url} />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={image} />
+    </>
   );
 };
 

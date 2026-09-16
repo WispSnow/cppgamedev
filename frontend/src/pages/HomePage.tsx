@@ -248,7 +248,7 @@ const LearnMoreButton = styled.span`
   margin-top: 1.5rem;
   padding: 0.5rem 1rem;
   background-color: var(--primary-color, #0066cc);
-  color: white;
+  color: var(--on-primary-color, #fff);
   border-radius: 5px;
   text-align: center;
   font-weight: 500;
@@ -289,7 +289,7 @@ const FilterButton = styled.button<{ $active: boolean; $color?: string; $bgColor
   border: none;
   border-radius: 20px;
   background-color: ${props => props.$active ? (props.$color || 'var(--primary-color, #0066cc)') : 'var(--card-bg-color, #fff)'};
-  color: ${props => props.$active ? '#fff' : 'var(--text-color, #333)'};
+  color: ${props => props.$active ? (props.$color ? '#fff' : 'var(--on-primary-color, #fff)') : 'var(--text-color, #333)'};
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 500;
@@ -321,8 +321,8 @@ const LoadingMessage = styled.div`
 const ErrorMessage = styled.div`
   text-align: center;
   padding: 2rem;
-  color: #e53935;
-  background-color: rgba(229, 57, 53, 0.1);
+  color: var(--error-color, #c62828);
+  background-color: var(--error-bg, rgba(229, 57, 53, 0.1));
   border-radius: 8px;
   margin: 1rem 0;
 `;
@@ -363,7 +363,7 @@ const ClearFilterButton = styled.button`
 
   &:hover {
     background: var(--primary-color, #0066cc);
-    color: #fff;
+    color: var(--on-primary-color, #fff);
   }
 `;
 

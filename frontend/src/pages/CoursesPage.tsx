@@ -96,7 +96,7 @@ const PartCount = styled.div`
   display: inline-block;
   margin-top: 1rem;
   padding: 0.4rem 0.8rem;
-  background-color: var(--primary-color-light);
+  background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.1));
   color: var(--primary-color);
   border-radius: 16px;
   font-size: 0.8rem;

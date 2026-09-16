@@ -5,7 +5,8 @@ const CopyButtonContainer = styled.button`
   position: absolute;
   top: 5px;
   right: 5px;
-  background-color: #f0f0f0;
+  background-color: var(--subtle-button-bg, #f0f0f0);
+  color: var(--text-color, #333);
   border: none;
   border-radius: 3px;
   padding: 4px 8px;
@@ -17,7 +18,7 @@ const CopyButtonContainer = styled.button`
   
   &:hover {
     opacity: 1;
-    background-color: #e0e0e0;
+    background-color: var(--subtle-button-hover-bg, #e0e0e0);
   }
 `;
 

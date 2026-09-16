@@ -1,14 +1,10 @@
-import axios from 'axios';
 import { TroubleshootingArticle, TroubleshootingArticleSummary } from '../types';
+import { getJson } from './api';
 
 const baseUrl = '/api/troubleshooting';
 
-export const getTroubleshootingArticles = async (): Promise<TroubleshootingArticleSummary[]> => {
-  const response = await axios.get(baseUrl);
-  return response.data;
-};
+export const getTroubleshootingArticles = (signal?: AbortSignal): Promise<TroubleshootingArticleSummary[]> =>
+  getJson<TroubleshootingArticleSummary[]>(baseUrl, signal);
 
-export const getTroubleshootingArticleById = async (id: string): Promise<TroubleshootingArticle> => {
-  const response = await axios.get(`${baseUrl}/${id}`);
-  return response.data;
-};
+export const getTroubleshootingArticleById = (id: string, signal?: AbortSignal): Promise<TroubleshootingArticle> =>
+  getJson<TroubleshootingArticle>(`${baseUrl}/${encodeURIComponent(id)}`, signal);

@@ -85,8 +85,8 @@ const ResultType = styled.span`
   font-size: 0.75rem;
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
-  background-color: #e3f2fd;
-  color: #1565c0;
+  background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.1));
+  color: var(--primary-color, #0066cc);
 `;
 
 const ResultSnippet = styled.div`
@@ -108,6 +108,17 @@ const EmptyState = styled.div`
   color: var(--secondary-text-color, #888);
 `;
 
+// 只给读屏软件读的文字
+const VisuallyHidden = styled.span`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+`;
+
 interface SearchResult {
   type: 'course' | 'chapter';
   id: string;
@@ -120,6 +131,9 @@ interface SearchModalProps {
   onClose: () => void;
 }
 
+const RESULTS_ID = 'search-results';
+const resultId = (index: number) => `search-result-${index}`;
+
 const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -128,16 +142,22 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const trimmedQuery = query.trim();
 
   const handleSelect = React.useCallback((result: SearchResult) => {
     navigate(result.url);
     onClose();
   }, [navigate, onClose]);
 
+  // 打开时聚焦输入框；关闭后把焦点还给打开前的元素（导航栏的搜索按钮），键盘用户不用从页面开头重新找
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    const previouslyFocused = document.activeElement;
+    inputRef.current?.focus();
+    return () => {
+      if (previouslyFocused instanceof HTMLElement && previouslyFocused.isConnected) {
+        previouslyFocused.focus({ preventScroll: true });
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -146,6 +166,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
       // Safari 确认上屏时 isComposing 已经是 false，只能靠 keyCode 229 识别
       if (e.isComposing || e.keyCode === 229) return;
       if (e.key === 'Escape') onClose();
+      // 对话框里能聚焦的只有输入框（结果用上下方向键选），Tab 不让焦点跑到背后的页面上
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         setSelectedIndex(prev => Math.min(prev + 1, results.length - 1));
@@ -163,8 +188,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [results, selectedIndex, onClose, handleSelect]);
 
+  // 用方向键选到列表可视范围以外的结果时，把它滚进来
   useEffect(() => {
-    const trimmedQuery = query.trim();
+    document.getElementById(resultId(selectedIndex))?.scrollIntoView?.({ block: 'nearest' });
+  }, [selectedIndex, results]);
+
+  useEffect(() => {
     if (trimmedQuery.length === 0) {
       setResults([]);
       setLoading(false);
@@ -202,21 +231,30 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query]);
+  }, [trimmedQuery]);
 
-
-  // Highlight matches in snippet manually since backend returns pure text
-  // Note: Better implementation would have backend return pre-highlighted text or indices
-  // For now we just display the snippet as is (which comes from backend)
-  // If we wanted bolding, we'd need regex replacement here.
+  const showResults = !loading && results.length > 0;
 
   return (
     <Overlay onClick={onClose}>
-      <ModalContainer onClick={e => e.stopPropagation()}>
+      <ModalContainer
+        role="dialog"
+        aria-modal="true"
+        aria-label="搜索"
+        onClick={e => e.stopPropagation()}
+      >
         <SearchHeader>
-          <SearchIcon>🔍</SearchIcon>
+          <SearchIcon aria-hidden="true">🔍</SearchIcon>
+          {/* 组合框：焦点一直留在输入框里，aria-activedescendant 告诉读屏软件当前选中的是哪条结果 */}
           <SearchInput
             ref={inputRef}
+            role="combobox"
+            aria-label="搜索课程或章节"
+            aria-autocomplete="list"
+            aria-expanded={showResults}
+            aria-controls={RESULTS_ID}
+            aria-activedescendant={showResults ? resultId(selectedIndex) : undefined}
+            enterKeyHint="search"
             placeholder="搜索课程或章节..."
             value={query}
             onChange={e => setQuery(e.target.value)}
@@ -224,28 +262,38 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
         </SearchHeader>
 
         <ResultsList>
-          {loading && <EmptyState>搜索中...</EmptyState>}
+          {/* 搜索状态变化时读屏软件会读出来 */}
+          <div role="status">
+            {loading && <EmptyState>搜索中...</EmptyState>}
 
-          {!loading && failed && <EmptyState>搜索失败，请稍后再试</EmptyState>}
+            {!loading && failed && <EmptyState>搜索失败，请稍后再试</EmptyState>}
 
-          {!loading && !failed && results.length === 0 && query.trim().length > 0 && (
-            <EmptyState>未找到相关内容</EmptyState>
-          )}
+            {!loading && !failed && results.length === 0 && trimmedQuery.length > 0 && (
+              <EmptyState>未找到相关内容</EmptyState>
+            )}
 
-          {!loading && results.map((result, index) => (
-            <ResultItem
-              key={`${result.type}-${result.id}`}
-              $selected={index === selectedIndex}
-              onClick={() => handleSelect(result)}
-              onMouseEnter={() => setSelectedIndex(index)}
-            >
-              <ResultTitle>
-                {result.title}
-                <ResultType>{result.type === 'course' ? '课程' : '章节'}</ResultType>
-              </ResultTitle>
-              <ResultSnippet>{result.snippet}</ResultSnippet>
-            </ResultItem>
-          ))}
+            {showResults && <VisuallyHidden>找到 {results.length} 条结果</VisuallyHidden>}
+          </div>
+
+          <div id={RESULTS_ID} role="listbox" aria-label="搜索结果">
+            {showResults && results.map((result, index) => (
+              <ResultItem
+                key={`${result.type}-${result.id}`}
+                id={resultId(index)}
+                role="option"
+                aria-selected={index === selectedIndex}
+                $selected={index === selectedIndex}
+                onClick={() => handleSelect(result)}
+                onMouseEnter={() => setSelectedIndex(index)}
+              >
+                <ResultTitle>
+                  {result.title}
+                  <ResultType>{result.type === 'course' ? '课程' : '章节'}</ResultType>
+                </ResultTitle>
+                <ResultSnippet>{result.snippet}</ResultSnippet>
+              </ResultItem>
+            ))}
+          </div>
         </ResultsList>
       </ModalContainer>
     </Overlay>

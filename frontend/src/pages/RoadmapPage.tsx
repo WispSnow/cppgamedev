@@ -86,7 +86,7 @@ const IndexCircle = styled.div<{ $status: string; $isLeft?: boolean }>`
     }
   }};
   border-radius: 50%;
-  color: ${props => props.$status === 'planned' ? '#bdc3c7' : '#fff'};
+  color: ${props => props.$status === 'planned' ? '#bdc3c7' : props.$status === 'completed' ? 'var(--on-primary-color, #fff)' : '#fff'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,14 +159,14 @@ const StatusBadge = styled.span<{ $status: string }>`
     switch(props.$status) {
       case 'completed': return 'rgba(0, 102, 204, 0.1)';
       case 'in-progress': return 'rgba(255, 152, 0, 0.1)';
-      default: return '#f5f5f5';
+      default: return 'var(--hover-bg-color, #f5f5f5)';
     }
   }};
   color: ${props => {
     switch(props.$status) {
       case 'completed': return 'var(--primary-color, #0066cc)';
       case 'in-progress': return '#f57c00';
-      default: return '#999';
+      default: return 'var(--secondary-text-color, #999)';
     }
   }};
 `;
@@ -214,7 +214,7 @@ const RoadmapPage: React.FC = () => {
                   <StatusBadge $status={item.status}>
                     {item.status === 'completed' ? '已发布' : item.status === 'in-progress' ? '制作中' : '计划中'}
                   </StatusBadge>
-                  <span style={{ fontSize: '0.8rem', color: '#999', fontWeight: 500 }}>{item.gameType}</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--secondary-text-color, #999)', fontWeight: 500 }}>{item.gameType}</span>
                 </div>
                 
                 <CourseTitle>

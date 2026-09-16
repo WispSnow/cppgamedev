@@ -25,21 +25,12 @@ jest.mock(
       NavLink: Link,
       useParams: () => ({}),
       useNavigate: () => () => undefined,
-      useLocation: () => ({ pathname: '/', search: '' }),
+      useLocation: () => ({ pathname: '/', search: '', hash: '', key: 'default' }),
+      useNavigationType: () => 'POP',
     };
   },
   { virtual: true }
 );
-
-jest.mock('axios', () => {
-  const get = jest.fn(() => Promise.resolve({ data: [] }));
-
-  return {
-    __esModule: true,
-    default: { get },
-    get,
-  };
-});
 
 // 页面都是按需加载的，这里全部替换成空组件，只验证应用外壳能正常渲染
 jest.mock('./pages/HomePage', () => ({ __esModule: true, default: () => <div /> }));

@@ -73,7 +73,7 @@ const ToggleButton = styled.button<{ $isVisible: boolean }>`
   width: 40px;
   height: 40px;
   background-color: var(--primary-color, #0066cc);
-  color: white;
+  color: var(--on-primary-color, #fff);
   border: none;
   border-radius: 8px 0 0 8px;
   display: flex;
@@ -86,7 +86,7 @@ const ToggleButton = styled.button<{ $isVisible: boolean }>`
   font-size: 1.2rem;
 
   &:hover {
-    background-color: #0055aa;
+    background-color: var(--primary-hover-color, #0055aa);
   }
 
   @media (max-width: 1200px) {

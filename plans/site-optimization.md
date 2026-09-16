@@ -9,9 +9,10 @@
 ## 建议执行顺序（2026-09-15）
 
 1. ~~**第 1 批 · 小修复**（与 P1.1 不冲突）：P2.1、P2.5、P1.5、P1.6、P1.7、P3.1、P3.3、P3.4、P3.6、P3.2（只升运行时依赖）；P2.6 的小项穿插做~~（2026-09-15 已完成，剩 GA4 后台一项设置，见 P1.6）
-2. **决定 P1.1 近期做不做**：做的话，P1.2 的 API 缓存与 `.md` Content-Type、P1.3 的前三项、P2.4 都会被框架模式与路由 loader 替代，先不做；暂缓的话按原清单做
-3. **P1.1 分阶段做**（见 P1.1），每个阶段都能单独上线
-4. **服务器批次**（需要 sudo，一次做完）：brotli、删除 nginx 遗留的 `location /css/`
+2. ~~**第 2 批 · 不论做不做 P1.1 都有价值的前端项**：P1.1 阶段 0（react-helmet → 原生标签、axios → fetch、主题改为 `data-theme` + 内联脚本，即 P2.2 / P2.3），P2.4 滚动位置，P2.6 的搜索对话框、正文链接下划线、减少动态效果；顺带 P1.3 的正文 memo 和章节请求取消~~（2026-09-15 已完成）
+3. **部署前**：在 GA4 后台关闭「基于浏览器历史记录事件的网页变化」（见 P1.6），否则上线后站内跳转会重复计数
+4. **决定 P1.1 阶段 1–3 做不做**（见 P1.1），每个阶段都能单独上线。做的话，P1.2 的 API 缓存与 `.md` Content-Type、P1.3 剩下的 Promise 缓存都会被框架模式与路由 loader 替代，先不做；暂缓的话按原清单做
+5. **服务器批次**（需要 sudo，一次做完）：brotli、删除 nginx 遗留的 `location /css/`
 
 ## P0 · 改动小、收益大
 
@@ -63,8 +64,9 @@
 - [ ] **1. 构建期预渲染 HTML（SEO 与首屏的根本解法）**
   - 现状：所有 URL 返回同一个 1.3KB 空壳，用百度爬虫 UA 请求只拿到 `<div id="root"></div>`；不执行 JS 的分享卡片抓取同样只能拿到默认标题
   - 章节页 JS 实测（2026-09-15，本地构建 + source map）：共 249KB gzip（brotli 207KB）。其中 Markdown 解析 + 代码高亮约 130KB（rehype-raw 带进来的 parse5 约 36KB），react-dom 约 55KB，axios 13KB，react-helmet 6KB
+  - 第 2 批之后（2026-09-15）：章节页不再加载 axios（13.4KB gzip）和 react-helmet（6.0KB gzip）两个 chunk；但第 1 批把 React 从 19.0 升到 19.3，react / react-dom 大了约 12KB，章节页合计 246KB gzip（brotli 204KB）
   - 路线（分阶段，每个阶段都能单独上线）：
-    - **阶段 0 · 准备**（不迁移也有价值）：react-helmet → React 19 原生 `<title>` / `<meta>`；axios → fetch；主题改为 `<html data-theme>` + `<head>` 内联脚本驱动（即 P2.2 / P2.3）；可选 P3.5
+    - ~~**阶段 0 · 准备**（不迁移也有价值）：react-helmet → React 19 原生 `<title>` / `<meta>`；axios → fetch；主题改为 `<html data-theme>` + `<head>` 内联脚本驱动（即 P2.2 / P2.3）~~（2026-09-15 已完成，见 P1.3、P2.2、P2.3）；可选的 P3.5 没做
       - 主题是预渲染的前提：CSS 变量现在在 ThemeContext 的 useEffect 里才设置，预渲染 HTML 会先按浅色显示；代码高亮是按 JS 主题生成的内联样式，暗色用户 hydration 时会与服务端不一致
     - **阶段 1 · CRA → Vite**（仍是 SPA）：npm audit 的 76 条里有 63 条不进浏览器，基本来自 CRA 构建 / 测试链；同时解锁 TS 5。Vite 默认资源目录是 `/assets/`，nginx 只给 `/static/` 配了一年缓存 → 设 `build.assetsDir: 'static'` 就不用动服务器
     - **阶段 2 · React Router 框架模式**：`ssr: false` + `prerender` 全部课程 / 章节路由，styled-components 在 entry.server 里用 ServerStyleSheet 收集样式。官方文档确认：预渲染路由可以用 `loader`（构建期执行，并生成 `.data` 供站内跳转），预渲染了 `/` 时其余路径走 `__spa-fallback.html`。loader 在构建期直接读 Markdown，完成后后端基本只剩搜索
@@ -74,7 +76,7 @@
     - `try_files` 兜底改为 `/__spa-fallback.html`；CI 的 rsync 源目录改为 `build/client/`
     - 回归 P0.1（发版后旧标签页进入没加载过的页面）
     - 上线后在百度搜索资源平台用「抓取诊断」确认爬虫拿到正文，并提交 sitemap
-    - index.html 里的静态 description / keywords 带着 `data-react-helmet`（见 P1.7），换掉 react-helmet 时要一起处理，否则会重新变成两份
+    - index.html 里的默认 description / keywords 现在带 `data-default-seo`，由 index.tsx 启动时移除（第 2 批换掉 react-helmet 时处理）；预渲染后每个页面的 HTML 自带自己的标签，这两个默认标签和 index.tsx 里的移除代码可以一起删掉
 
 - [ ] **2. 压缩与缓存**
   - [ ] 【服务器】开 brotli：线上 `gzip_comp_level 6` 与 gzip -9 只差 0.5%，预压缩 gzip 没有意义；brotli-11 实测全站 89 个 JS/CSS 1750KB → 1437KB（-18%），章节页 249KB → 207KB。apt 源里有 `libnginx-mod-http-brotli-static`（未安装），`.br` 文件用 Node 自带的 zlib 在构建后生成，不加依赖
@@ -82,12 +84,16 @@
   - [ ] `/content/*.md` 的 Content-Type 改为 `text/markdown; charset=utf-8`（现在是 octet-stream）——fetch 读取不受影响，只是直接打开会下载，价值很低；做 P1.1 后也不再需要
   - [ ] 图床：342 张图（291 张 webp、51 张 png），抽样 25 张中位数 41KB、最大 84KB，估算总共约 14MB；Cloudflare 缓存 `max-age=14400`。开发机访问 Cloudflare 的出口在美国（colo=LAX），测不出国内速度 → 用阿里云拨测或 17CE 在国内测；如果慢，图片总量小，直接挂到自己域名下（nginx `proxy_cache` 或拷到服务器）最省事
 
-- [ ] **3. 前端数据与渲染**
-  - 做 P1.1 的话：前三项由框架模式的 loader、导航取消和构建期渲染替代，先不做；最后一项并入 P1.1 阶段 0
-  - [ ] 章节正文 `React.memo`（现在点收藏会整章重新解析 + 重新高亮）
+- [ ] **3. 前端数据与渲染**（2026-09-15 完成 3 项，剩 Promise 缓存）
+  - 做 P1.1 的话：剩下的 Promise 缓存由框架模式的 loader 替代，先不做
+  - [x] 章节正文 `React.memo`：点收藏不再整章重新解析 + 重新高亮（改动很小，没等 P1.1 的决定）
   - [ ] courseService 加 Promise 缓存（每切一章都重新拉课程信息）
-  - [ ] 请求可取消（章节没加载完就返回，该章仍会被记入「继续阅读」）
-  - [ ] axios → fetch（-13KB gzip）；react-helmet → React 19 原生 `<title>` / `<meta>`（-6KB，也能解决开发模式 StrictMode 下标题不更新的问题）
+  - [x] 请求可取消：service 函数接受 `AbortSignal`，章节页切走时取消请求，没加载完就离开的章节不再记进「继续阅读」
+    - 验证：无头 Chrome 里用 CDP 挂起章节接口，点进章节后立刻后退，再放行请求，阅读历史里没有这一章；正常打开会记进去
+  - [x] axios → fetch；react-helmet → React 19 原生 `<title>` / `<meta>`（2026-09-15，即 P1.1 阶段 0）
+    - 做法：SEOHelmet 直接渲染 `<title>` / `<meta>` / `<link rel="canonical">`，React 19 把它们放进 `<head>`、页面卸载时移除；index.html 的默认 description / keywords 改为 `data-default-seo`，index.tsx 启动时移除（不执行 JS 的抓取方仍能看到）；`twitter:*` 改用 `name` 属性。新增 services/api.ts（`getJson`、`HttpError`、`isNotFoundError`）
+    - 验证：本机 Chrome 无头模式逐页加载 212 个页面，标题、description、keywords、canonical 都只有一份，og:title 与标题一致，没有残留默认标签；站内跳到下一章时整组标签替换；404 页有 noindex、没有 canonical
+    - 修改涉及：SEOHelmet.tsx、index.tsx、public/index.html、services/api.ts（新增）、courseService.ts、troubleshootingService.ts、CoursePartPage.tsx、App.test.tsx、frontend/package.json（去掉 axios、react-helmet、@types/react-helmet）
 
 - [ ] **4. 章内目录**：`rehype-slug` + 「本章目录」（每章平均约 9 个 h2、10 个 h3，标题目前没有锚点）；做 P1.1 的话放到阶段 3
 
@@ -110,7 +116,7 @@
 
 - [x] 🆕 **7. 4 个页面没有 SEOHelmet**（2026-09-15 已完成）：关于 / 联系 / 合作（MarkdownPage）和全部课程（CoursesPage）都在 sitemap 里，直接打开是默认标题；站内跳过去时 react-helmet 不会重置，标题停在上一页
   - 做法：MarkdownPage 增加 `description` 参数，加载中和出错时也渲染 SEOHelmet；CoursesPage 接入 SEOHelmet
-  - 🆕 顺带修复：index.html 里的静态 description / keywords 不归 react-helmet 管，每个页面都是「站点默认 + 页面自己的」两份，默认的排在前面。给静态标签加上 `data-react-helmet="true"` 后由 Helmet 替换，不执行 JS 的抓取方仍能看到默认描述
+  - 🆕 顺带修复：index.html 里的静态 description / keywords 不归 react-helmet 管，每个页面都是「站点默认 + 页面自己的」两份，默认的排在前面。给静态标签加上 `data-react-helmet="true"` 后由 Helmet 替换，不执行 JS 的抓取方仍能看到默认描述（第 2 批换成原生标签后，改为 `data-default-seo` + index.tsx 启动时移除）
   - 验证：本机 Chrome 无头模式逐页加载 212 个页面，标题全部是当前页，description 和 keywords 都只有一份
   - 修改涉及：MarkdownPage.tsx、AboutPage.tsx、ContactPage.tsx、CollaboratePage.tsx、CoursesPage.tsx、public/index.html
 
@@ -121,17 +127,36 @@
   - 做法：目录按钮移到回顶按钮正上方、中心对齐；抽屉底部留白，最后几项能滚到回顶按钮上方
   - 验证：375px 下两个按钮不再重叠，目录按钮中心点上最上层的元素就是它，点击后抽屉展开、页面不跳动
   - 修改涉及：TableOfContents.tsx
-- [ ] **2. 暗色模式**：定义 `--hover-bg-color`（搜索框选中项对比度 1.21:1）；设置 `data-theme`（写好的暗色表格样式从未生效）；主色按钮对比度 2.72:1；ChapterNavigation 硬编码浅色
-- [ ] **3. 暗色首屏闪白**：主题在 useEffect 里才生效 → `<head>` 内联脚本提前设置，并跟随 `prefers-color-scheme`
-- [ ] **4. 滚动位置**：前进导航统一回顶部，后退恢复原阅读位置
-  - 做 P1.1 的话由框架模式的 `<ScrollRestoration>` 解决：数据先于渲染到位，位置才恢复得准（现在数据在 useEffect 里拉，后退时页面还没有内容）
+- [x] **2. 暗色模式**（2026-09-15 已完成）：定义 `--hover-bg-color`（搜索框选中项对比度 1.21:1）；设置 `data-theme`（写好的暗色表格样式从未生效）；主色按钮对比度 2.72:1；ChapterNavigation 硬编码浅色
+  - 做法：颜色变量从 ThemeContext 的 JS 挪到 index.css，按 `<html data-theme>` 切换（暗色表格样式随之生效），暗色加 `color-scheme: dark`；补上 `--hover-bg-color`；新增 `--on-primary-color`（主色背景上的文字，暗色下用深色字，对比度 2.72:1 → 约 7:1）、`--primary-hover-color` 和错误 / 成功 / 骨架屏 / 小按钮的颜色变量；ChapterNavigation、复制按钮、骨架屏、错误提示、搜索结果标签、路线图「计划中」标签等硬编码颜色改用变量
+  - 顺带：全部任务页「N 个章节」标签用了不存在的 `--primary-color-light`，一直没有背景；课程页「已读」绿字对比度 2.5:1 → 4.6:1；章节页没收藏时的星号是 `#eaeaea`，几乎看不见 → 次要文字色，并加 `aria-pressed`
+  - 验证：无头 Chrome 暗色截图检查首页、课程页、章节页（表格、代码块、上下章导航）、FAQ、路线图、搜索弹窗
+  - 修改涉及：index.css、ThemeContext.tsx、useMarkdownComponents.tsx（去掉设置代码块背景变量的 effect）、ChapterNavigation.tsx、CopyButton.tsx、Skeleton.tsx、ErrorState.tsx、SearchModal.tsx、TableOfContents.tsx、ScrollToTopButton.tsx、MarkdownPage.tsx、HomePage.tsx、CourseDetailPage.tsx、CoursePartPage.tsx、CoursesPage.tsx、FAQPage.tsx、NotFoundPage.tsx、RoadmapPage.tsx
+- [x] **3. 暗色首屏闪白**（2026-09-15 已完成）：主题在 useEffect 里才生效 → `<head>` 内联脚本提前设置，并跟随 `prefers-color-scheme`
+  - 做法：public/index.html 的 `<head>` 里加内联脚本，首屏绘制前按「手动切换过的主题 → 系统主题」设置 `data-theme` 和 `theme-color`（原来固定是黑色）；ThemeContext 沿用这个值，没手动切换过时跟随系统切换
+  - 验证（无头 Chrome）：系统暗色下，HTML 解析完、打包的 JS 执行前 `data-theme` 已经是 dark，body 背景是 #121212；系统切换深浅色时网站跟着变；手动切换后刷新保持
+  - 注意：没手动切换过、系统是暗色的访客，上线后默认看到暗色
+  - 修改涉及：public/index.html、ThemeContext.tsx、index.css
+- [x] **4. 滚动位置**（2026-09-15 已完成）：前进导航统一回顶部，后退恢复原阅读位置
+  - 🆕 复核：除了章节页，所有页面切换都不回顶部，比如在页面底部点页脚链接，新页面停在下半截
+  - 做法：新增 ScrollManager。点链接进入新页面时回到顶部；后退 / 前进 / 刷新时恢复。数据在组件里异步加载，浏览器自带的恢复发生在内容出来之前，所以关掉自带的自己管。只记 scrollY 在图片多的章节不准（懒加载图片没加载时高度是 0，同样的 scrollY 会落到更靠后的内容），所以记下视口顶部的元素（DOM 路径 + 偏移），等它渲染出来再对齐，对齐后 1.5 秒内上方内容变高时继续对齐。位置存 sessionStorage；新打开的页面（输入地址、从别处点进来）不恢复
+  - 验证（无头 Chrome，桌面 1280px 和手机 375px 各一遍，10 项全过）：页面底部点页脚链接，新页面在顶部，后退回到列表原来的位置；课程页 80% 处点章节再后退、刷新课程页，都回到原来看到的那一章；图片多的章节读到 60% → 下一章 → 后退，视口里是同一段内容，1.8 秒后仍对齐
+  - 做 P1.1 的话：框架模式的 `<ScrollRestoration>` 按像素恢复，图片多的章节会有上面说的偏差，可以继续用 ScrollManager
+  - 修改涉及：ScrollManager.tsx（新增）、App.tsx、CoursePartPage.tsx（去掉进入章节时的 scrollTo）
 - [x] **5. 代码块**：没标语言的 495 个代码块没有背景、不能横向滚动（手机上撑宽整页）；~~疑难解决页行内代码被设成 `display:block`~~（2026-09-14 已修复）（2026-09-15 已完成）
   - 做法：没标语言的代码块放进和其他代码块一样的代码框（背景、块内横向滚动、复制按钮）
   - 🆕 复核时发现，手机上把页面撑宽的还有宽表格和正文里的长网址 / 长标识符 → 表格外面包一层横向滚动容器；body 设 `overflow-wrap: break-word`，放不下的长词才断行
+  - 🆕 第 2 批逐页检查时又测出一处：SDL与太空战机的介绍章用 `display:flex` 并排两张 `width="300"` 的图片，手机上把页面撑宽 267px → 全局给图片加 `min-width: 0`，窄屏上等比缩小（index.css）。之后 375px 下 212 页横向溢出为 0
   - 验证：本机 Chrome 无头模式按 375px 手机视口逐页加载 212 个页面，横向溢出 0 页；1400px 抽查 22 页也没有溢出。把代码框换回改动前的裸 `<pre>` 模拟旧版，两个章节分别被撑到 848px / 918px 宽
   - 修改涉及：useMarkdownComponents.tsx、index.css
-- [ ] **6. 其他**：搜索弹窗的对话框语义与焦点管理；~~收起的目录仍可 Tab 聚焦~~（2026-09-15 已修复：收起后设为 `visibility: hidden`，按钮加 `aria-expanded`）；正文链接只靠颜色区分；80% 图片缺 alt；~~手机菜单开着时经搜索结果或浏览器后退跳转，菜单不关、`body` 保持 `overflow:hidden` 导致页面滚不动~~（2026-09-15 已修复：路由变化时收起菜单，滚动锁跟随菜单状态）；`prefers-reduced-motion`
-  - 修改涉及（已修复的两项）：TableOfContents.tsx、Navbar.tsx
+- [ ] **6. 其他**（2026-09-15 只剩图片 alt）：~~搜索弹窗的对话框语义与焦点管理~~；~~收起的目录仍可 Tab 聚焦~~（2026-09-15 已修复：收起后设为 `visibility: hidden`，按钮加 `aria-expanded`）；~~正文链接只靠颜色区分~~；80% 图片缺 alt（要逐张补文字说明，是内容工作）；~~手机菜单开着时经搜索结果或浏览器后退跳转，菜单不关、`body` 保持 `overflow:hidden` 导致页面滚不动~~（2026-09-15 已修复：路由变化时收起菜单，滚动锁跟随菜单状态）；~~`prefers-reduced-motion`~~
+  - 修改涉及（目录和菜单两项）：TableOfContents.tsx、Navbar.tsx
+  - 搜索弹窗（2026-09-15）：`role="dialog"` + `aria-modal`；输入框是组合框，方向键选中的结果通过 `aria-activedescendant` 告诉读屏软件，结果数写进状态区；Tab 不会让焦点移出对话框；关闭后焦点回到搜索按钮；方向键选到列表可视范围以外的结果时自动滚进来
+  - 正文链接（2026-09-15）：章节页、静态页、疑难解决页的正文链接加下划线（疑难解决页的链接以前连颜色都和正文一样）
+  - 减少动态效果（2026-09-15）：系统开启时去掉过渡和动画，回顶按钮直接跳到顶部
+  - 🆕 章节底部的「上一章 / 遇到问题？去反馈 / 下一章」在手机上三栏挤在一行，标题一行只剩两三个字（2026-09-15 暗色截图时发现）→ 600px 以下上一章、下一章各占一行，反馈链接放最后（ChapterNavigation.tsx）
+  - 验证：SearchModal.test 新增 2 个用例（焦点与 Tab、aria-activedescendant）；无头 Chrome 里实际操作搜索、方向键、Tab、Esc；模拟 `prefers-reduced-motion` 后页面淡入和目录抽屉的时长为 0
+  - 修改涉及（这 3 项）：SearchModal.tsx、SearchModal.test.tsx、CoursePartPage.tsx、MarkdownPage.tsx、TroubleshootingDetailPage.tsx、index.css、ScrollToTopButton.tsx
 
 ## P3 · 工程与运维
 

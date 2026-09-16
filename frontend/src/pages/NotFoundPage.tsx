@@ -40,7 +40,7 @@ const ActionLink = styled(Link)<{ $primary?: boolean }>`
   border-radius: 6px;
   border: 1px solid var(--primary-color, #0066cc);
   background-color: ${props => (props.$primary ? 'var(--primary-color, #0066cc)' : 'transparent')};
-  color: ${props => (props.$primary ? 'var(--background-color, #ffffff)' : 'var(--primary-color, #0066cc)')};
+  color: ${props => (props.$primary ? 'var(--on-primary-color, #ffffff)' : 'var(--primary-color, #0066cc)')};
   font-weight: 500;
 
   &:hover {

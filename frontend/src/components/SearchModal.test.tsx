@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, createEvent, fireEvent, render, screen } from '@testing-library/react';
 import SearchModal from './SearchModal';
 
 const mockNavigate = jest.fn();
@@ -68,5 +68,37 @@ describe('SearchModal', () => {
 
     expect(screen.getByText('新结果')).toBeInTheDocument();
     expect(screen.queryByText('旧结果')).not.toBeInTheDocument();
+  });
+
+  it('是对话框：打开时聚焦输入框，Tab 不会让焦点离开，关闭后焦点回到打开前的按钮', () => {
+    const trigger = document.createElement('button');
+    document.body.appendChild(trigger);
+    trigger.focus();
+
+    const { unmount } = render(<SearchModal onClose={() => {}} />);
+    expect(screen.getByRole('dialog', { name: '搜索' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: '搜索课程或章节' })).toHaveFocus();
+
+    const tab = createEvent.keyDown(window, { key: 'Tab' });
+    fireEvent(window, tab);
+    expect(tab.defaultPrevented).toBe(true);
+
+    unmount();
+    expect(trigger).toHaveFocus();
+    trigger.remove();
+  });
+
+  it('方向键移动选中项时，输入框的 aria-activedescendant 跟着变', async () => {
+    render(<SearchModal onClose={() => {}} />);
+    await type('组件');
+    await act(async () => requests[0].respond(['甲', '乙']));
+
+    const input = screen.getByRole('combobox');
+    const options = await screen.findAllByRole('option');
+    expect(input).toHaveAttribute('aria-activedescendant', options[0].id);
+
+    fireEvent.keyDown(window, { key: 'ArrowDown' });
+    expect(input).toHaveAttribute('aria-activedescendant', options[1].id);
+    expect(options[1]).toHaveAttribute('aria-selected', 'true');
   });
 });

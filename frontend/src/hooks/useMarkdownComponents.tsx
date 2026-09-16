@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -75,19 +75,6 @@ export const CodeBlockWrapper = styled.div`
     box-shadow: none !important;
   }
 `;
-
-// --- Theme CSS variable effect (call once per page that renders code) ---
-
-export function useCodeBlockThemeEffect(theme: string) {
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.style.setProperty('--code-block-bg', '#161b22');
-    } else {
-      root.style.setProperty('--code-block-bg', '#f6f8fa');
-    }
-  }, [theme]);
-}
 
 // --- Code style builders ---
 
@@ -221,7 +208,7 @@ interface UseMarkdownComponentsOptions {
 
 /**
  * Returns a memoized `components` object for ReactMarkdown.
- * Also applies the code-block theme CSS variable effect.
+ * Code block backgrounds come from CSS variables in index.css (switched by <html data-theme>).
  */
 export function useMarkdownComponents(theme: string, options: UseMarkdownComponentsOptions = {}) {
   const {
@@ -229,8 +216,6 @@ export function useMarkdownComponents(theme: string, options: UseMarkdownCompone
     fullStyleOverrides = false,
     useCodeWrappers = true,
   } = options;
-
-  useCodeBlockThemeEffect(theme);
 
   return useMemo(() => {
     const codeStyle = fullStyleOverrides ? getFullCodeStyle(theme) : getSimpleCodeStyle(theme);

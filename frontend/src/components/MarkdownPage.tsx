@@ -74,12 +74,15 @@ const MarkdownContainer = styled.div`
     margin-bottom: 1.5rem;
   }
   
+  /* 正文链接带下划线，不只靠颜色和普通文字区分 */
   a {
     color: var(--primary-color, #0066cc);
-    text-decoration: none;
-    
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+
     &:hover {
-      text-decoration: underline;
+      text-decoration-thickness: 2px;
     }
   }
   
@@ -176,7 +179,7 @@ const LoadingMessage = styled.div`
 const ErrorMessage = styled.div`
   text-align: center;
   padding: 3rem;
-  color: #e53935;
+  color: var(--error-color, #c62828);
 `;
 
 interface MarkdownPageProps {

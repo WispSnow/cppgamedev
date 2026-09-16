@@ -25,7 +25,7 @@ const Button = styled.button<{ $visible: boolean }>`
 
   &:hover {
     background-color: var(--primary-color, #0066cc);
-    color: #fff;
+    color: var(--on-primary-color, #fff);
     border-color: var(--primary-color, #0066cc);
   }
 `;
@@ -42,7 +42,9 @@ const ScrollToTopButton: React.FC = () => {
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 系统设置了「减少动态效果」时直接跳到顶部
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   };
 
   return (

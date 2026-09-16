@@ -64,7 +64,7 @@ const BookmarkButton = styled.button<{ $active: boolean }>`
   border: none;
   cursor: pointer;
   font-size: 1.5rem;
-  color: ${props => props.$active ? '#ffc107' : 'var(--border-color, #ccc)'};
+  color: ${props => props.$active ? '#ffc107' : 'var(--secondary-text-color, #999)'};
   transition: all 0.2s;
   padding: 0.5rem;
   margin-left: 1rem;
@@ -121,12 +121,15 @@ const MarkdownContainer = styled.div`
     margin-bottom: 1.25rem;
   }
 
+  /* 正文链接带下划线，不只靠颜色和普通文字区分 */
   a {
     color: var(--primary-color, #0066cc);
-    text-decoration: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
 
     &:hover {
-      text-decoration: underline;
+      text-decoration-thickness: 2px;
     }
   }
 
@@ -229,6 +232,24 @@ const SkeletonRow = styled(Skeleton)`
   margin-bottom: 0.5rem;
 `;
 
+interface ChapterContentProps {
+  content: string;
+  components: React.ComponentProps<typeof ReactMarkdown>['components'];
+}
+
+// 正文单独 memo：点收藏这类页面状态变化时，不会整章重新解析 Markdown、重新高亮代码
+const ChapterContent = React.memo(function ChapterContent({ content, components }: ChapterContentProps) {
+  return (
+    <ReactMarkdown
+      components={components}
+      remarkPlugins={markdownRemarkPlugins}
+      rehypePlugins={markdownRehypePlugins}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+});
+
 const CoursePartPage: React.FC = () => {
   const { courseId, partId } = useParams<{ courseId: string; partId: string }>();
   const [course, setCourse] = useState<Course | null>(null);
@@ -239,62 +260,70 @@ const CoursePartPage: React.FC = () => {
   const [notFound, setNotFound] = useState(false);
   const { theme } = useTheme();
 
-  const fetchCourseAndPart = useCallback(async () => {
-    try {
+  // 点「重试」时加一，重新发起请求
+  const [reloadKey, setReloadKey] = useState(0);
+  const retry = useCallback(() => setReloadKey(key => key + 1), []);
+
+  useEffect(() => {
+    if (!courseId || !partId) return;
+
+    // 切换章节或离开页面时取消还没返回的请求：没加载完就离开的章节不会被记进「继续阅读」
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    const load = async () => {
       setError(null);
       setNotFound(false);
       setLoading(true);
       setCourse(null);
       setPart(null);
-      if (courseId && partId) {
-        // Fetch course metadata and part content in parallel
-        const [courseData, partData] = await Promise.allSettled([
-          getCourseById(courseId),
-          getCoursePart(courseId, partId),
-        ]);
 
-        if (courseData.status === 'rejected') {
-          if (isNotFoundError(courseData.reason)) {
-            setNotFound(true);
-            return;
-          }
-          throw courseData.reason;
-        }
-        setCourse(courseData.value);
+      // 课程信息和章节内容并行请求
+      const [courseData, partData] = await Promise.allSettled([
+        getCourseById(courseId, signal),
+        getCoursePart(courseId, partId, signal),
+      ]);
+      if (signal.aborted) return;
 
-        if (partData.status === 'fulfilled') {
-          setPart(partData.value);
-          saveReadingProgress(courseData.value.id, partData.value.id, partData.value.title);
-        } else if (isNotFoundError(partData.reason)) {
+      if (courseData.status === 'rejected') {
+        if (isNotFoundError(courseData.reason)) {
           setNotFound(true);
-        } else {
-          console.error('获取章节内容失败:', partData.reason);
-          const foundPart = courseData.value.parts?.find(p => p.id === partId);
-          if (foundPart) {
-            setPart(foundPart);
-            setError('无法加载章节内容，请稍后再试');
-            saveReadingProgress(courseData.value.id, foundPart.id, foundPart.title);
-          } else {
-            setPart(null);
-            setError('未找到章节内容');
-          }
+          return;
         }
-      } else if (courseId) {
-        const courseData = await getCourseById(courseId);
-        setCourse(courseData);
+        throw courseData.reason;
       }
-    } catch (err) {
-      setError('加载内容时出错');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [courseId, partId]);
+      setCourse(courseData.value);
 
-  useEffect(() => {
-    fetchCourseAndPart();
-    window.scrollTo(0, 0);
-  }, [fetchCourseAndPart]);
+      if (partData.status === 'fulfilled') {
+        setPart(partData.value);
+        saveReadingProgress(courseData.value.id, partData.value.id, partData.value.title);
+      } else if (isNotFoundError(partData.reason)) {
+        setNotFound(true);
+      } else {
+        console.error('获取章节内容失败:', partData.reason);
+        const foundPart = courseData.value.parts?.find(p => p.id === partId);
+        if (foundPart) {
+          setPart(foundPart);
+          setError('无法加载章节内容，请稍后再试');
+          saveReadingProgress(courseData.value.id, foundPart.id, foundPart.title);
+        } else {
+          setError('未找到章节内容');
+        }
+      }
+    };
+
+    load()
+      .catch(err => {
+        if (signal.aborted) return;
+        setError('加载内容时出错');
+        console.error(err);
+      })
+      .finally(() => {
+        if (!signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [courseId, partId, reloadKey]);
 
   useEffect(() => {
     if (courseId && partId) {
@@ -344,11 +373,11 @@ const CoursePartPage: React.FC = () => {
         )}
 
         {!loading && error && (
-          <ErrorState message={error} onRetry={fetchCourseAndPart} />
+          <ErrorState message={error} onRetry={retry} />
         )}
 
         {!loading && !error && (!course || !part) && (
-          <ErrorState message="未找到章节内容" onRetry={fetchCourseAndPart} />
+          <ErrorState message="未找到章节内容" onRetry={retry} />
         )}
 
         {hasContent && (
@@ -373,6 +402,8 @@ const CoursePartPage: React.FC = () => {
               <BookmarkButton 
                 onClick={handleBookmarkToggle}
                 $active={bookmarked}
+                aria-pressed={bookmarked}
+                aria-label="收藏章节"
                 title={bookmarked ? "取消收藏" : "收藏章节"}
               >
                 {bookmarked ? '★' : '☆'}
@@ -381,13 +412,7 @@ const CoursePartPage: React.FC = () => {
 
             {part.content ? (
               <MarkdownContainer>
-                <ReactMarkdown
-                  components={components}
-                  remarkPlugins={markdownRemarkPlugins}
-                  rehypePlugins={markdownRehypePlugins}
-                >
-                  {part.content}
-                </ReactMarkdown>
+                <ChapterContent content={part.content} components={components} />
               </MarkdownContainer>
             ) : (
               <ErrorState message="此章节暂无内容" />

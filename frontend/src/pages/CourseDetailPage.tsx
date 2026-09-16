@@ -147,8 +147,8 @@ const PartReadBadge = styled.span`
   font-size: 0.75rem;
   padding: 0.15rem 0.5rem;
   border-radius: 10px;
-  background-color: rgba(76, 175, 80, 0.1);
-  color: #4caf50;
+  background-color: var(--success-bg, rgba(76, 175, 80, 0.12));
+  color: var(--success-color, #2e7d32);
   font-weight: 500;
 `;
 
@@ -216,7 +216,7 @@ const DownloadButton = styled.a<{ $primary?: boolean }>`
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   background-color: ${props => props.$primary ? 'var(--primary-color, #0066cc)' : 'transparent'};
-  color: ${props => props.$primary ? 'white' : 'var(--primary-color, #0066cc)'};
+  color: ${props => props.$primary ? 'var(--on-primary-color, #fff)' : 'var(--primary-color, #0066cc)'};
   border: 1px solid var(--primary-color, #0066cc);
   border-radius: 4px;
   text-decoration: none;
@@ -227,7 +227,7 @@ const DownloadButton = styled.a<{ $primary?: boolean }>`
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: ${props => props.$primary ? '#0055aa' : 'rgba(0, 102, 204, 0.05)'};
+    background-color: ${props => props.$primary ? 'var(--primary-hover-color, #0055aa)' : 'var(--toc-active-bg, rgba(0, 102, 204, 0.05))'};
     text-decoration: none;
   }
 `;

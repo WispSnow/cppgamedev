@@ -134,10 +134,10 @@ const GithubButton = styled(ActionButton)`
 
 const EmailButton = styled(ActionButton)`
   background-color: var(--primary-color, #0066cc);
-  color: white;
+  color: var(--on-primary-color, #fff);
   
   &:hover {
-    background-color: #0052a3;
+    background-color: var(--primary-hover-color, #0052a3);
   }
 `;
 

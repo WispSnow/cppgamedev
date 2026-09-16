@@ -9,8 +9,8 @@ const ErrorContainer = styled.div`
   text-align: center;
   padding: 2.5rem 2rem;
   border-radius: 12px;
-  background-color: rgba(229, 57, 53, 0.08);
-  color: #c62828;
+  background-color: var(--error-bg, rgba(229, 57, 53, 0.08));
+  color: var(--error-color, #c62828);
   gap: 1rem;
 `;
 
@@ -21,15 +21,15 @@ const Title = styled.h3`
 
 const Message = styled.p`
   margin: 0;
-  color: rgba(198, 40, 40, 0.85);
+  color: var(--error-color, #c62828);
 `;
 
 const RetryButton = styled.button`
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
   border: none;
-  background-color: #c62828;
-  color: #ffffff;
+  background-color: var(--error-color, #c62828);
+  color: var(--on-error-color, #ffffff);
   cursor: pointer;
   font-size: 0.95rem;
   transition: opacity 0.2s ease;
