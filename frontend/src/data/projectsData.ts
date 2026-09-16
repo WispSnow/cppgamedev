@@ -113,7 +113,7 @@ export const projects: Project[] = [
     title: '小小庭院 · Little Yard',
     tagline: 'AI 协作开发的 3D 回收小游戏：四关入门、无尽远征、装备与排行榜，全程留有开发手记。',
     kind: 'experiment',
-    status: 'coming-soon',
+    status: 'playable',
     techStack: ['Three.js', 'TypeScript', 'Vite', 'Blender', 'AI 协作'],
     platforms: ['desktop'],
     cover: {
@@ -132,7 +132,10 @@ export const projects: Project[] = [
         caption: '四关通关后的结算画面',
       },
     ],
-    links: {},
+    links: {
+      play: 'https://yard.cppgamedev.top/play/',
+      devlog: 'https://yard.cppgamedev.top/devlog/',
+    },
     highlights: [
       '四关入门，之后解锁按种子生成的无尽远征',
       '每三关一次装备三选一，背包最多五格',
@@ -142,11 +145,11 @@ export const projects: Project[] = [
     body: [
       '小小庭院是一次「用 AI 协作做完一款小游戏」的尝试：玩法代码、Blender 建模与贴图、自动试玩截图、每一轮的开发手记归档，都在同一套流程里推进。',
       '四关入门教会移动、拾取、交付和充电，通关后解锁无尽远征：地图按种子生成，可以暂存进度、连续挑战更高关数；每三关一次装备三选一，背包最多扩到五格，形成不同的回收路线。',
-      '排行榜不直接上传分数，而是由服务端按原始规则重放整局操作来校验，只记录每位玩家历史最高的通关关数。这部分需要一个独立的服务，会在游戏上线之后单独接入。',
-      '目前正在准备上线，地址定下来之后，这里会补上试玩入口和开发手记。',
+      '排行榜不直接上传分数，而是由服务端按原始规则重放整局操作来校验，只记录每位玩家历史最高的通关关数；这套校验服务已经和游戏一起上线。',
+      '游戏可以直接在浏览器里打开，四关入门大约十分钟。开发手记按时间记录了每一轮的改动、试玩发现和当时的取舍。',
     ],
     notice: '开发过程由 AI 协作完成，包括玩法代码、美术资产与试玩验收，细节记录在项目的开发手记里。',
-    updatedAt: '2026-09-15',
+    updatedAt: '2026-09-16',
   },
 ];
 
