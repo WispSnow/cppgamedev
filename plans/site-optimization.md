@@ -79,7 +79,9 @@
     - index.html 里的默认 description / keywords 现在带 `data-default-seo`，由 index.tsx 启动时移除（第 2 批换掉 react-helmet 时处理）；预渲染后每个页面的 HTML 自带自己的标签，这两个默认标签和 index.tsx 里的移除代码可以一起删掉
 
 - [ ] **2. 压缩与缓存**
-  - [ ] 【服务器】开 brotli：线上 `gzip_comp_level 6` 与 gzip -9 只差 0.5%，预压缩 gzip 没有意义；brotli-11 实测全站 89 个 JS/CSS 1750KB → 1437KB（-18%），章节页 249KB → 207KB。apt 源里有 `libnginx-mod-http-brotli-static`（未安装），`.br` 文件用 Node 自带的 zlib 在构建后生成，不加依赖
+  - [ ] 开 brotli：线上 `gzip_comp_level 6` 与 gzip -9 只差 0.5%，预压缩 gzip 没有意义；brotli-11 实测全站 89 个 JS/CSS 1750KB → 1437KB（-18%），章节页 246KB → 204KB
+    - [x] 构建期生成 `.br`（2026-09-15）：新增 `scripts/precompress.js`，前端 `postbuild` 钩子自动执行，用 Node 自带 zlib，不加依赖；构建产物里 ≥1KB 的 js/css/html/json/svg/xml/txt/md 各压一份 `.br`，随 CI 的 rsync 一起上传
+    - [ ] 【服务器，需要 sudo 密码，由用户执行】装 `libnginx-mod-http-brotli-static`（apt 源里有 1.0.0~rc-5build1，未安装），新建 `/etc/nginx/conf.d/brotli.conf` 写入 `brotli_static on;`（nginx.conf 的 http 段已经 include conf.d，不用动 nginx.conf），`sudo nginx -t` 通过后 reload；回滚就是删掉这个文件再 reload
   - [ ] API 响应加 `Cache-Control`（内容只在发版时变）——做 P1.1 的话不再需要（前端不再请求课程接口）
   - [ ] `/content/*.md` 的 Content-Type 改为 `text/markdown; charset=utf-8`（现在是 octet-stream）——fetch 读取不受影响，只是直接打开会下载，价值很低；做 P1.1 后也不再需要
   - [ ] 图床：342 张图（291 张 webp、51 张 png），抽样 25 张中位数 41KB、最大 84KB，估算总共约 14MB；Cloudflare 缓存 `max-age=14400`。开发机访问 Cloudflare 的出口在美国（colo=LAX），测不出国内速度 → 用阿里云拨测或 17CE 在国内测；如果慢，图片总量小，直接挂到自己域名下（nginx `proxy_cache` 或拷到服务器）最省事
@@ -171,7 +173,7 @@
   - 修改涉及：frontend/package.json、frontend/package-lock.json
 - [x] **3. 清理死代码**（2026-09-15 已完成，服务器上的 nginx 配置待处理）：`rehype-highlight`、`@types/react-router-dom@5`、`@types/styled-components`、`web-vitals`、`ThemeToggle.tsx`、`App.css`、`logo.svg`、`public/css/*`、`public/content/faq.md` 与 `roadmap.md`、`backend/src/test_search.js`、已被跟踪的 `frontend/build.log`、根目录 `package.json` 里的 helmet 依赖；`searchService.js:41` 引用了未定义的 `fs`
   - 顺带：根目录 `package.json` / `package-lock.json` 里只有这几个没用到的依赖，整个删掉；SearchModal 去掉 `REACT_APP_API_URL`，和其他请求一样走同源 `/api`；index.tsx 去掉 reportWebVitals
-  - [ ] 【服务器】nginx 里遗留的 `location /css/`（指向服务器上另一个目录，前端没有任何地方引用 `/css/`）
+  - [ ] 【服务器，需要 sudo 密码，由用户执行】nginx 里遗留的 `location /css/`（配置文件第 28–34 行，alias 到 `/var/www/html/css/`，里面还有 2025-03 的 tableStyles.css / videoStyles.css）：线上跑的还是第 1 批之前的构建，`index.html` 仍引用 `/css/`，**要等这批部署完、确认站点正常之后再删**；改前备份 `cppgamedev.conf`，`nginx -t` 通过再 reload
   - 修改涉及：删除 12 个文件，frontend/package.json（去掉 4 个依赖），searchService.js、SearchModal.tsx、index.tsx
 - [x] **4. 后端精简**（2026-09-15 已完成）：关闭 `x-powered-by`；去掉 `cors()` 与 `express.json()`（接口全是同源 GET）
   - `cors` 依赖一并删除，部署脚本里的依赖自检同步去掉 cors

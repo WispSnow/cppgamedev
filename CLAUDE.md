@@ -96,6 +96,7 @@ Frontend page → `fetch` call to `/api/courses/:id/parts/:partId` → backend r
 - **Difficulty scale:** 1 (entry) through 5 (expert)
 - **Content paths** in `courseData.js` are relative to the project root (e.g., `backend/src/courses/...`)
 - **Deployment:** Push to `deploy` branch triggers GitHub Actions CI/CD (`.github/workflows/deploy.yml`): frontend and backend tests → build → rsync to the server → backend restart with a health check
+- **Build hooks:** `npm run build` in `frontend/` runs `prebuild` (`scripts/generate-sitemap.js`, regenerates `public/sitemap.xml`) and `postbuild` (`scripts/precompress.js`, writes a `.br` copy of every text asset ≥1KB in the build output; nginx serves them via `brotli_static`)
 
 ## Agent Files
 
