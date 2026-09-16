@@ -43,7 +43,6 @@ jest.mock('./pages/TroubleshootingPage', () => ({ __esModule: true, default: () 
 jest.mock('./pages/TroubleshootingDetailPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/AboutPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/ContactPage', () => ({ __esModule: true, default: () => <div /> }));
-jest.mock('./pages/CollaboratePage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/ProjectsPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/ProjectDetailPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/RoadmapPage', () => ({ __esModule: true, default: () => <div /> }));

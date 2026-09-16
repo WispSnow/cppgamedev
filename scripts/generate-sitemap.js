@@ -22,7 +22,6 @@ const staticPages = [
   { loc: '/faq', changefreq: 'monthly', priority: '0.5' },
   { loc: '/about', changefreq: 'yearly', priority: '0.4' },
   { loc: '/contact', changefreq: 'yearly', priority: '0.4' },
-  { loc: '/collaborate', changefreq: 'yearly', priority: '0.4' },
 ];
 
 const isDate = value => /^\d{4}-\d{2}-\d{2}$/.test(value || '');

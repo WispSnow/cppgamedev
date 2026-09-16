@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom';
-
 export interface FAQItem {
   question: string;
   answer: string | React.ReactNode;
@@ -63,15 +61,6 @@ export const faqData: FAQCategory[] = [
       {
         question: "如何提供支持/赞助你们？",
         answer: "您在观看视频时的点赞、分享就是对我们最好的支持。如果您希望提供物质支持，可以通过爱发电赞助我们。赞助者将获得加入专属答疑群等权益，感谢您的慷慨解囊！"
-      }
-    ]
-  },
-  {
-    title: "合作与交流",
-    items: [
-      {
-        question: "我能和你一起开发游戏吗？",
-        answer: <>非常欢迎，详情请查看<Link to="/collaborate">合作开发页面</Link>。</>
       }
     ]
   }

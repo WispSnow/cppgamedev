@@ -17,7 +17,6 @@ interface MarkdownPageProps {
 const pages = [
   { path: '/about', title: '关于我们', eyebrow: 'STUDIO NOTES / 关于工作台' },
   { path: '/contact', title: '联系我们', eyebrow: 'KEEP IN TOUCH / 交流与反馈' },
-  { path: '/collaborate', title: '合作开发', eyebrow: 'BUILD TOGETHER / 一起做游戏' },
 ];
 
 export default function MarkdownPage({ title, description, contentUrl }: MarkdownPageProps) {

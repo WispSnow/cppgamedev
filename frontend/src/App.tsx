@@ -20,7 +20,6 @@ const AboutPage = React.lazy(() => import('./pages/AboutPage'));
 const ContactPage = React.lazy(() => import('./pages/ContactPage'));
 const RoadmapPage = React.lazy(() => import('./pages/RoadmapPage'));
 const FAQPage = React.lazy(() => import('./pages/FAQPage'));
-const CollaboratePage = React.lazy(() => import('./pages/CollaboratePage'));
 const ProjectsPage = React.lazy(() => import('./pages/ProjectsPage'));
 const ProjectDetailPage = React.lazy(() => import('./pages/ProjectDetailPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
@@ -69,7 +68,6 @@ function AnimatedRoutes() {
         <Route path="/troubleshooting/:articleId" element={<TroubleshootingDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/collaborate" element={<CollaboratePage />} />
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/projects/:projectId" element={<ProjectDetailPage />} />

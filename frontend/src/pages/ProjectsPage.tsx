@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import SEOHelmet from '../components/SEOHelmet';
 import ProjectCard from '../components/ProjectCard';
@@ -41,18 +40,6 @@ const List = styled.div`
   gap: 2rem;
 `;
 
-const FooterNote = styled.p`
-  margin: 3rem 0 0;
-  text-align: center;
-  color: var(--secondary-text-color);
-  font-size: 0.95rem;
-
-  a {
-    color: var(--primary-color, #0066cc);
-    text-decoration: underline;
-  }
-`;
-
 const ProjectsPage: React.FC = () => (
   <PageContainer>
     <SEOHelmet
@@ -75,9 +62,6 @@ const ProjectsPage: React.FC = () => (
       ))}
     </List>
 
-    <FooterNote>
-      想一起做点什么？欢迎看看 <Link to="/collaborate">合作开发</Link>。
-    </FooterNote>
   </PageContainer>
 );
 

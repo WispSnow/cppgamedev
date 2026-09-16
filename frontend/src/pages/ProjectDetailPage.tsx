@@ -254,7 +254,7 @@ const ProjectDetailPage: React.FC = () => {
 
         </Info>
       </Body>
-      <RelatedLinks aria-label="探索更多"><Link to="/projects">更多作品与实验 →</Link><Link to="/collaborate">一起做游戏 →</Link></RelatedLinks>
+      <RelatedLinks aria-label="探索更多"><Link to="/projects">更多作品与实验 →</Link></RelatedLinks>
       <Suspense fallback={null}><GiscusComments /></Suspense>
     </PageShell>
   );
