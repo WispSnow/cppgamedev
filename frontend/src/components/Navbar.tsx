@@ -58,6 +58,12 @@ const LogoBracket = styled.span`
 const LogoText = styled.span`
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 
+  /* 平板宽度下导航项还是一整排，6 个入口加站名会把右侧的搜索和主题按钮挤出屏幕，
+     这一档只保留 C++ 徽章（徽章本身也是回首页的链接） */
+  @media (max-width: 1024px) and (min-width: 769px) {
+    display: none;
+  }
+
   @media (max-width: 480px) {
     display: none;
   }
@@ -102,6 +108,10 @@ const NavLink = styled(Link)<{ $isActive?: boolean }>`
   &:hover {
     color: var(--primary-color, #0066cc);
     background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.1));
+  }
+
+  @media (max-width: 1024px) and (min-width: 769px) {
+    padding: 0.5rem 0.75rem;
   }
 
   @media (max-width: 768px) {
@@ -184,6 +194,7 @@ const Navbar: React.FC = () => {
         <NavLinks $isOpen={isMenuOpen}>
           <NavLink to="/mainline" $isActive={isActive('/mainline')} onClick={closeMenu}>主线</NavLink>
           <NavLink to="/side-quests" $isActive={isActive('/side-quests')} onClick={closeMenu}>支线</NavLink>
+          <NavLink to="/projects" $isActive={isActive('/projects')} onClick={closeMenu}>作品</NavLink>
           <NavLink to="/roadmap" $isActive={isActive('/roadmap')} onClick={closeMenu}>路线图</NavLink>
           <NavLink to="/troubleshooting" $isActive={isActive('/troubleshooting')} onClick={closeMenu}>疑难解决</NavLink>
           <NavLink to="/faq" $isActive={isActive('/faq')} onClick={closeMenu}>FAQ</NavLink>

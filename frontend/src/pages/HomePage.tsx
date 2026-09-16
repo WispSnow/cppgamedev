@@ -6,6 +6,8 @@ import { Course } from '../types';
 import SEOHelmet from '../components/SEOHelmet';
 import { getDifficultyInfo } from '../utils/difficultyUtils';
 import { getReadingHistory, getBookmarks, HistoryItem } from '../services/storageService';
+import ProjectCard from '../components/ProjectCard';
+import { projects } from '../data/projectsData';
 
 const HomeContainer = styled.div`
   max-width: 1200px;
@@ -367,6 +369,34 @@ const ClearFilterButton = styled.button`
   }
 `;
 
+const ProjectsIntro = styled.p`
+  /* SectionTitle 自带 2rem 下边距，这里收回一部分，让说明贴着标题 */
+  margin: -1.5rem 0 2rem;
+  text-align: center;
+  color: var(--secondary-text-color, #666);
+  font-size: 0.95rem;
+`;
+
+const ProjectGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+`;
+
+const SectionFooter = styled.div`
+  margin-top: 1.5rem;
+  text-align: center;
+`;
+
+const MoreLink = styled(Link)`
+  color: var(--primary-color, #0066cc);
+  font-weight: 500;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const HomePage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -600,6 +630,20 @@ const HomePage: React.FC = () => {
           )}
         </CoursesSection>
       )}
+
+      {/* 作品：课程之外做的小游戏和实验，不依赖课程接口，加载失败也照常显示 */}
+      <CoursesSection>
+        <SectionTitle>作品</SectionTitle>
+        <ProjectsIntro>课程之外做的小游戏和实验，技术栈不限于 C++</ProjectsIntro>
+        <ProjectGrid>
+          {projects.slice(0, 3).map(project => (
+            <ProjectCard key={project.id} project={project} variant="grid" />
+          ))}
+        </ProjectGrid>
+        <SectionFooter>
+          <MoreLink to="/projects">查看全部作品 →</MoreLink>
+        </SectionFooter>
+      </CoursesSection>
     </HomeContainer>
   );
 };

@@ -38,7 +38,7 @@ Both servers must run simultaneously for local development. Frontend proxies `/a
 - **Mermaid diagrams:** ```` ```mermaid ```` fences render as diagrams via `components/MermaidDiagram.tsx` (the `mermaid` package is dynamically imported only on pages that contain one)
 - **API calls:** `fetch` via service files in `services/` (`api.ts` holds the shared JSON helper and `isNotFoundError`; `courseService.ts` and `troubleshootingService.ts` take an optional `AbortSignal`); `SearchModal` calls `/api/search` directly. `storageService.ts` wraps localStorage (bookmarks, reading progress)
 - **Comments:** Giscus integration configured in `config/giscus.ts`
-- **Static data:** `data/roadmapData.ts` (roadmap), `data/faqData.tsx` (FAQ)
+- **Static data:** `data/roadmapData.ts` (roadmap), `data/faqData.tsx` (FAQ), `data/projectsData.ts` (个人作品 — the `/projects` pages, no backend involved)
 - **Shared types:** `types/index.ts` — `Course`, `CoursePart`, `TroubleshootingArticle`, etc.
 - **Analytics:** GA4 (`G-JLHZH11YW4`) + 百度统计 (`_hmt`). `public/index.html` loads both only in production builds and turns off their automatic page views; `SEOHelmet` reports each page view through `utils/analytics.ts` once the page title is known. Every routed page must render `SEOHelmet` (pages that fetch data render it after the data arrives, so the reported title is final)
 
@@ -52,6 +52,7 @@ Both servers must run simultaneously for local development. Frontend proxies `/a
 - `ProgressIndicator` — reading progress bar for long pages
 - `ScrollToTopButton` — floating back-to-top button shown after scrolling 400px, used in chapter pages
 - `ErrorState` / `Skeleton` — standard error and loading-state UI
+- `ProjectCard` / `ProjectActions` / `ProjectBadges` — 作品卡片（`/projects` 列表页、首页作品区块和详情页共用）。试玩、源码等按钮都指向站外，点击时通过 `utils/analytics.ts` 的 `trackOutboundClick` 记一笔；只支持电脑的作品在触摸设备上（`hooks/useCoarsePointer.ts`，按 `pointer: coarse` 判断而不是屏幕宽度）会多出提示和「复制链接」按钮
 - `utils/difficultyUtils.ts` — maps difficulty level (1–5) to label and color
 
 ### Backend (`backend/src/`)
@@ -88,6 +89,12 @@ Frontend page → `fetch` call to `/api/courses/:id/parts/:partId` → backend r
 2. Create `frontend/src/pages/{Name}Page.tsx` using `<MarkdownPage title="..." description="..." contentUrl="/content/{slug}.md" />`
 3. Register the route in `App.tsx` (lazy import + `<Route>`) and add it to `staticPages` in `scripts/generate-sitemap.js`
 4. Add a link in `Footer.tsx` and/or relevant existing pages
+
+### New project (`/projects`)
+1. Put the cover and screenshots in `frontend/public/images/projects/` (webp; set `pixelated: true` on pixel art so it stays sharp when scaled). Host them here rather than hotlinking GitHub — `raw.githubusercontent.com` is unreliable from the mainland
+2. Add one entry to the `projects` array in `frontend/src/data/projectsData.ts` — that is the only step for the list page, the detail page and the homepage section
+3. `scripts/generate-sitemap.js` parses the `id` fields straight out of that file, so `/projects/{id}` lands in the sitemap automatically (it throws if it parses none)
+4. Games hosted elsewhere stay elsewhere: the site links out in a new tab instead of embedding an iframe, so the game keeps its own origin (localStorage saves and any identity cookie belong to it, and a cross-site iframe would break both)
 
 ## Conventions
 

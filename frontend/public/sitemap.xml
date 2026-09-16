@@ -26,6 +26,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://cppgamedev.top/projects</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://cppgamedev.top/troubleshooting</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -1260,5 +1265,15 @@
     <loc>https://cppgamedev.top/troubleshooting/windows-chinese-encoding-issue</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://cppgamedev.top/projects/angel2-web-remake</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://cppgamedev.top/projects/little-yard</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>

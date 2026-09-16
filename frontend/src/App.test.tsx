@@ -44,6 +44,8 @@ jest.mock('./pages/TroubleshootingDetailPage', () => ({ __esModule: true, defaul
 jest.mock('./pages/AboutPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/ContactPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/CollaboratePage', () => ({ __esModule: true, default: () => <div /> }));
+jest.mock('./pages/ProjectsPage', () => ({ __esModule: true, default: () => <div /> }));
+jest.mock('./pages/ProjectDetailPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/RoadmapPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/FAQPage', () => ({ __esModule: true, default: () => <div /> }));
 jest.mock('./pages/NotFoundPage', () => ({ __esModule: true, default: () => <div /> }));
@@ -56,7 +58,7 @@ describe('App', () => {
     });
 
     // 导航栏和页脚里有同名链接，所以用 getAllByText
-    for (const label of ['主线', '支线', '路线图', '疑难解决', 'FAQ']) {
+    for (const label of ['主线', '支线', '作品', '路线图', '疑难解决', 'FAQ']) {
       expect(screen.getAllByText(label).length).toBeGreaterThan(0);
     }
   });

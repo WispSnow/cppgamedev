@@ -17,6 +17,7 @@ const staticPages = [
   { loc: '/side-quests', changefreq: 'weekly', priority: '0.8' },
   { loc: '/courses', changefreq: 'weekly', priority: '0.8' },
   { loc: '/roadmap', changefreq: 'monthly', priority: '0.7' },
+  { loc: '/projects', changefreq: 'monthly', priority: '0.7' },
   { loc: '/troubleshooting', changefreq: 'monthly', priority: '0.6' },
   { loc: '/faq', changefreq: 'monthly', priority: '0.5' },
   { loc: '/about', changefreq: 'yearly', priority: '0.4' },
@@ -40,6 +41,18 @@ for (const course of courses) {
 
 for (const article of troubleshootingArticles) {
   urls.push({ loc: `/troubleshooting/${article.id}`, changefreq: 'monthly', priority: '0.5' });
+}
+
+// 作品数据在前端的 TypeScript 文件里，这个脚本 require 不了，只能按 id 字段取；
+// 一条都没取到就报错，免得改了数据文件后 sitemap 悄悄漏掉作品页
+const projectsSource = fs.readFileSync(path.join(root, 'frontend/src/data/projectsData.ts'), 'utf8');
+const projectIds = [...new Set([...projectsSource.matchAll(/^\s+id: '([a-z0-9-]+)',$/gm)].map(match => match[1]))];
+if (projectIds.length === 0) {
+  throw new Error('没有从 frontend/src/data/projectsData.ts 解析出作品 id');
+}
+
+for (const id of projectIds) {
+  urls.push({ loc: `/projects/${id}`, changefreq: 'monthly', priority: '0.6' });
 }
 
 const entries = urls.map(({ loc, lastmod, changefreq, priority }) =>

@@ -27,3 +27,17 @@ export function trackPageView(locationKey: string, path: string, title: string) 
   });
   window._hmt?.push(['_trackPageview', path]);
 }
+
+// 站外跳转：作品的试玩、源码、演示视频都在别的站点上，不记一笔就看不出哪个作品有人点
+export function trackOutboundClick(label: string, url: string) {
+  if (process.env.NODE_ENV === 'development') {
+    console.debug('[analytics] outbound_click', label, url);
+  }
+
+  window.gtag?.('event', 'outbound_click', {
+    event_category: '作品',
+    event_label: label,
+    link_url: url,
+  });
+  window._hmt?.push(['_trackEvent', '作品', label, url]);
+}

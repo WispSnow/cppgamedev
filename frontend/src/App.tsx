@@ -21,6 +21,8 @@ const ContactPage = React.lazy(() => import('./pages/ContactPage'));
 const RoadmapPage = React.lazy(() => import('./pages/RoadmapPage'));
 const FAQPage = React.lazy(() => import('./pages/FAQPage'));
 const CollaboratePage = React.lazy(() => import('./pages/CollaboratePage'));
+const ProjectsPage = React.lazy(() => import('./pages/ProjectsPage'));
+const ProjectDetailPage = React.lazy(() => import('./pages/ProjectDetailPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 const AppContainer = styled.div`
@@ -69,6 +71,8 @@ function AnimatedRoutes() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/collaborate" element={<CollaboratePage />} />
         <Route path="/roadmap" element={<RoadmapPage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:projectId" element={<ProjectDetailPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
