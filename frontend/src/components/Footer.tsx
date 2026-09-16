@@ -161,10 +161,10 @@ const Footer: React.FC = () => {
             <ColumnTitle>站点导航</ColumnTitle>
             <FooterLink to="/mainline">主线任务</FooterLink>
             <FooterLink to="/side-quests">支线任务</FooterLink>
-            <FooterLink to="/projects">作品</FooterLink>
             <FooterLink to="/roadmap">路线图</FooterLink>
             <FooterLink to="/faq">常见问题</FooterLink>
             <FooterLink to="/troubleshooting">疑难解决</FooterLink>
+            <FooterLink to="/projects">作品</FooterLink>
           </FooterColumn>
 
           <FooterColumn>

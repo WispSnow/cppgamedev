@@ -194,10 +194,11 @@ const Navbar: React.FC = () => {
         <NavLinks $isOpen={isMenuOpen}>
           <NavLink to="/mainline" $isActive={isActive('/mainline')} onClick={closeMenu}>主线</NavLink>
           <NavLink to="/side-quests" $isActive={isActive('/side-quests')} onClick={closeMenu}>支线</NavLink>
-          <NavLink to="/projects" $isActive={isActive('/projects')} onClick={closeMenu}>作品</NavLink>
           <NavLink to="/roadmap" $isActive={isActive('/roadmap')} onClick={closeMenu}>路线图</NavLink>
           <NavLink to="/troubleshooting" $isActive={isActive('/troubleshooting')} onClick={closeMenu}>疑难解决</NavLink>
           <NavLink to="/faq" $isActive={isActive('/faq')} onClick={closeMenu}>FAQ</NavLink>
+          {/* 作品是课程之外的附属内容，放在最后；和 FAQ 一样用英文短标签，页面标题仍是「作品」 */}
+          <NavLink to="/projects" $isActive={isActive('/projects')} onClick={closeMenu}>Works</NavLink>
         </NavLinks>
 
         <ActionGroup>

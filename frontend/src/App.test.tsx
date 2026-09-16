@@ -58,7 +58,7 @@ describe('App', () => {
     });
 
     // 导航栏和页脚里有同名链接，所以用 getAllByText
-    for (const label of ['主线', '支线', '作品', '路线图', '疑难解决', 'FAQ']) {
+    for (const label of ['主线', '支线', '路线图', '疑难解决', 'FAQ', 'Works']) {
       expect(screen.getAllByText(label).length).toBeGreaterThan(0);
     }
   });
