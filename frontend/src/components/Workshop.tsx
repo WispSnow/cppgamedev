@@ -54,3 +54,46 @@ export const PrimaryLink = styled(Link)`
   transition: transform 0.18s ease;
   &:hover { transform: translateY(-2px); }
 `;
+
+export const SplitLayout = styled.div`
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+  @media (max-width: 850px) { grid-template-columns: 1fr; gap: 1.5rem; }
+`;
+
+export const SectionNav = styled.nav`
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-color);
+  a { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: 0.7rem 0.8rem; border-radius: 4px; font-size: 0.9rem; color: var(--secondary-text-color); }
+  a:hover, a[aria-current='page'] { color: var(--primary-color); background: var(--toc-active-bg); }
+  @media (max-width: 850px) { position: static; flex-direction: row; flex-wrap: wrap; padding: 0.8rem 0; border-bottom: 1px solid var(--border-color); }
+`;
+
+export const ReadingPanel = styled.article`
+  min-width: 0;
+  padding: clamp(1.1rem, 3vw, 2.5rem);
+  background: var(--card-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+`;
+
+export const RelatedLinks = styled.nav`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  a { color: var(--primary-color); }
+  a:hover { text-decoration: underline; text-underline-offset: 4px; }
+`;

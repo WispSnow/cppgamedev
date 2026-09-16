@@ -49,7 +49,9 @@ describe('SearchModal', () => {
     fireEvent.keyDown(window, { key: 'Enter', keyCode: 229 });
     expect(mockNavigate).not.toHaveBeenCalled();
 
-    fireEvent.keyDown(window, { key: 'Enter' });
+    const enter = createEvent.keyDown(window, { key: 'Enter' });
+    fireEvent(window, enter);
+    expect(enter.defaultPrevented).toBe(true);
     expect(mockNavigate).toHaveBeenCalledWith('/courses/demo/parts/状态机');
   });
 
@@ -82,10 +84,37 @@ describe('SearchModal', () => {
     const tab = createEvent.keyDown(window, { key: 'Tab' });
     fireEvent(window, tab);
     expect(tab.defaultPrevented).toBe(true);
+    expect(screen.getByRole('button', { name: '关闭搜索' })).toHaveFocus();
+    fireEvent.keyDown(window, { key: 'Tab' });
+    expect(screen.getByRole('combobox')).toHaveFocus();
+    expect(document.body.style.overflow).toBe('hidden');
 
     unmount();
+    expect(document.body.style.overflow).not.toBe('hidden');
     expect(trigger).toHaveFocus();
     trigger.remove();
+  });
+
+  it('关闭按钮获得焦点时，Enter 不会打开当前搜索结果', async () => {
+    const onClose = jest.fn();
+    render(<SearchModal onClose={onClose} />);
+    await type('组件');
+    await act(async () => requests[0].respond(['组件']));
+    fireEvent.keyDown(window, { key: 'Tab' });
+    fireEvent.keyDown(screen.getByRole('button', { name: '关闭搜索' }), { key: 'Enter' });
+    expect(mockNavigate).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: '关闭搜索' }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('输入新查询后，不会在防抖期间打开旧查询的结果', async () => {
+    render(<SearchModal onClose={() => {}} />);
+    await type('组件');
+    await act(async () => requests[0].respond(['旧结果']));
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: '状态机' } });
+    expect(screen.queryByRole('option')).not.toBeInTheDocument();
+    fireEvent.keyDown(window, { key: 'Enter' });
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it('方向键移动选中项时，输入框的 aria-activedescendant 跟着变', async () => {

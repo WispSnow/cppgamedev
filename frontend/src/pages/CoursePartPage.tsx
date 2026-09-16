@@ -20,6 +20,7 @@ import ScrollToTopButton from '../components/ScrollToTopButton';
 import SEOHelmet from '../components/SEOHelmet';
 import NotFoundPage from './NotFoundPage';
 import Icon from '../components/Icon';
+import ArticleProse from '../components/ArticleProse';
 
 const GiscusComments = React.lazy(() => import('../components/GiscusComments'));
 
@@ -113,152 +114,6 @@ const ChapterIntro = styled.p`
   font-size: 0.95rem;
   line-height: 1.8;
   strong { display: block; color: var(--primary-color); font-size: 0.8rem; margin-bottom: 0.3rem; }
-`;
-
-const MarkdownContainer = styled.div`
-  max-width: 720px;
-  margin: 0 auto;
-  line-height: 1.85;
-  color: var(--text-color, #333);
-  font-size: 1.0625rem;
-
-  /* Markdown 里的一级标题渲染成 h2（页面标题才是 h1），这里保留原来一级标题的外观 */
-  h2[data-md-h1] {
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0;
-    border-bottom: none;
-    font-size: 1.75rem;
-    color: var(--text-color, #333);
-  }
-
-  h2 {
-    margin-top: 2.5rem;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.4rem;
-    font-size: 1.4rem;
-    border-bottom: 1px solid var(--border-color, #eaeaea);
-    color: var(--text-color, #333);
-  }
-
-  h3 {
-    margin-top: 2rem;
-    margin-bottom: 0.6rem;
-    font-size: 1.2rem;
-    color: var(--text-color, #333);
-  }
-
-  h4, h5, h6 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-color, #333);
-  }
-
-  p {
-    margin-bottom: 1.25rem;
-  }
-
-  /* 正文链接带下划线，不只靠颜色和普通文字区分 */
-  a {
-    color: var(--primary-color, #0066cc);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.2em;
-
-    &:hover {
-      text-decoration-thickness: 2px;
-    }
-  }
-
-  img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 6px;
-    margin: 1.5rem 0;
-  }
-
-  ul, ol {
-    margin-bottom: 1.25rem;
-    padding-left: 1.75rem;
-  }
-
-  li {
-    margin-bottom: 0.35rem;
-  }
-
-  blockquote {
-    margin: 1.5rem 0;
-    margin-left: 0;
-    padding: 0.75rem 1rem;
-    border-left: 3px solid var(--primary-color, #0066cc);
-    color: var(--secondary-text-color, #666);
-    background-color: var(--toc-active-bg, rgba(0, 102, 204, 0.03));
-    border-radius: 0 6px 6px 0;
-  }
-
-  hr {
-    border: none;
-    border-top: 1px solid var(--border-color, #eaeaea);
-    margin: 2.5rem 0;
-  }
-  
-  /* 表格样式 */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 2rem 0;
-    font-size: 0.95rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  
-  thead {
-    background-color: var(--primary-color, #0066cc);
-    color: var(--on-primary-color);
-  }
-  
-  th {
-    padding: 1rem;
-    text-align: left;
-    font-weight: 600;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-  }
-  
-  td {
-    padding: 0.875rem 1rem;
-    border-bottom: 1px solid var(--border-color, #eaeaea);
-  }
-  
-  tbody tr {
-    background-color: var(--card-bg-color, #ffffff);
-    transition: background-color 0.2s ease;
-    
-    &:hover {
-      background-color: var(--hover-bg-color, #f5f5f5);
-    }
-    
-    &:last-child td {
-      border-bottom: none;
-    }
-  }
-  
-  /* 暗色主题下的表格样式 */
-  [data-theme='dark'] & {
-    table {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    thead {
-      background-color: var(--primary-color);
-    }
-    
-    tbody tr {
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-      }
-    }
-  }
 `;
 
 const ProgressSkeleton = styled.div`
@@ -451,9 +306,9 @@ const CoursePartPage: React.FC = () => {
             {part.description && <ChapterIntro><strong>本节内容</strong>{part.description}</ChapterIntro>}
 
             {part.content ? (
-              <MarkdownContainer>
+              <ArticleProse>
                 <ChapterContent content={part.content} components={components} />
-              </MarkdownContainer>
+              </ArticleProse>
             ) : (
               <ErrorState message="此章节暂无内容" />
             )}

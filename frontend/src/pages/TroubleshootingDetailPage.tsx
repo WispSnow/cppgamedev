@@ -1,163 +1,54 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
 import { getTroubleshootingArticleById } from '../services/troubleshootingService';
+import { isNotFoundError } from '../services/api';
 import { TroubleshootingArticle } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import SEOHelmet from '../components/SEOHelmet';
 import ErrorState from '../components/ErrorState';
 import { ArticleSkeleton } from '../components/Skeleton';
-import {
-  markdownRehypePlugins,
-  markdownRemarkPlugins,
-  useMarkdownComponents,
-} from '../hooks/useMarkdownComponents';
+import ArticleProse from '../components/ArticleProse';
+import { PageShell, Eyebrow, PageHeading, PageIntro, ReadingPanel, RelatedLinks } from '../components/Workshop';
+import { markdownRehypePlugins, markdownRemarkPlugins, useMarkdownComponents } from '../hooks/useMarkdownComponents';
+import NotFoundPage from './NotFoundPage';
 
-const PageContainer = styled.div`
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem;
-  background-color: var(--card-bg-color, #ffffff);
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-`;
+const Container = styled(PageShell)`max-width: 980px;`;
+const Back = styled(Link)`display: inline-block; margin-bottom: 2rem; color: var(--primary-color); font-size: 0.9rem; &:hover { text-decoration: underline; }`;
 
-const BackLink = styled(Link)`
-  display: inline-block;
-  margin-bottom: 2rem;
-  color: var(--primary-color, #0066cc);
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const Title = styled.h1`
-  margin-bottom: 0.5rem;
-  color: var(--text-color, #333);
-`;
-
-const Subtitle = styled.p`
-  margin-top: 0;
-  color: var(--secondary-text-color, #666);
-`;
-
-const MarkdownContainer = styled.div`
-  line-height: 1.8;
-  color: var(--text-color, #333);
-
-  h1, h2, h3, h4, h5, h6 {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    color: var(--text-color, #333);
-  }
-
-  p {
-    margin-bottom: 1.5rem;
-  }
-
-  ul, ol {
-    margin-bottom: 1.5rem;
-    padding-left: 2rem;
-  }
-
-  /* 正文链接带下划线，不只靠颜色和普通文字区分 */
-  a {
-    color: var(--primary-color, #0066cc);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.2em;
-
-    &:hover {
-      text-decoration-thickness: 2px;
-    }
-  }
-
-  pre, .react-syntax-highlighter {
-    margin: 1.5rem 0;
-    border-radius: 8px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    background-color: var(--code-block-bg, #f6f8fa);
-    padding: 1rem;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* 只作用于代码块，行内代码保持行内显示 */
-  pre code, .react-syntax-highlighter code {
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    white-space: pre;
-    display: block;
-    width: max-content;
-    min-width: 100%;
-  }
-`;
-
-const TroubleshootingDetailPage: React.FC = () => {
+export default function TroubleshootingDetailPage() {
   const { articleId } = useParams<{ articleId: string }>();
   const [article, setArticle] = useState<TroubleshootingArticle | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const { theme } = useTheme();
-
-  const fetchArticle = useCallback(async () => {
-    try {
-      if (!articleId) return;
-      setError(null);
-      setLoading(true);
-      const data = await getTroubleshootingArticleById(articleId);
-      setArticle(data);
-    } catch (err) {
-      console.error('Error fetching troubleshooting article:', err);
-      setError('加载文章失败，请稍后再试');
-    } finally {
-      setLoading(false);
-    }
-  }, [articleId]);
-
   useEffect(() => {
-    fetchArticle();
-  }, [fetchArticle]);
-
-  const markdownComponents = useMarkdownComponents(theme, {
-    useCodeWrappers: false,
-  });
-
+    if (!articleId) return;
+    const controller = new AbortController();
+    setArticle(null);
+    setLoading(true);
+    setFailed(false);
+    setNotFound(false);
+    getTroubleshootingArticleById(articleId, controller.signal)
+      .then(data => { if (!controller.signal.aborted) setArticle(data); })
+      .catch(error => { if (!controller.signal.aborted) { if (isNotFoundError(error)) setNotFound(true); else setFailed(true); } })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [articleId, reloadKey]);
+  const components = useMarkdownComponents(theme, { showCopyButton: true, fullStyleOverrides: true });
+  if (notFound) return <NotFoundPage message="这篇排障文章不存在，可能已经调整或者地址有误。" />;
   return (
-    <PageContainer>
-      {article && (
-        <SEOHelmet
-          title={`${article.title} | 疑难解决`}
-          description={article.description}
-          keywords={`C++,游戏开发,疑难解决,${article.title}`}
-          canonical={`/troubleshooting/${article.id}`}
-        />
-      )}
-      <BackLink to="/troubleshooting">← 返回疑难解决</BackLink>
-
-      {loading && <ArticleSkeleton />}
-
-      {!loading && error && <ErrorState message={error} onRetry={fetchArticle} />}
-
-      {!loading && !error && article && (
-        <>
-          <Title>{article.title}</Title>
-          <Subtitle>{article.description}</Subtitle>
-          <MarkdownContainer>
-            <ReactMarkdown
-              remarkPlugins={markdownRemarkPlugins}
-              rehypePlugins={markdownRehypePlugins}
-              components={markdownComponents}
-            >
-              {article.content || '内容正在整理中，敬请期待。'}
-            </ReactMarkdown>
-          </MarkdownContainer>
-        </>
-      )}
-    </PageContainer>
+    <Container>
+      {article && <SEOHelmet title={`${article.title} | 疑难解决`} description={article.description} keywords={`C++,游戏开发,疑难解决,${article.title}`} canonical={`/troubleshooting/${article.id}`} />}
+      <Back to="/troubleshooting">← 返回疑难解决</Back>
+      {loading ? <ArticleSkeleton /> : failed ? <ErrorState message="加载文章失败，请稍后再试" onRetry={() => setReloadKey(key => key + 1)} /> : article && <>
+        <Eyebrow>DEBUG NOTES / 排障笔记</Eyebrow><PageHeading>{article.title}</PageHeading><PageIntro>{article.description}</PageIntro>
+        <ReadingPanel><ArticleProse><ReactMarkdown remarkPlugins={markdownRemarkPlugins} rehypePlugins={markdownRehypePlugins} components={components}>{article.content || '内容正在整理中，敬请期待。'}</ReactMarkdown></ArticleProse></ReadingPanel>
+        <RelatedLinks aria-label="排障相关入口"><Link to="/troubleshooting">其他排障文章 →</Link><Link to="/contact">仍有问题？查看交流渠道 →</Link></RelatedLinks>
+      </>}
+    </Container>
   );
-};
-
-export default TroubleshootingDetailPage;
+}
