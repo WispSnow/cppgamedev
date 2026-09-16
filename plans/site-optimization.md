@@ -81,7 +81,10 @@
 - [ ] **2. 压缩与缓存**
   - [ ] 开 brotli：线上 `gzip_comp_level 6` 与 gzip -9 只差 0.5%，预压缩 gzip 没有意义；brotli-11 实测全站 89 个 JS/CSS 1750KB → 1437KB（-18%），章节页 246KB → 204KB
     - [x] 构建期生成 `.br`（2026-09-15）：新增 `scripts/precompress.js`，前端 `postbuild` 钩子自动执行，用 Node 自带 zlib，不加依赖；构建产物里 ≥1KB 的 js/css/html/json/svg/xml/txt/md 各压一份 `.br`，随 CI 的 rsync 一起上传
-    - [ ] 【服务器，需要 sudo 密码，由用户执行】装 `libnginx-mod-http-brotli-static`（apt 源里有 1.0.0~rc-5build1，未安装），新建 `/etc/nginx/conf.d/brotli.conf` 写入 `brotli_static on;`（nginx.conf 的 http 段已经 include conf.d，不用动 nginx.conf），`sudo nginx -t` 通过后 reload；回滚就是删掉这个文件再 reload
+    - [x] 【服务器】2026-09-16 已开：装 `libnginx-mod-http-brotli-static` 1.0.0~rc-5build1，新建 `/etc/nginx/conf.d/brotli.conf`（`brotli_static on;`，nginx.conf 的 http 段本来就 include conf.d，没动 nginx.conf），`nginx -t` 通过后 reload（worker 已换新）
+      - 验证（在服务器本机用 `--resolve` 请求，开发机的 curl 走透明代理测不准）：`Accept-Encoding: gzip` 仍返回 gzip，首页和 API 都是 200；`.br` 要等这批部署后才会命中
+      - 回滚：`sudo rm /etc/nginx/conf.d/brotli.conf && sudo nginx -t && sudo systemctl reload nginx`
+      - 顺带发现：`/etc/apt/sources.list.d/newrelic-infra.list` 是台遗留的探针源，域名连不上，每次 `apt-get update` 都要白等几分钟重试三轮，建议单独清掉（需要 sudo）
   - [ ] API 响应加 `Cache-Control`（内容只在发版时变）——做 P1.1 的话不再需要（前端不再请求课程接口）
   - [ ] `/content/*.md` 的 Content-Type 改为 `text/markdown; charset=utf-8`（现在是 octet-stream）——fetch 读取不受影响，只是直接打开会下载，价值很低；做 P1.1 后也不再需要
   - [ ] 图床：342 张图（291 张 webp、51 张 png），抽样 25 张中位数 41KB、最大 84KB，估算总共约 14MB；Cloudflare 缓存 `max-age=14400`。开发机访问 Cloudflare 的出口在美国（colo=LAX），测不出国内速度 → 用阿里云拨测或 17CE 在国内测；如果慢，图片总量小，直接挂到自己域名下（nginx `proxy_cache` 或拷到服务器）最省事
